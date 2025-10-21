@@ -28,11 +28,24 @@ def index():
     return 'Hello, Supabase + Flask!'
 
 from api.kategori.kategori import get_kategori_transaksi
+from api.pegawai.new import create_pegawai
+from api.pegawai.pegawai import get_pegawai
 
 # GET: Mengambil semua data dari tabel
+#@app.route('/data', methods=['GET'])
 @app.route('/api/kategori.list', methods=['GET'])
 def get_data():
     return get_kategori_transaksi(supabase)
+
+# POST: Membuat profil baru
+@app.route('/api/pegawai.create', methods=['POST'])
+def new_pegawai():
+    return create_pegawai(supabase, request)
+
+# GET: Mengambil semua data pegawai
+@app.route('/api/pegawai.list', methods=['GET'])
+def list_pegawai():
+    return get_pegawai(supabase)
 
 if __name__ == '__main__':
     app.run(debug=True)
