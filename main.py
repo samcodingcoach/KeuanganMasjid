@@ -32,6 +32,7 @@ from api.kategori.new import create_kategori
 from api.pegawai.new import create_pegawai
 from api.pegawai.pegawai import get_pegawai
 from api.mustahik.mustahik import get_mustahik
+from api.akun.akun import get_akun_kas_bank
 
 # GET: Mengambil semua data dari tabel
 #@app.route('/data', methods=['GET'])
@@ -58,6 +59,11 @@ def list_pegawai():
 @app.route('/api/mustahik.list', methods=['GET'])
 def list_mustahik():
     return get_mustahik(supabase)
+
+# GET: Mengambil semua data akun kas bank
+@app.route('/api/akun.list', methods=['GET'])
+def list_akun():
+    return get_akun_kas_bank(supabase)
 
 if __name__ == '__main__':
     app.run(debug=True)
