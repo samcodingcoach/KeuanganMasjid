@@ -35,7 +35,7 @@ from api.mustahik.mustahik import get_mustahik
 from api.akun.akun import get_akun_kas_bank
 from api.akun.new import create_akun_kas_bank
 from api.akun.update import update_akun_kas_bank
-from api.asset.asset import get_asset_list
+from api.asset.asset import get_all_assets, get_asset_by_kode_barang
 
 # GET: Mengambil semua data dari tabel
 #@app.route('/data', methods=['GET'])
@@ -81,7 +81,12 @@ def update_akun():
 # GET: Mengambil semua data asset
 @app.route('/api/asset.list', methods=['GET'])
 def list_asset():
-    return get_asset_list(supabase)
+    return get_all_assets(supabase)
+
+# GET: Mengambil data asset berdasarkan kode_barang
+@app.route('/api/asset.list/<kode_barang>', methods=['GET'])
+def get_asset_by_kode_barang_route(kode_barang):
+    return get_asset_by_kode_barang(supabase, kode_barang)
 
 if __name__ == '__main__':
     app.run(debug=True)
