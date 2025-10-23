@@ -32,6 +32,8 @@ from api.kategori.new import create_kategori
 from api.pegawai.new import create_pegawai
 from api.pegawai.pegawai import get_pegawai
 from api.mustahik.mustahik import get_mustahik
+from api.mustahik.new import create_mustahik
+from api.mustahik.update import update_mustahik
 from api.akun.akun import get_akun_kas_bank
 from api.akun.new import create_akun_kas_bank
 from api.akun.update import update_akun_kas_bank
@@ -64,6 +66,16 @@ def list_pegawai():
 @app.route('/api/mustahik.list', methods=['GET'])
 def list_mustahik():
     return get_mustahik(supabase)
+
+# POST: Membuat mustahik baru
+@app.route('/api/mustahik.create', methods=['POST'])
+def new_mustahik():
+    return create_mustahik(supabase, request)
+
+# POST: Mengupdate mustahik
+@app.route('/api/mustahik.update', methods=['POST'])
+def update_mustahik_route():
+    return update_mustahik(supabase, request)
 
 # GET: Mengambil semua data akun kas bank
 @app.route('/api/akun.list', methods=['GET'])
