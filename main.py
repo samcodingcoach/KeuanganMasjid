@@ -36,6 +36,8 @@ from api.akun.akun import get_akun_kas_bank
 from api.akun.new import create_akun_kas_bank
 from api.akun.update import update_akun_kas_bank
 from api.asset.asset import get_all_assets, get_asset_by_kode_barang
+from api.asset.new import create_asset
+from api.asset.update import update_asset
 
 # GET: Mengambil semua data dari tabel
 #@app.route('/data', methods=['GET'])
@@ -87,6 +89,16 @@ def list_asset():
 @app.route('/api/asset.list/<kode_barang>', methods=['GET'])
 def get_asset_by_kode_barang_route(kode_barang):
     return get_asset_by_kode_barang(supabase, kode_barang)
+
+# POST: Membuat asset baru
+@app.route('/api/asset.create', methods=['POST'])
+def new_asset():
+    return create_asset(supabase, request)
+
+# POST: Mengupdate asset
+@app.route('/api/asset.update', methods=['POST'])
+def update_asset_route():
+    return update_asset(supabase, request)
 
 if __name__ == '__main__':
     app.run(debug=True)
