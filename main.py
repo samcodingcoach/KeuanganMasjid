@@ -31,6 +31,7 @@ from api.kategori.kategori import get_kategori_transaksi
 from api.kategori.new import create_kategori
 from api.pegawai.new import create_pegawai
 from api.pegawai.pegawai import get_pegawai
+from api.pegawai.update import update_pegawai
 from api.mustahik.mustahik import get_mustahik
 from api.mustahik.new import create_mustahik
 from api.mustahik.update import update_mustahik
@@ -40,6 +41,7 @@ from api.akun.update import update_akun_kas_bank
 from api.asset.asset import get_all_assets, get_asset_by_kode_barang
 from api.asset.new import create_asset
 from api.asset.update import update_asset
+from api.muzakki.muzakki import get_muzakki_list
 
 # GET: Mengambil semua data dari tabel
 #@app.route('/data', methods=['GET'])
@@ -61,6 +63,11 @@ def new_pegawai():
 @app.route('/api/pegawai.list', methods=['GET'])
 def list_pegawai():
     return get_pegawai(supabase)
+
+# POST: Mengupdate data pegawai
+@app.route('/api/pegawai.update', methods=['POST'])
+def update_pegawai_route():
+    return update_pegawai(supabase, request)
 
 # GET: Mengambil semua data mustahik
 @app.route('/api/mustahik.list', methods=['GET'])
@@ -111,6 +118,11 @@ def new_asset():
 @app.route('/api/asset.update', methods=['POST'])
 def update_asset_route():
     return update_asset(supabase, request)
+
+# GET: Mengambil semua data muzakki
+@app.route('/api/muzakki.list', methods=['GET'])
+def list_muzakki():
+    return get_muzakki_list(supabase)
 
 if __name__ == '__main__':
     app.run(debug=True)
