@@ -9,24 +9,7 @@ load_dotenv()
 # Initialize Flask app
 app = Flask(__name__)
 
-# Initialize Supabase client
-supabase_url = os.getenv("SUPABASE_URL")
-supabase_key = os.getenv("SUPABASE_KEY")
-
-# Cek apakah credentials ada
-if not supabase_url or not supabase_key:
-    print("ERROR: SUPABASE_URL atau SUPABASE_KEY tidak ditemukan!")
-else:
-    print(f"Supabase URL: {supabase_url}")
-    print(f"Supabase Key: {supabase_key[:20]}...")  # Print sebagian key saja
-
-supabase: Client = create_client(supabase_url, supabase_key)
-
-# Route utama
-@app.route('/')
-def index():
-    return 'Hello, Supabase + Flask!'
-
+# Import routes
 from api.kategori.kategori import get_kategori_transaksi
 from api.kategori.new import create_kategori
 from api.pegawai.new import create_pegawai
@@ -41,7 +24,31 @@ from api.akun.update import update_akun_kas_bank
 from api.asset.asset import get_all_assets, get_asset_by_kode_barang
 from api.asset.new import create_asset
 from api.asset.update import update_asset
-from api.muzakki.muzakki import get_muzakki_list
+from api.muzakki.muzakki import muzakki_bp, init_supabase
+
+# Initialize Supabase client
+supabase_url = os.getenv("SUPABASE_URL")
+supabase_key = os.getenv("SUPABASE_KEY")
+
+# Cek apakah credentials ada
+if not supabase_url or not supabase_key:
+    print("ERROR: SUPABASE_URL atau SUPABASE_KEY tidak ditemukan!")
+else:
+    print(f"Supabase URL: {supabase_url}")
+    print(f"Supabase Key: {supabase_key[:20]}...")  # Print sebagian key saja
+
+supabase: Client = create_client(supabase_url, supabase_key)
+
+# Initialize Supabase for blueprints
+init_supabase(supabase)
+
+# Register blueprints
+app.register_blueprint(muzakki_bp)
+
+# Route utama
+@app.route('/')
+def index():
+    return 'Hello, Supabase + Flask!'
 
 # GET: Mengambil semua data dari tabel
 #@app.route('/data', methods=['GET'])
@@ -118,11 +125,6 @@ def new_asset():
 @app.route('/api/asset.update', methods=['POST'])
 def update_asset_route():
     return update_asset(supabase, request)
-
-# GET: Mengambil semua data muzakki
-@app.route('/api/muzakki.list', methods=['GET'])
-def list_muzakki():
-    return get_muzakki_list(supabase)
 
 if __name__ == '__main__':
     app.run(debug=True)
