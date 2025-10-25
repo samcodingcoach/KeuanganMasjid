@@ -60,7 +60,8 @@ def get_transaksi_detail_list(supabase_client):
                 'nominal': detail.get('nominal'),
                 'isAsset': detail.get('isAsset'),
                 'subtotal': detail.get('subtotal'),
-                'id_transaksi': detail.get('id_transaksi')
+                'id_transaksi': detail.get('id_transaksi'),
+                'url_bukti': detail.get('url_bukti')
             }
             
             # Format created_at if it exists
