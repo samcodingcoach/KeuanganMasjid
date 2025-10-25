@@ -75,9 +75,67 @@ def get_transaksi_list(supabase_client):
             mustahik_response = supabase_client.table('mustahik').select('*').in_('id_mustahik', mustahik_ids).execute()
             mustahik_data = {item['id_mustahik']: item for item in mustahik_response.data or []}
         
-        # Build the result with joined data
+        # Extract all transaction IDs for fetching details
+        transaction_ids = [t['id_transaksi'] for t in transactions]
+        
+        # Fetch transaction details for all transactions
+        transaksi_detail_data = {}
+        if transaction_ids:
+            detail_response = supabase_client.table('transaksi_detail').select('*').in_('id_transaksi', transaction_ids).execute()
+            if detail_response.data:
+                # Group details by transaction ID
+                for detail in detail_response.data:
+                    transaksi_id = detail.get('id_transaksi')
+                    if transaksi_id not in transaksi_detail_data:
+                        transaksi_detail_data[transaksi_id] = []
+                    transaksi_detail_data[transaksi_id].append(detail)
+        
+        # Get unique category IDs from all details to fetch category data
+        all_kategori_ids = set()
+        for details_list in transaksi_detail_data.values():
+            for detail in details_list:
+                if detail.get('id_kategori'):
+                    all_kategori_ids.add(detail['id_kategori'])
+        
+        # Fetch category data
+        kategori_data = {}
+        if all_kategori_ids:
+            kategori_response = supabase_client.table('kategori_transaksi').select('*').in_('id_kategori', list(all_kategori_ids)).execute()
+            kategori_data = {item['id_kategori']: item for item in kategori_response.data or []}
+        
+        # Build the result with joined data and nested details
         result = []
         for transaksi in transactions:
+            # Build transaction details with related category data
+            details_list = []
+            if transaksi.get('id_transaksi') in transaksi_detail_data:
+                for detail in transaksi_detail_data[transaksi['id_transaksi']]:
+                    detail_item = {
+                        'id_detail': detail.get('id_detail'),
+                        'created_at': detail.get('created_at'),
+                        'deskripsi': detail.get('deskripsi'),
+                        'kode_transaksi': transaksi.get('kode_transaksi'),
+                        'id_kategori': detail.get('id_kategori'),
+                        'nama_kategori': kategori_data.get(detail.get('id_kategori'), {}).get('nama_kategori'),
+                        'jenis_kategori': kategori_data.get(detail.get('id_kategori'), {}).get('jenis_kategori'),
+                        'jumlah': detail.get('jumlah'),
+                        'nominal': detail.get('nominal'),
+                        'isAsset': detail.get('isAsset'),
+                        'subtotal': detail.get('subtotal'),
+                        'id_transaksi': detail.get('id_transaksi')
+                    }
+                    
+                    # Format created_at if it exists
+                    if detail_item['created_at']:
+                        try:
+                            created_at = datetime.fromisoformat(detail_item['created_at'].replace('Z', '+00:00'))
+                            detail_item['created_at'] = created_at.strftime('%Y-%m-%d %H:%M:%S')
+                        except ValueError:
+                            pass  # Keep original if parsing fails
+                    
+                    details_list.append(detail_item)
+            
+            # Create the main transaction item with nested details
             item = {
                 'id_transaksi': transaksi.get('id_transaksi'),
                 'tanggal_transaksi': transaksi.get('tanggal_transaksi'),
@@ -93,7 +151,8 @@ def get_transaksi_list(supabase_client):
                 'nama_muzakki': muzakki_data.get(transaksi.get('id_muzakki'), {}).get('nama_lengkap'),
                 'id_mustahik': transaksi.get('id_mustahik'),
                 'nama_mustahik': mustahik_data.get(transaksi.get('id_mustahik'), {}).get('nama_lengkap'),
-                'total': transaksi.get('total')
+                'total': transaksi.get('total'),
+                'details': details_list  # Add the nested details
             }
             
             # Format tanggal_transaksi if it exists

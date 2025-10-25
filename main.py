@@ -26,6 +26,7 @@ from api.asset.new import create_asset
 from api.asset.update import update_asset
 from api.muzakki.muzakki import muzakki_bp, init_supabase
 from api.transaksi.list_tx import get_transaksi_list
+from api.transaksi.list_tx_detail import get_transaksi_detail_list
 
 # Initialize Supabase client
 supabase_url = os.getenv("SUPABASE_URL")
@@ -131,6 +132,11 @@ def update_asset_route():
 @app.route('/api/transaksi.list', methods=['GET'])
 def list_transaksi():
     return get_transaksi_list(supabase)
+
+# GET: Mengambil data detail transaksi berdasarkan id_transaksi
+@app.route('/api/transaksi.listdetail', methods=['GET'])
+def list_transaksi_detail():
+    return get_transaksi_detail_list(supabase)
 
 if __name__ == '__main__':
     app.run(debug=True)
