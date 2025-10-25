@@ -1,12 +1,43 @@
 '''API for Transaction List'''
-from flask import jsonify
+from flask import jsonify, request
 from datetime import datetime
 
 def get_transaksi_list(supabase_client):
     '''Get all transactions with related data (akun, pegawai, muzakki, mustahik)'''
     try:
-        # Get all transactions
-        transaksi_response = supabase_client.table('transaksi').select('*').execute()
+        # Build the query with potential filters
+        query = supabase_client.table('transaksi').select('*')
+        
+        # Handle query parameters for filtering
+        id_transaksi = request.args.get('id_transaksi')
+        kode_transaksi = request.args.get('kode_transaksi')
+        tanggal_transaksi = request.args.get('tanggal_transaksi')
+        
+        if id_transaksi:
+            query = query.eq('id_transaksi', id_transaksi)
+        
+        if kode_transaksi:
+            query = query.eq('kode_transaksi', kode_transaksi)
+        
+        if tanggal_transaksi:
+            # Filter by date (only records with this specific date)
+            try:
+                # Parse the date to ensure it's valid
+                date_obj = datetime.strptime(tanggal_transaksi, '%Y-%m-%d')
+                # Format to match Supabase ISO format
+                date_str = date_obj.strftime('%Y-%m-%d')
+                # Filter records between start and end of the day
+                start_date = f"{date_str} 00:00:00"
+                end_date = f"{date_str} 23:59:59"
+                query = query.gte('tanggal_transaksi', start_date).lte('tanggal_transaksi', end_date)
+            except ValueError:
+                return jsonify({
+                    'success': False,
+                    'message': 'Format tanggal_transaksi tidak valid. Gunakan format YYYY-MM-DD'
+                }), 400
+        
+        # Execute the query
+        transaksi_response = query.execute()
         
         if not transaksi_response.data:
             return jsonify({
@@ -78,7 +109,12 @@ def get_transaksi_list(supabase_client):
         return jsonify({
             'success': True,
             'data': result,
-            'count': len(result)
+            'count': len(result),
+            'filters_applied': {
+                'id_transaksi': id_transaksi,
+                'kode_transaksi': kode_transaksi,
+                'tanggal_transaksi': tanggal_transaksi
+            } if any([id_transaksi, kode_transaksi, tanggal_transaksi]) else None
         })
             
     except Exception as e:
