@@ -8,7 +8,7 @@ def update_kategori(supabase_client, request):
         if not data:
             return jsonify({'success': False, 'message': 'Request body harus berisi JSON. Pastikan header Content-Type adalah application/json.'}), 400
 
-        id = data.get('id')
+        id = data.get('id_kategori')
         nama_kategori = data.get('nama_kategori')
         jenis_kategori = data.get('jenis_kategori')
 
@@ -23,7 +23,7 @@ def update_kategori(supabase_client, request):
             return jsonify({'success': False, 'message': f'jenis_kategori tidak valid. Gunakan salah satu dari: {allowed_jenis}'}), 400
 
         # Cek duplikat
-        existing = supabase_client.table('kategori_transaksi').select('id').eq('nama_kategori', nama_kategori).eq('jenis_kategori', jenis_kategori).neq('id', id).execute()
+        existing = supabase_client.table('kategori_transaksi').select('id_kategori').eq('nama_kategori', nama_kategori).eq('jenis_kategori', jenis_kategori).neq('id_kategori', id).execute()
         if existing.data:
             return jsonify({'success': False, 'message': f'Kategori "{nama_kategori}" dengan jenis "{jenis_kategori}" sudah ada.'}), 409
 
@@ -31,7 +31,7 @@ def update_kategori(supabase_client, request):
         response = supabase_client.table('kategori_transaksi').update({
             'nama_kategori': nama_kategori,
             'jenis_kategori': jenis_kategori
-        }).eq('id', id).execute()
+        }).eq('id_kategori', id).execute()
 
         if response.data:
             return jsonify({
@@ -41,7 +41,7 @@ def update_kategori(supabase_client, request):
             }), 200
         else:
             # Cek apakah kategori dengan ID tersebut ada
-            check_exists = supabase_client.table('kategori_transaksi').select('id').eq('id', id).execute()
+            check_exists = supabase_client.table('kategori_transaksi').select('id_kategori').eq('id_kategori', id).execute()
             if not check_exists.data:
                 return jsonify({'success': False, 'message': f'Kategori dengan ID {id} tidak ditemukan.'}), 404
             
