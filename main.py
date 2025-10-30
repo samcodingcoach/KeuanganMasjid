@@ -12,6 +12,7 @@ app = Flask(__name__)
 # Import routes
 from api.kategori.kategori import get_kategori_transaksi
 from api.kategori.new import create_kategori
+from api.kategori.update import update_kategori
 from api.pegawai.new import create_pegawai
 from api.pegawai.pegawai import get_pegawai
 from api.pegawai.update import update_pegawai
@@ -63,6 +64,11 @@ def get_data():
 @app.route('/api/kategori.create', methods=['POST'])
 def new_kategori():
     return create_kategori(supabase, request)
+
+# POST: Mengupdate kategori baru
+@app.route('/api/kategori.update', methods=['POST'])
+def update_kategori_route():
+    return update_kategori(supabase, request)
 
 # POST: Membuat profil baru
 @app.route('/api/pegawai.create', methods=['POST'])
