@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from supabase import create_client, Client
 from dotenv import load_dotenv
 import os
@@ -149,6 +149,18 @@ def list_transaksi_detail():
 @app.route('/api/transaksi.create', methods=['POST'])
 def new_transaksi():
     return create_transaksi(supabase, request)
+
+@app.route('/login')
+def login():
+    return send_from_directory('public', 'login.html')
+
+@app.route('/css/<path:path>')
+def send_css(path):
+    return send_from_directory('public/css', path)
+
+@app.route('/js/<path:path>')
+def send_js(path):
+    return send_from_directory('public/js', path)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0',port=5000, debug=True)

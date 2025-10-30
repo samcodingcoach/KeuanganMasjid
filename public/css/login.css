@@ -1,0 +1,23 @@
+html, body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    background-color: #f0f2f5;
+}
+
+.container {
+    flex: 1 0 auto;
+}
+
+.login-container {
+    border: none;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 1rem;
+}
+
+.footer {
+    flex-shrink: 0;
+}
