@@ -21,6 +21,7 @@
                     <th>Nama Akun</th>
                     <th>Saldo Awal</th>
                     <th>Saldo Akhir</th>
+                    <th>Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -73,6 +74,54 @@
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                             <button type="submit" class="btn btn-primary">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Edit Akun -->
+    <div class="modal fade" id="editAkunModal" tabindex="-1" aria-labelledby="editAkunModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editAkunModalLabel">Edit Akun</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="edit-akun-form">
+                        <input type="hidden" id="edit_id_akun">
+                        <div class="mb-3">
+                            <label for="edit_nama_akun" class="form-label">Nama Akun</label>
+                            <input type="text" class="form-control" id="edit_nama_akun" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_jenis_akun" class="form-label">Jenis Akun</label>
+                            <select class="form-select" id="edit_jenis_akun" required>
+                                <option value="kas_fisik">Kas Fisik</option>
+                                <option value="rekening_bank">Rekening Bank</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_nomor_rekening" class="form-label">Nomor Rekening (Opsional)</label>
+                            <input type="text" class="form-control" id="edit_nomor_rekening">
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_nama_bank" class="form-label">Nama Bank (Opsional)</label>
+                            <input type="text" class="form-control" id="edit_nama_bank">
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_deskripsi" class="form-label">Deskripsi (Opsional)</label>
+                            <textarea class="form-control" id="edit_deskripsi" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_no_referensi" class="form-label">No. Referensi (Opsional)</label>
+                            <input type="text" class="form-control" id="edit_no_referensi">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
                         </div>
                     </form>
                 </div>
