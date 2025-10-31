@@ -3,6 +3,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const addAssetModal = new bootstrap.Modal(document.getElementById('addAssetModal'));
     const editAssetModal = new bootstrap.Modal(document.getElementById('editAssetModal'));
 
+    // Get logged in user's ID from session storage
+    function getLoggedInUserId() {
+        const userData = sessionStorage.getItem('userData');
+        if (userData) {
+            const user = JSON.parse(userData);
+            return user.id_pegawai;
+        }
+        return null;
+    }
+
     // Load asset data on page load
     loadAssetData();
 
@@ -10,15 +20,27 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('add-asset-form').addEventListener('submit', async function(e) {
         e.preventDefault();
 
+        // Get logged in user's ID
+        const id_pegawai = getLoggedInUserId();
+        if (!id_pegawai) {
+            alert('Anda harus login terlebih dahulu untuk menambahkan asset.');
+            window.location.href = '/login';
+            return;
+        }
+
+        const hargaStr = document.getElementById('harga').value;
+        const harga = parseFloat(hargaStr.replace(/\./g, '')); // Remove dots and parse as float
+
         const formData = {
             nama_barang: document.getElementById('nama_barang').value,
             kode_barang: document.getElementById('kode_barang').value,
             jenis_asset: document.getElementById('jenis_asset').value,
-            harga: parseFloat(document.getElementById('harga').value),
-            id_pegawai: parseInt(document.getElementById('id_pegawai').value),
+            harga: harga,
+            id_pegawai: id_pegawai, // Get from session storage
             isHibah: document.getElementById('isHibah').checked,
             aktif: document.getElementById('aktif').checked,
-            isBroken: document.getElementById('isBroken').checked
+            isBroken: document.getElementById('isBroken').checked,
+            gambar_url: document.getElementById('gambar_url').value // Add the image URL
         };
 
         try {
@@ -49,15 +71,27 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('edit-asset-form').addEventListener('submit', async function(e) {
         e.preventDefault();
 
+        // Get logged in user's ID
+        const id_pegawai = getLoggedInUserId();
+        if (!id_pegawai) {
+            alert('Anda harus login terlebih dahulu untuk mengedit asset.');
+            window.location.href = '/login';
+            return;
+        }
+
+        const hargaStr = document.getElementById('edit_harga').value;
+        const harga = parseFloat(hargaStr.replace(/\./g, '')); // Remove dots and parse as float
+
         const formData = {
             kode_barang: document.getElementById('edit_kode_barang').value,
             nama_barang: document.getElementById('edit_nama_barang').value,
             jenis_asset: document.getElementById('edit_jenis_asset').value,
-            harga: parseFloat(document.getElementById('edit_harga').value),
-            id_pegawai: parseInt(document.getElementById('edit_id_pegawai').value),
+            harga: harga,
+            id_pegawai: id_pegawai, // Get from session storage
             isHibah: document.getElementById('edit_isHibah').checked,
             aktif: document.getElementById('edit_aktif').checked,
-            isBroken: document.getElementById('edit_isBroken').checked
+            isBroken: document.getElementById('edit_isBroken').checked,
+            gambar_url: document.getElementById('edit_gambar_url').value // Add the image URL
         };
 
         try {
@@ -98,6 +132,11 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Error loading asset data:', error);
             assetTableBody.innerHTML = `<tr><td colspan="11" class="text-center text-danger">Gagal memuat data: ${error.message}</td></tr>`;
         }
+    }
+
+    // Function to format number with thousands separators
+    function formatNumber(num) {
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
 
     // Function to render asset table
@@ -143,7 +182,8 @@ document.addEventListener('DOMContentLoaded', function() {
                             data-pegawai="${asset.id_pegawai}"
                             data-hibah="${asset.isHibah}"
                             data-aktif="${asset.aktif}"
-                            data-broken="${asset.isBroken}">
+                            data-broken="${asset.isBroken}"
+                            data-gambar-url="${asset.gambar_url || ''}">
                         <i class="bi bi-pencil"></i>
                     </button>
                     <button class="btn btn-danger btn-sm delete-btn ms-1" 
@@ -169,13 +209,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 const isHibah = this.getAttribute('data-hibah') === 'True' || this.getAttribute('data-hibah') === 'true';
                 const aktif = this.getAttribute('data-aktif') === 'True' || this.getAttribute('data-aktif') === 'true';
                 const isBroken = this.getAttribute('data-broken') === 'True' || this.getAttribute('data-broken') === 'true';
+                const gambarUrl = this.getAttribute('data-gambar-url');
 
                 document.getElementById('edit_id_asset').value = assetId;
                 document.getElementById('edit_kode_barang').value = kodeBarang;
                 document.getElementById('edit_nama_barang').value = namaBarang;
                 document.getElementById('edit_jenis_asset').value = jenisAsset;
-                document.getElementById('edit_harga').value = harga;
-                document.getElementById('edit_id_pegawai').value = idPegawai;
+                document.getElementById('edit_harga').value = formatNumber(harga);
+                document.getElementById('edit_gambar_url').value = gambarUrl;
                 document.getElementById('edit_isHibah').checked = isHibah;
                 document.getElementById('edit_aktif').checked = aktif;
                 document.getElementById('edit_isBroken').checked = isBroken;
