@@ -168,6 +168,10 @@ def akun_page():
 def kategori_transaksi_page():
     return send_from_directory('public', 'kategori_transaksi.html')
 
+@app.route('/pegawai')
+def pegawai_page():
+    return send_from_directory('public', 'pegawai.html')
+
 @app.route('/login')
 def login():
     return send_from_directory('public', 'login.html')
