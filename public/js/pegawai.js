@@ -84,6 +84,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     let counter = 1;
                     data.data.forEach(pegawai => {
                         const row = document.createElement('tr');
+                        row.dataset.id = pegawai.id_pegawai;
                         row.innerHTML = `
                             <td>${counter++}</td>
                             <td>${pegawai.nama_lengkap}</td>
@@ -105,6 +106,75 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('Terjadi kesalahan saat mengambil data.');
             });
     }
+
+    const editPegawaiModal = new bootstrap.Modal(document.getElementById('editPegawaiModal'));
+    const editPegawaiForm = document.getElementById('edit-pegawai-form');
+
+    // Event listener untuk tombol edit
+    document.getElementById('pegawai-table').addEventListener('click', function(event) {
+        if (event.target.classList.contains('edit-btn')) {
+            const row = event.target.closest('tr');
+            const id = row.dataset.id;
+            const nama = row.cells[1].innerText;
+            const email = row.cells[2].innerText;
+
+            document.getElementById('edit_pegawai_id').value = id;
+            document.getElementById('edit_nama_lengkap').value = nama;
+            document.getElementById('edit_email').value = email;
+            document.getElementById('edit_password').value = ''; // Kosongkan password
+
+            editPegawaiModal.show();
+        }
+    });
+
+    // Event listener untuk form edit pegawai
+    editPegawaiForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const id = document.getElementById('edit_pegawai_id').value;
+        const updatedData = {
+            id_pegawai: id,
+            nama_lengkap: document.getElementById('edit_nama_lengkap').value,
+            email: document.getElementById('edit_email').value,
+        };
+
+        const password = document.getElementById('edit_password').value;
+        if (password) {
+            updatedData.password = password;
+        }
+
+        fetch('/api/pegawai.update', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedData),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Data pegawai berhasil diperbarui!');
+                editPegawaiModal.hide();
+                fetchAndDisplayPegawai();
+            } else {
+                alert('Gagal memperbarui data: ' + (data.message || data.error));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Terjadi kesalahan saat memperbarui data.');
+        });
+    });
+
+    // Show/hide password di modal edit
+    const toggleEditPassword = document.querySelector('#toggleEditPassword');
+    const editPassword = document.querySelector('#edit_password');
+    toggleEditPassword.addEventListener('click', function () {
+        const type = editPassword.getAttribute('type') === 'password' ? 'text' : 'password';
+        editPassword.setAttribute('type', type);
+        this.querySelector('i').classList.toggle('bi-eye');
+        this.querySelector('i').classList.toggle('bi-eye-slash');
+    });
 
     // Panggil fungsi untuk pertama kali memuat data
     fetchAndDisplayPegawai();
