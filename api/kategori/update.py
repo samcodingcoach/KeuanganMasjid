@@ -29,8 +29,7 @@ def update_kategori(supabase_client, request):
 
         # Update data
         response = supabase_client.table('kategori_transaksi').update({
-            'nama_kategori': nama_kategori,
-            'jenis_kategori': jenis_kategori
+            'nama_kategori': nama_kategori
         }).eq('id_kategori', id).execute()
 
         if response.data:
