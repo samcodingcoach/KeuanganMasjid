@@ -4,24 +4,84 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar Akun</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 
-    <h1>Daftar Akun Kas dan Bank</h1>
-    <table border="1" id="akun-table">
-        <thead>
-            <tr>
-                <th>No.</th>
-                <th>Nama Akun</th>
-                <th>Saldo Awal</th>
-                <th>Saldo Akhir</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Data akan diisi oleh JavaScript -->
-        </tbody>
-    </table>
+    <div class="container mt-4">
+        <h1>Daftar Akun Kas dan Bank</h1>
+        <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addAkunModal">
+            Tambah Akun
+        </button>
+        <table class="table table-bordered" id="akun-table">
+            <thead class="table-light">
+                <tr>
+                    <th>No.</th>
+                    <th>Nama Akun</th>
+                    <th>Saldo Awal</th>
+                    <th>Saldo Akhir</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data akan diisi oleh JavaScript -->
+            </tbody>
+        </table>
+    </div>
 
+    <!-- Modal Tambah Akun -->
+    <div class="modal fade" id="addAkunModal" tabindex="-1" aria-labelledby="addAkunModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addAkunModalLabel">Tambah Akun Baru</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="add-akun-form">
+                        <div class="mb-3">
+                            <label for="nama_akun" class="form-label">Nama Akun</label>
+                            <input type="text" class="form-control" id="nama_akun" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="jenis_akun" class="form-label">Jenis Akun</label>
+                            <select class="form-select" id="jenis_akun" required>
+                                <option value="kas_fisik">Kas Fisik</option>
+                                <option value="rekening_bank">Rekening Bank</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="saldo_awal" class="form-label">Saldo Awal</label>
+                            <input type="number" class="form-control" id="saldo_awal" value="0.00" step="0.01">
+                        </div>
+                        <div class="mb-3">
+                            <label for="nomor_rekening" class="form-label">Nomor Rekening (Opsional)</label>
+                            <input type="text" class="form-control" id="nomor_rekening">
+                        </div>
+                        <div class="mb-3">
+                            <label for="nama_bank" class="form-label">Nama Bank (Opsional)</label>
+                            <input type="text" class="form-control" id="nama_bank">
+                        </div>
+                        <div class="mb-3">
+                            <label for="deskripsi" class="form-label">Deskripsi (Opsional)</label>
+                            <textarea class="form-control" id="deskripsi" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="no_referensi" class="form-label">No. Referensi (Opsional)</label>
+                            <input type="text" class="form-control" id="no_referensi">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-primary">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/js/akun.js"></script>
 
 </body>
