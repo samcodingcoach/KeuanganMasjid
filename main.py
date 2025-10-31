@@ -172,6 +172,10 @@ def kategori_transaksi_page():
 def pegawai_page():
     return send_from_directory('public', 'pegawai.html')
 
+@app.route('/asset')
+def asset_page():
+    return send_from_directory('public', 'asset.html')
+
 @app.route('/login')
 def login():
     return send_from_directory('public', 'login.html')
