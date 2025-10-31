@@ -16,7 +16,7 @@ def cek_login_pegawai(supabase_client, request):
             return jsonify({'success': False, 'message': 'Email dan password harus diisi.'}), 400
 
         # Ambil data pegawai berdasarkan email
-        user_response = supabase_client.table('pegawai').select('id_pegawai, email, password, role').eq('email', email).execute()
+        user_response = supabase_client.table('pegawai').select('id_pegawai, email, password, role, nama_lengkap').eq('email', email).execute()
 
         if not user_response.data:
             return jsonify({'success': False, 'message': 'Email tidak ditemukan.'}), 404

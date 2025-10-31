@@ -55,6 +55,10 @@ app.register_blueprint(muzakki_bp)
 def index():
     return 'Hello, Supabase + Flask!'
 
+@app.route('/index')
+def index_page():
+    return send_from_directory('public', 'index.html')
+
 # GET: Mengambil semua data dari tabel
 #@app.route('/data', methods=['GET'])
 @app.route('/api/kategori.list', methods=['GET'])
@@ -155,6 +159,10 @@ def list_transaksi_detail():
 @app.route('/api/transaksi.create', methods=['POST'])
 def new_transaksi():
     return create_transaksi(supabase, request)
+
+@app.route('/akun')
+def akun_page():
+    return send_from_directory('public', 'akun.html')
 
 @app.route('/login')
 def login():

@@ -39,9 +39,8 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert('Login berhasil!');
-                // Redirect to a new page or update the UI
-                window.location.href = '/'; // Redirect to homepage
+                sessionStorage.setItem('userData', JSON.stringify(data.data));
+                window.location.href = '/index'; // Redirect to index page
             } else {
                 alert(`Login gagal: ${data.message}`);
                 correctAnswer = generateCaptcha();

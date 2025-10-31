@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beranda</title>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        h1 { font-weight: normal; }
+    </style>
+</head>
+<body>
+    <h1 id="greeting"></h1>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const greetingElement = document.getElementById('greeting');
+            const userData = JSON.parse(sessionStorage.getItem('userData'));
+
+            if (userData && userData.nama_lengkap) {
+                const hour = new Date().getHours();
+                let greetingText = '';
+
+                if (hour < 12) {
+                    greetingText = 'Selamat Pagi';
+                } else if (hour < 15) {
+                    greetingText = 'Selamat Siang';
+                } else if (hour < 18) {
+                    greetingText = 'Selamat Sore';
+                } else {
+                    greetingText = 'Selamat Malam';
+                }
+
+                greetingElement.textContent = `${greetingText}, ${userData.nama_lengkap}`;
+            } else {
+                // Jika tidak ada data user, mungkin redirect kembali ke login
+                window.location.href = '/login';
+            }
+        });
+    </script>
+</body>
+</html>
