@@ -164,6 +164,10 @@ def new_transaksi():
 def akun_page():
     return send_from_directory('public', 'akun.html')
 
+@app.route('/kategori')
+def kategori_transaksi_page():
+    return send_from_directory('public', 'kategori_transaksi.html')
+
 @app.route('/login')
 def login():
     return send_from_directory('public', 'login.html')

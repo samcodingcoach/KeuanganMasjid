@@ -20,7 +20,7 @@ def create_kategori(supabase_client, request):
             return jsonify({'success': False, 'message': f'jenis_kategori tidak valid. Gunakan salah satu dari: {allowed_jenis}'}), 400
 
         # Cek duplikat
-        existing = supabase_client.table('kategori_transaksi').select('id').eq('nama_kategori', nama_kategori).eq('jenis_kategori', jenis_kategori).execute()
+        existing = supabase_client.table('kategori_transaksi').select('id_kategori').eq('nama_kategori', nama_kategori).eq('jenis_kategori', jenis_kategori).execute()
         if existing.data:
             return jsonify({'success': False, 'message': f'Kategori "{nama_kategori}" dengan jenis "{jenis_kategori}" sudah ada.'}), 409
 
