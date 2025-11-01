@@ -6,7 +6,7 @@ def get_all_assets(supabase_client):
     try:
         # Get all assets
         asset_response = supabase_client.table('asset').select(
-            'id_asset, created_at, kode_barang, nama_barang, jenis_asset, harga, aktif, "isBroken", "isHibah", id_pegawai'
+            'id_asset, created_at, kode_barang, nama_barang, jenis_asset, harga, aktif, "isBroken", "isHibah", id_pegawai, url_gambar'
         ).execute()
         
         if not asset_response.data:
@@ -59,7 +59,7 @@ def get_asset_by_kode_barang(supabase_client, kode_barang):
     try:
         # Get asset with specific kode_barang
         asset_response = supabase_client.table('asset').select(
-            'id_asset, created_at, kode_barang, nama_barang, jenis_asset, harga, aktif, "isBroken", "isHibah", id_pegawai'
+            'id_asset, created_at, kode_barang, nama_barang, jenis_asset, harga, aktif, "isBroken", "isHibah", id_pegawai, url_gambar'
         ).eq('kode_barang', kode_barang).execute()
         
         if not asset_response.data:
