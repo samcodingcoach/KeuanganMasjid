@@ -189,6 +189,10 @@ def pegawai_page():
 def asset_page():
     return send_from_directory('public', 'asset.html')
 
+@app.route('/muzakki')
+def muzakki_page():
+    return send_from_directory('public', 'muzakki.html')
+
 @app.route('/login')
 def login():
     return send_from_directory('public', 'login.html')
