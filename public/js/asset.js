@@ -149,10 +149,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         assets.forEach((asset, index) => {
-            // Format harga to currency
+            // Format harga to currency without decimals
             const formattedHarga = new Intl.NumberFormat('id-ID', {
                 style: 'currency',
-                currency: 'IDR'
+                currency: 'IDR',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
             }).format(asset.harga);
 
             // Format status as Ya/Tidak
@@ -224,6 +226,43 @@ document.addEventListener('DOMContentLoaded', function() {
                 editAssetModal.show();
             });
         });
+
+        // Calculate summary values
+        let totalHarga = 0;
+        let totalHibah = 0;
+        let totalAktif = 0;
+        let totalRusak = 0;
+
+        assets.forEach(asset => {
+            totalHarga += asset.harga;
+            if (asset.isHibah) totalHibah++;
+            if (asset.aktif) totalAktif++;
+            if (asset.isBroken) totalRusak++;
+        });
+
+        // Format summary values
+        const formattedTotalHarga = new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }).format(totalHarga);
+
+        // Add summary rows at the bottom of the table
+        const summaryRow1 = document.createElement('tr');
+        summaryRow1.style.fontWeight = 'bold';
+        summaryRow1.style.backgroundColor = '#f8f9fa';
+        summaryRow1.innerHTML = `
+            <td colspan="5" class="text-end">TOTAL</td>
+            <td>${formattedTotalHarga}</td>
+            <td></td>
+            <td>${totalHibah}</td>
+            <td>${totalAktif}</td>
+            <td>${totalRusak}</td>
+            <td></td>
+        `;
+
+        assetTableBody.appendChild(summaryRow1);
 
         // Add event listeners for delete buttons
         document.querySelectorAll('.delete-btn').forEach(button => {
