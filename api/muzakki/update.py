@@ -2,7 +2,7 @@ from flask import jsonify
 from datetime import datetime
 
 
-def update_muzakki(supabase_client, request, muzakki_id):
+def update_muzakki(supabase_client, request):
     """Update existing muzakki data"""
     try:
         data = request.get_json()
@@ -10,6 +10,11 @@ def update_muzakki(supabase_client, request, muzakki_id):
         # Initial check to ensure JSON data is present
         if not data:
             return jsonify({'success': False, 'message': 'Request body must contain JSON. Make sure header Content-Type is application/json.'}), 400
+
+        # Extract the ID from the request data (required)
+        muzakki_id = data.get('id_muzakki')
+        if not muzakki_id:
+            return jsonify({'success': False, 'message': 'id_muzakki is required'}), 400
 
         # Extract fields from request (only update provided fields)
         nama_lengkap = data.get('nama_lengkap')

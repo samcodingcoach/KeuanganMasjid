@@ -1,45 +1,8 @@
-from flask import Blueprint, request, jsonify
-from api.muzakki.new import create_muzakki
-from api.muzakki.update import update_muzakki
+from flask import jsonify
 from datetime import datetime
-import os
 
-# Create blueprint
-muzakki_bp = Blueprint('muzakki', __name__)
-
-# Import Supabase client from main app
-supabase_client = None
-
-def init_supabase(client):
-    global supabase_client
-    supabase_client = client
-
-@muzakki_bp.route('/api/muzakki.create', methods=['POST'])
-def create_muzakki_route():
-    """Endpoint to create a new muzakki"""
-    if not supabase_client:
-        return jsonify({'success': False, 'error': 'Database client not initialized'}), 500
-    
-    return create_muzakki(supabase_client, request)
-
-@muzakki_bp.route('/api/muzakki.update', methods=['PUT'])
-def update_muzakki_route():
-    """Endpoint to update an existing muzakki"""
-    if not supabase_client:
-        return jsonify({'success': False, 'error': 'Database client not initialized'}), 500
-    
-    muzakki_id = request.args.get('id_muzakki')
-    if not muzakki_id:
-        return jsonify({'success': False, 'message': 'Muzakki ID is required as query parameter'}), 400
-    
-    return update_muzakki(supabase_client, request, muzakki_id)
-
-@muzakki_bp.route('/api/muzakki.get', methods=['GET'])
-def get_muzakki_list_route():
-    """Endpoint to get all muzakki data"""
-    if not supabase_client:
-        return jsonify({'success': False, 'error': 'Database client not initialized'}), 500
-    
+def get_muzakki_list(supabase_client):
+    """Get all muzakki data"""
     try:
         response = supabase_client.table('muzakki').select(
             'id_muzakki, nama_lengkap, alamat, no_telepon, no_ktp, gps, fakir, tanggal_lahir, aktif, keterangan, created_at, kategori'
@@ -86,32 +49,4 @@ def get_muzakki_list_route():
             'error': str(e)
         }), 500
 
-@muzakki_bp.route('/api/muzakki.delete', methods=['DELETE'])
-def delete_muzakki_route():
-    """Endpoint to delete a muzakki"""
-    if not supabase_client:
-        return jsonify({'success': False, 'error': 'Database client not initialized'}), 500
-    
-    muzakki_id = request.args.get('id_muzakki')
-    if not muzakki_id:
-        return jsonify({'success': False, 'message': 'Muzakki ID is required as query parameter'}), 400
-    
-    try:
-        response = supabase_client.table('muzakki').delete().eq('id_muzakki', muzakki_id).execute()
-        
-        if response.data:
-            return jsonify({
-                'success': True,
-                'message': 'Muzakki data successfully deleted'
-            })
-        else:
-            return jsonify({
-                'success': False,
-                'message': 'No muzakki found with the provided ID'
-            }), 404
-    except Exception as e:
-        print(f"Error: {str(e)}")
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 500
+
