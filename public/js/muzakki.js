@@ -55,10 +55,11 @@ async function loadMuzakkiData() {
                                 data-kategori="${muzakki.kategori || ''}">
                             <i class="bi bi-pencil"></i>
                         </button>
-                        <button class="btn btn-danger btn-sm delete-btn ms-1" 
+                        <button class="btn btn-success btn-sm change-btn ms-1" 
                                 data-id="${muzakki.id_muzakki}"
-                                data-nama="${muzakki.nama_lengkap}">
-                            <i class="bi bi-trash"></i>
+                                data-nama="${muzakki.nama_lengkap}"
+                                data-aktif="${muzakki.aktif}">
+                            <i class="bi bi-arrow-repeat"></i>
                         </button>
                     </td>
                 `;
@@ -98,15 +99,14 @@ async function loadMuzakkiData() {
                 });
             });
             
-            // Add event listeners for delete buttons (placeholder)
-            document.querySelectorAll('.delete-btn').forEach(button => {
+            // Add event listeners for change buttons (toggle active status)
+            document.querySelectorAll('.change-btn').forEach(button => {
                 button.addEventListener('click', function() {
                     const id = this.getAttribute('data-id');
                     const nama = this.getAttribute('data-nama');
+                    const currentAktif = this.getAttribute('data-aktif') === 'True' || this.getAttribute('data-aktif') === 'true';
                     
-                    if (confirm(`Apakah Anda yakin ingin menghapus muzakki "${nama}"?`)) {
-                        alert(`Fungsi delete untuk muzakki "${nama}" (ID: ${id}) belum diimplementasikan sepenuhnya.`);
-                    }
+                    toggleMuzakkiActiveStatus(id, nama, currentAktif);
                 });
             });
         } else {
@@ -202,6 +202,43 @@ document.getElementById('update-muzakki-btn').addEventListener('click', async fu
         alert('Gagal memperbarui muzakki: ' + error.message);
     }
 });
+
+// Function to toggle muzakki active status
+async function toggleMuzakkiActiveStatus(id, nama, currentAktif) {
+    if (!checkLoginStatus()) return;
+    
+    const newAktifStatus = !currentAktif;
+    const statusText = newAktifStatus ? 'aktif' : 'non-aktif';
+    
+    if (confirm(`Apakah Anda yakin ingin mengubah status muzakki "${nama}" menjadi ${statusText}?`)) {
+        try {
+            // Get the current muzakki data to update only the aktif field
+            const formData = {
+                id_muzakki: id,
+                aktif: newAktifStatus
+            };
+
+            const response = await fetch('/api/muzakki.update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert(`Status muzakki "${nama}" berhasil diubah menjadi ${statusText}!`);
+                loadMuzakkiData(); // Reload data to reflect changes
+            } else {
+                alert('Gagal mengubah status muzakki: ' + (result.message || result.error || 'Unknown error'));
+            }
+        } catch (error) {
+            alert('Gagal mengubah status muzakki: ' + error.message);
+        }
+    }
+}
 
 // Load data when page loads
 document.addEventListener('DOMContentLoaded', function() {
