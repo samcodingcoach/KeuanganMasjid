@@ -197,6 +197,10 @@ def muzakki_page():
 def mustahik_page():
     return send_from_directory('public', 'mustahik.html')
 
+@app.route('/admin')
+def admin_page():
+    return send_from_directory('public', 'admin.html')
+
 @app.route('/login')
 def login():
     return send_from_directory('public', 'login.html')
