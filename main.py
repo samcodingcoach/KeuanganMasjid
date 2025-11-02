@@ -193,6 +193,10 @@ def asset_page():
 def muzakki_page():
     return send_from_directory('public', 'muzakki.html')
 
+@app.route('/mustahik')
+def mustahik_page():
+    return send_from_directory('public', 'mustahik.html')
+
 @app.route('/login')
 def login():
     return send_from_directory('public', 'login.html')
