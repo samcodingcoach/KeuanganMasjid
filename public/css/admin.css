@@ -1,0 +1,237 @@
+:root {
+    --whatsapp-green: #25D366;
+    --whatsapp-dark-green: #128C7E;
+    --whatsapp-darker-green: #075E54;
+    --sidebar-width: 250px;
+}
+
+/* WhatsApp-themed components */
+.bg-whatsapp {
+    background-color: var(--whatsapp-green) !important;
+}
+
+.btn-whatsapp {
+    background-color: var(--whatsapp-green);
+    border-color: var(--whatsapp-green);
+    color: white;
+}
+
+.btn-whatsapp:hover {
+    background-color: var(--whatsapp-dark-green);
+    border-color: var(--whatsapp-dark-green);
+    color: white;
+}
+
+.text-whatsapp {
+    color: var(--whatsapp-darker-green);
+}
+
+.btn-outline-whatsapp {
+    border-color: var(--whatsapp-dark-green);
+    color: var(--whatsapp-dark-green);
+}
+
+.btn-outline-whatsapp:hover {
+    background-color: var(--whatsapp-dark-green);
+    color: white;
+    border-color: var(--whatsapp-dark-green);
+}
+
+body.bg-light {
+    background-color: #f8f9fa !important;
+}
+
+body {
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Mobile Navigation Bar */
+.mobile-navbar {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background: linear-gradient(90deg, var(--whatsapp-darker-green) 0%, var(--whatsapp-dark-green) 100%);
+    color: white;
+    z-index: 1000;
+    align-items: center;
+    padding: 0 15px;
+}
+
+.mobile-toggle {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.mobile-navbar .app-title {
+    margin-left: 15px;
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+/* Sidebar Styles */
+#sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: var(--sidebar-width);
+    height: 100vh;
+    background: linear-gradient(180deg, var(--whatsapp-darker-green) 0%, var(--whatsapp-dark-green) 100%);
+    color: white;
+    z-index: 999;
+    overflow-y: auto;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+}
+
+/* Desktop: Show sidebar by default */
+@media (min-width: 769px) {
+    #sidebar {
+        transform: translateX(0);
+    }
+    
+    body {
+        padding-left: var(--sidebar-width);
+    }
+}
+
+#sidebar.active {
+    transform: translateX(0);
+}
+
+/* Elegant Scrollbar */
+#sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+#sidebar::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+}
+
+#sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.3);
+    border-radius: 10px;
+}
+
+#sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.5);
+}
+
+.sidebar-title {
+    font-size: 1.2rem;
+    padding: 20px 15px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+}
+
+.user-profile-section {
+    padding: 15px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+    color: var(--whatsapp-darker-green);
+    font-weight: bold;
+}
+
+.user-details {
+    flex: 1;
+}
+
+.user-name {
+    font-weight: 500;
+    margin-bottom: 0;
+}
+
+.user-role {
+    font-size: 0.8rem;
+    color: rgba(255,255,255, 0.7);
+    margin-bottom: 0;
+}
+
+.profile-settings {
+    text-align: right;
+}
+
+.profile-settings-btn {
+    background: none;
+    border: none;
+    color: rgba(255,255,255, 0.7);
+    cursor: pointer;
+}
+
+.nav-link {
+    color: rgba(255,255,255, 0.8);
+    padding: 12px 15px;
+    margin: 5px 10px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+}
+
+.nav-link:hover, .nav-link.active {
+    background-color: rgba(255,255,255, 0.15);
+    color: white;
+}
+
+.nav-link i {
+    margin-right: 15px;
+    font-size: 1.2rem;
+    min-width: 24px;
+    text-align: center;
+}
+
+.menu-group {
+    padding: 15px 10px 5px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: rgba(255,255,255, 0.6);
+    letter-spacing: 1px;
+}
+
+.footer-section {
+    margin-top: auto;
+    padding: 15px;
+    border-top: 1px solid rgba(255,255,255, 0.1);
+    text-align: center;
+    font-size: 0.8rem;
+    color: rgba(255,255,255, 0.6);
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .mobile-navbar {
+        display: flex;
+    }
+    
+    body {
+        padding-top: 60px;
+    }
+}
