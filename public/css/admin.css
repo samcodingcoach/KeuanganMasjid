@@ -41,6 +41,21 @@
     border-radius: 0 0 10px 10px !important;
 }
 
+/* Input with icons styling */
+.form-floating.position-relative {
+    position: relative;
+}
+
+.form-floating.position-relative .bi {
+    z-index: 3;
+}
+
+/* Ensure proper padding for inputs with icons */
+.form-floating.position-relative .form-control,
+.form-floating.position-relative .form-select {
+    padding-right: 40px;
+}
+
 .btn-whatsapp {
     background-color: var(--whatsapp-green);
     border-color: var(--whatsapp-green);
