@@ -10,6 +10,11 @@
     background-color: var(--whatsapp-green) !important;
 }
 
+/* Rounded corners for cards */
+.rounded-3 {
+    border-radius: 10px !important;
+}
+
 .btn-whatsapp {
     background-color: var(--whatsapp-green);
     border-color: var(--whatsapp-green);
@@ -24,6 +29,10 @@
 
 .text-whatsapp {
     color: var(--whatsapp-darker-green);
+}
+
+.bg-gradient {
+    background: linear-gradient(180deg, var(--whatsapp-darker-green) 0%, var(--whatsapp-dark-green) 100%) !important;
 }
 
 .btn-outline-whatsapp {
