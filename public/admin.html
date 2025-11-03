@@ -290,34 +290,40 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label class="form-label">Status Pernikahan</label>
-                                            <div class="d-flex">
-                                                <div class="form-check me-3">
-                                                    <input class="form-check-input" type="radio" name="statusPernikahan" id="belumMenikah" value="belum">
-                                                    <label class="form-check-label" for="belumMenikah">
-                                                        Belum Menikah
-                                                    </label>
-                                                </div>
-                                                <div class="form-check me-3">
-                                                    <input class="form-check-input" type="radio" name="statusPernikahan" id="menikah" value="menikah">
-                                                    <label class="form-check-label" for="menikah">
-                                                        Menikah
-                                                    </label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="statusPernikahan" id="lainnya" value="lain">
-                                                    <label class="form-check-label" for="lainnya">
-                                                        Lainnya
-                                                    </label>
+                                            <div class="border rounded p-3 position-relative">
+                                                <label class="form-label mb-3">Status Pernikahan</label>
+                                                <i class="bi bi-people position-absolute top-0 end-0 mt-3 me-3"></i>
+                                                <div class="d-flex">
+                                                    <div class="form-check me-3">
+                                                        <input class="form-check-input" type="radio" name="statusPernikahan" id="belumMenikah" value="belum">
+                                                        <label class="form-check-label" for="belumMenikah">
+                                                            Belum Menikah
+                                                        </label>
+                                                    </div>
+                                                    <div class="form-check me-3">
+                                                        <input class="form-check-input" type="radio" name="statusPernikahan" id="menikah" value="menikah">
+                                                        <label class="form-check-label" for="menikah">
+                                                            Menikah
+                                                        </label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="statusPernikahan" id="lainnya" value="lain">
+                                                        <label class="form-check-label" for="lainnya">
+                                                            Lainnya
+                                                        </label>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="fileUpload" class="form-label">Unggah Dokumen</label>
-                                            <input class="form-control" type="file" id="fileUpload">
-                                            <div class="form-text">Format: PDF, JPG, PNG (Maks. 5MB)</div>
+                                            <div class="border rounded p-3 position-relative">
+                                                <label class="form-label mb-3">Unggah Dokumen</label>
+                                                <i class="bi bi-file-earmark-arrow-up position-absolute top-0 end-0 mt-3 me-3"></i>
+                                                <input class="form-control" type="file" id="fileUpload">
+                                                <div class="form-text mt-2">Format: PDF, JPG, PNG (Maks. 5MB)</div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -326,8 +332,27 @@
                                     <input type="checkbox" class="form-check-input" id="aktifCheck">
                                     <label class="form-check-label" for="aktifCheck">Aktif</label>
                                 </div>
-                                <button type="submit" class="btn btn-whatsapp">Simpan</button>
-                                <button type="reset" class="btn btn-outline-secondary">Reset</button>
+                                <button type="submit" class="btn btn-whatsapp me-2" id="btnSimpan"><i class="bi bi-save me-1"></i>Simpan</button>
+                                <button type="reset" class="btn btn-outline-secondary" id="btnReset"><i class="bi bi-arrow-counterclockwise me-1"></i>Reset</button>
+                                
+                                <!-- Confirmation Modal -->
+                                <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="confirmModalLabel">Konfirmasi</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Apakah Anda yakin ingin menyimpan data ini?
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tidak</button>
+                                                <button type="button" class="btn btn-whatsapp" id="confirmSave">Ya</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </form>
                         </div>
                     </div>
@@ -685,6 +710,38 @@
                         value = value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
                     }
                     e.target.value = value;
+                });
+            }
+            
+            // Handle form submission with confirmation
+            const form = document.querySelector('form');
+            const simpanBtn = document.getElementById('btnSimpan');
+            const confirmModal = new bootstrap.Modal(document.getElementById('confirmModal'));
+            const confirmSaveBtn = document.getElementById('confirmSave');
+            
+            // Prevent default form submission
+            if(form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                });
+            }
+            
+            // Show confirmation modal when clicking Simpan
+            if(simpanBtn) {
+                simpanBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    confirmModal.show();
+                });
+            }
+            
+            // Handle confirmation
+            if(confirmSaveBtn) {
+                confirmSaveBtn.addEventListener('click', function() {
+                    // Submit the form
+                    if(form) {
+                        form.submit();
+                    }
+                    confirmModal.hide();
                 });
             }
         });
