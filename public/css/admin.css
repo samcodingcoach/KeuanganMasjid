@@ -15,6 +15,32 @@
     border-radius: 10px !important;
 }
 
+/* Pagination styling to match table theme */
+.pagination {
+    margin-bottom: 0;
+}
+
+.pagination .page-link {
+    color: var(--whatsapp-darker-green);
+    border: 1px solid #ddd;
+}
+
+.pagination .page-link:hover {
+    color: var(--whatsapp-dark-green);
+    background-color: #f8f9fa;
+    border-color: #ddd;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--whatsapp-green);
+    border-color: var(--whatsapp-green);
+    color: white;
+}
+
+.card-footer {
+    border-radius: 0 0 10px 10px !important;
+}
+
 .btn-whatsapp {
     background-color: var(--whatsapp-green);
     border-color: var(--whatsapp-green);
