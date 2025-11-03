@@ -280,12 +280,48 @@
                                             </select>
                                         </div>
                                         <div class="form-floating mb-3 position-relative">
-                                            <textarea class="form-control" id="alamat" placeholder="Masukkan alamat lengkap" rows="2"></textarea>
-                                            <label for="alamat">Alamat</label>
-                                            <i class="bi bi-geo-alt position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                                            <input type="text" class="form-control" id="jumlahNominal" placeholder="Masukkan jumlah nominal">
+                                            <label for="jumlahNominal">Jumlah Nominal</label>
+                                            <i class="bi bi-currency-dollar position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
                                         </div>
                                     </div>
                                 </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Status Pernikahan</label>
+                                            <div class="d-flex">
+                                                <div class="form-check me-3">
+                                                    <input class="form-check-input" type="radio" name="statusPernikahan" id="belumMenikah" value="belum">
+                                                    <label class="form-check-label" for="belumMenikah">
+                                                        Belum Menikah
+                                                    </label>
+                                                </div>
+                                                <div class="form-check me-3">
+                                                    <input class="form-check-input" type="radio" name="statusPernikahan" id="menikah" value="menikah">
+                                                    <label class="form-check-label" for="menikah">
+                                                        Menikah
+                                                    </label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="statusPernikahan" id="lainnya" value="lain">
+                                                    <label class="form-check-label" for="lainnya">
+                                                        Lainnya
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="fileUpload" class="form-label">Unggah Dokumen</label>
+                                            <input class="form-control" type="file" id="fileUpload">
+                                            <div class="form-text">Format: PDF, JPG, PNG (Maks. 5MB)</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
                                 <div class="mb-3 form-check">
                                     <input type="checkbox" class="form-check-input" id="aktifCheck">
                                     <label class="form-check-label" for="aktifCheck">Aktif</label>
@@ -629,6 +665,28 @@
                 width: '100%',
                 dropdownParent: $(document.body) // Ensure dropdown appears correctly
             });
+            
+            // Format number input with thousand separators (Indonesian style - using dots)
+            const nominalInput = document.getElementById('jumlahNominal');
+            if(nominalInput) {
+                nominalInput.addEventListener('input', function(e) {
+                    let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+                    if(value) {
+                        // Format with thousand separators using dots (Indonesian style)
+                        value = value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                    }
+                    e.target.value = value;
+                });
+                
+                // Format on blur as well
+                nominalInput.addEventListener('blur', function(e) {
+                    let value = e.target.value.replace(/\D/g, '');
+                    if(value) {
+                        value = value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                    }
+                    e.target.value = value;
+                });
+            }
         });
     </script>
 </body>
