@@ -56,6 +56,60 @@
     padding-right: 40px;
 }
 
+/* Style for searchable selects */
+.searchable-select {
+    /* Inherits default form-select styles */
+}
+
+/* Adjust form control styling */
+.form-control, .form-select {
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+/* Select2 custom styling to match Bootstrap form controls */
+.select2-container--bootstrap-5 .select2-selection {
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+    padding: 0.375rem 0.75rem;
+    height: calc(1.5em + 0.75rem + 2px);
+    display: flex;
+    align-items: center;
+}
+
+.select2-container--bootstrap-5.select2-container--focus .select2-selection,
+.select2-container--bootstrap-5.select2-container--open .select2-selection {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    outline: 0;
+}
+
+.select2-container--bootstrap-5 .select2-selection--single {
+    padding-right: 2.25rem; /* Make space for the dropdown arrow */
+}
+
+/* Styling for the search input inside dropdown */
+.select2-container--bootstrap-5 .select2-search--dropdown .select2-search__field {
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+}
+
+/* Style for the dropdown container */
+.select2-dropdown {
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+/* Style for options in dropdown */
+.select2-results__option {
+    padding: 0.375rem 0.75rem;
+}
+
+.select2-results__option--highlighted {
+    background-color: #e9ecef;
+    color: #212529;
+}
+
 .btn-whatsapp {
     background-color: var(--whatsapp-green);
     border-color: var(--whatsapp-green);
