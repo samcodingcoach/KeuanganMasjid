@@ -188,9 +188,9 @@ document.addEventListener('DOMContentLoaded', function() {
             row.dataset.id = pegawai.id_pegawai;
             row.style = "border-top: 1px solid #eee;";
             row.innerHTML = `
-                            <th scope="row" style="padding: 15px 20px; vertical-align: middle; font-size: 0.9em;">${counter++}</th>
-                            <td style="padding: 15px 20px; font-weight: 500; vertical-align: middle; font-size: 0.9em;">${pegawai.nama_lengkap}</td>
-                            <td style="padding: 15px 20px; color: #666; vertical-align: middle; font-size: 0.9em;">${pegawai.email}</td>
+                            <td scope="row" style="padding: 15px 20px; vertical-align: middle; font-size: 0.9em;">${counter++}</td>
+                            <td style="padding: 15px 20px;  vertical-align: middle; font-size: 0.9em;">${pegawai.nama_lengkap}</td>
+                            <td style="padding: 15px 20px; vertical-align: middle; font-size: 0.9em;">${pegawai.email}</td>
                             <td style="padding: 15px 20px; vertical-align: middle; font-size: 0.9em;"><span class="badge bg-light text-whatsapp" style="font-size: 0.8em; text-transform: capitalize;">${pegawai.role}</span></td>
                             <td style="padding: 15px 20px; vertical-align: middle; font-size: 0.9em;">${new Date(pegawai.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
                             <td style="padding: 15px 20px; vertical-align: middle; font-size: 0.9em;">
