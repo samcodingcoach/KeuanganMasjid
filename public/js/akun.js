@@ -7,46 +7,26 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
-    const addAkunForm = document.getElementById('add-akun-form');
     const addAkunModal = new bootstrap.Modal(document.getElementById('addAkunModal'));
-    const editAkunForm = document.getElementById('edit-akun-form');
-    const editAkunModal = new bootstrap.Modal(document.getElementById('editAkunModal'));
+    const addAkunForm = document.getElementById('add-akun-form');
 
-    // Fungsi untuk mengambil dan menampilkan data akun
+    // Data store
+    let allAkunData = [];
+    let filteredAkunData = [];
+
+    // Pagination variables
+    let currentPage = 1;
+    const itemsPerPage = 10; // Default items per page
+
+    // Fungsi untuk mengambil data akun
     function fetchAndDisplayAkun() {
         fetch('/api/akun.list')
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    const tableBody = document.querySelector('#akun-table tbody');
-                    tableBody.innerHTML = ''; // Kosongkan body tabel sebelum mengisi
-                    let counter = 1;
-                    data.data.forEach(akun => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${counter++}</td>
-                            <td>${akun.nama_akun}</td>
-                            <td>${akun.saldo_awal}</td>
-                            <td>${akun.saldo_akhir}</td>
-                            <td>
-                                <button class="btn btn-sm btn-warning edit-btn">Edit</button>
-                            </td>
-                        `;
-
-                        const editButton = row.querySelector('.edit-btn');
-                        editButton.addEventListener('click', () => {
-                            document.getElementById('edit_id_akun').value = akun.id_akun;
-                            document.getElementById('edit_nama_akun').value = akun.nama_akun;
-                            document.getElementById('edit_jenis_akun').value = akun.jenis_akun;
-                            document.getElementById('edit_nomor_rekening').value = akun.nomor_rekening || '';
-                            document.getElementById('edit_nama_bank').value = akun.nama_bank || '';
-                            document.getElementById('edit_deskripsi').value = akun.deskripsi || '';
-                            document.getElementById('edit_no_referensi').value = akun.no_referensi || '';
-                            editAkunModal.show();
-                        });
-
-                        tableBody.appendChild(row);
-                    });
+                    allAkunData = data.data;
+                    filteredAkunData = allAkunData;
+                    displayData(1); // Display first page
                 } else {
                     alert('Gagal memuat data akun: ' + data.message);
                 }
@@ -56,6 +36,188 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('Terjadi kesalahan saat mengambil data.');
             });
     }
+
+    // Fungsi untuk menampilkan data, paginasi, dan event listener
+    function displayData(page) {
+        currentPage = page;
+        const tableBody = document.querySelector('#akun-table tbody');
+        tableBody.innerHTML = ''; // Kosongkan body tabel
+
+        // Calculate pagination values
+        const totalEntries = filteredAkunData.length;
+        const totalPages = Math.ceil(totalEntries / itemsPerPage);
+        const startIndex = (page - 1) * itemsPerPage;
+        const endIndex = Math.min(startIndex + itemsPerPage, totalEntries);
+        const pageData = filteredAkunData.slice(startIndex, endIndex);
+
+        // Update pagination info
+        const paginationInfo = document.querySelector('.card-footer .text-muted');
+        if (paginationInfo) {
+            paginationInfo.innerHTML = `<small style="font-size: 0.75em;">Menampilkan <strong>${totalEntries > 0 ? startIndex + 1 : 0}-${endIndex}</strong> dari <strong>${totalEntries}</strong> entri</small>`;
+        }
+
+        // Update pagination controls
+        updatePaginationControls(page, totalPages);
+
+        let counter = startIndex + 1;
+        pageData.forEach(akun => {
+            const row = document.createElement('tr');
+            row.dataset.id = akun.id_akun;
+            row.style = "border-top: 1px solid #eee;";
+            row.innerHTML = `
+                <th scope="row" style="padding: 15px 20px; vertical-align: middle; font-size: 0.9em;">${counter++}</th>
+                <td style="padding: 15px 20px; font-weight: 500; vertical-align: middle; font-size: 0.9em;">${akun.nama_akun}</td>
+                <td style="padding: 15px 20px; color: #666; vertical-align: middle; font-size: 0.9em;">${akun.jenis_akun.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</td>
+                <td style="padding: 15px 20px; vertical-align: middle; font-size: 0.9em;" class="text-end">${parseFloat(akun.saldo_awal).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</td>
+                <td style="padding: 15px 20px; vertical-align: middle; font-size: 0.9em;" class="text-end">${parseFloat(akun.saldo_akhir).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</td>
+                <td style="padding: 15px 20px; vertical-align: middle; font-size: 0.9em;">
+                    <button class="btn btn-sm btn-outline-whatsapp p-1 edit-btn" style="border-radius: 8px; width: 36px; height: 36px;">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+
+        // Calculate and display totals
+        const tableFooter = document.getElementById('akun-table-footer');
+        tableFooter.innerHTML = ''; // Clear previous totals
+
+        const totals = allAkunData.reduce((acc, akun) => {
+            const jenis = akun.jenis_akun;
+            if (!acc[jenis]) {
+                acc[jenis] = { saldo_awal: 0, saldo_akhir: 0 };
+            }
+            acc[jenis].saldo_awal += parseFloat(akun.saldo_awal);
+            acc[jenis].saldo_akhir += parseFloat(akun.saldo_akhir);
+            return acc;
+        }, {});
+
+        for (const jenis in totals) {
+            const footerRow = document.createElement('tr');
+            footerRow.style = "border-top: 2px solid #dee2e6; background-color: #f8f9fa;";
+            footerRow.innerHTML = `
+                <th colspan="3" class="text-end" style="padding: 15px 20px; font-weight: bold;">Total ${jenis.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</th>
+                <td class="text-end" style="padding: 15px 20px; font-weight: bold;">${totals[jenis].saldo_awal.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</td>
+                <td class="text-end" style="padding: 15px 20px; font-weight: bold;">${totals[jenis].saldo_akhir.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</td>
+                <td></td>
+            `;
+            tableFooter.appendChild(footerRow);
+        }
+    }
+    
+    // Function to update pagination controls
+    function updatePaginationControls(currentPage, totalPages) {
+        const paginationContainer = document.querySelector('.card-footer .pagination');
+        if (!paginationContainer) return;
+        
+        paginationContainer.innerHTML = ''; // Clear existing pagination
+        
+        // Previous button
+        const prevItem = document.createElement('li');
+        prevItem.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+        prevItem.innerHTML = `<a class="page-link" href="#" onclick="changePage(${currentPage - 1}); return false;" ${currentPage === 1 ? 'tabindex="-1"' : ''}><i class="bi bi-chevron-left"></i></a>`;
+        paginationContainer.appendChild(prevItem);
+        
+        // Page numbers
+        const pagesToShow = [];
+        if (totalPages <= 5) {
+            for (let i = 1; i <= totalPages; i++) pagesToShow.push(i);
+        } else {
+            pagesToShow.push(1);
+            if (currentPage > 3) pagesToShow.push('...');
+            if (currentPage > 2) pagesToShow.push(currentPage - 1);
+            if (currentPage > 1 && currentPage < totalPages) pagesToShow.push(currentPage);
+            if (currentPage < totalPages - 1) pagesToShow.push(currentPage + 1);
+            if (currentPage < totalPages - 2) pagesToShow.push('...');
+            pagesToShow.push(totalPages);
+        }
+        
+        // Remove duplicate '...'
+        let uniquePages = [...new Set(pagesToShow)];
+
+        uniquePages.forEach(page => {
+            if (page === '...') {
+                const ellipsisItem = document.createElement('li');
+                ellipsisItem.className = 'page-item disabled';
+                ellipsisItem.innerHTML = '<span class="page-link">...</span>';
+                paginationContainer.appendChild(ellipsisItem);
+            } else {
+                const pageItem = document.createElement('li');
+                pageItem.className = `page-item ${page === currentPage ? 'active' : ''}`;
+                pageItem.innerHTML = `<a class="page-link" href="#" onclick="changePage(${page}); return false;">${page}</a>`;
+                paginationContainer.appendChild(pageItem);
+            }
+        });
+        
+        // Next button
+        const nextItem = document.createElement('li');
+        nextItem.className = `page-item ${currentPage === totalPages || totalPages === 0 ? 'disabled' : ''}`;
+        nextItem.innerHTML = `<a class="page-link" href="#" onclick="changePage(${currentPage + 1}); return false;"><i class="bi bi-chevron-right"></i></a>`;
+        paginationContainer.appendChild(nextItem);
+    }
+    
+    // Function to change page
+    function changePage(page) {
+        const totalPages = Math.ceil(filteredAkunData.length / itemsPerPage);
+        if (page < 1) page = 1;
+        if (page > totalPages) page = totalPages;
+        displayData(page);
+    }
+    
+    // Make changePage function available globally
+    window.changePage = changePage;
+
+    // Search functionality
+    const searchInput = document.getElementById('search-input');
+    const searchButton = document.getElementById('search-button');
+
+    function performSearch() {
+        const searchTerm = searchInput.value.toLowerCase();
+        filteredAkunData = allAkunData.filter(akun => 
+            akun.nama_akun.toLowerCase().includes(searchTerm) ||
+            akun.jenis_akun.toLowerCase().includes(searchTerm)
+        );
+        displayData(1); // Display first page of filtered results
+    }
+
+    searchButton.addEventListener('click', performSearch);
+    searchInput.addEventListener('keyup', function(event) {
+        if (event.key === 'Enter') {
+            performSearch();
+        }
+    });
+
+    const editAkunModal = new bootstrap.Modal(document.getElementById('editAkunModal'));
+    const editAkunForm = document.getElementById('edit-akun-form');
+
+    // Event listener untuk tombol edit
+    document.getElementById('akun-table').addEventListener('click', function(event) {
+        if (event.target.classList.contains('edit-btn') || event.target.closest('.edit-btn')) {
+            const button = event.target.classList.contains('edit-btn') ? event.target : event.target.closest('.edit-btn');
+            const row = button.closest('tr');
+            const id = row.dataset.id;
+            
+            const akun = allAkunData.find(a => a.id_akun == id);
+            if (!akun) return;
+
+            document.getElementById('edit_id_akun').value = akun.id_akun;
+            document.getElementById('edit_nama_akun').value = akun.nama_akun;
+            
+            // Set radio button for jenis_akun
+            const jenisAkunRadio = document.querySelector(`#editAkunModal input[name="edit_jenis_akun"][value="${akun.jenis_akun}"]`);
+            if (jenisAkunRadio) {
+                jenisAkunRadio.checked = true;
+            }
+
+            document.getElementById('edit_nomor_rekening').value = akun.nomor_rekening || '';
+            document.getElementById('edit_nama_bank').value = akun.nama_bank || '';
+            document.getElementById('edit_deskripsi').value = akun.deskripsi || '';
+            document.getElementById('edit_no_referensi').value = akun.no_referensi || '';
+            
+            editAkunModal.show();
+        }
+    });
 
     // Event listener untuk form tambah akun
     addAkunForm.addEventListener('submit', function(event) {
@@ -107,7 +269,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const newAkun = {
             nama_akun: document.getElementById('nama_akun').value,
-            jenis_akun: document.getElementById('jenis_akun').value,
+            jenis_akun: document.querySelector('input[name="jenis_akun"]:checked').value,
             saldo_awal: parseFloat(document.getElementById('saldo_awal').value) || 0.00,
             nomor_rekening: document.getElementById('nomor_rekening').value || null,
             nama_bank: document.getElementById('nama_bank').value || null,
@@ -207,7 +369,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const updatedAkun = {
             id_akun: document.getElementById('edit_id_akun').value,
             nama_akun: document.getElementById('edit_nama_akun').value,
-            jenis_akun: document.getElementById('edit_jenis_akun').value,
+            jenis_akun: document.querySelector('input[name="edit_jenis_akun"]:checked').value,
             nomor_rekening: document.getElementById('edit_nomor_rekening').value || null,
             nama_bank: document.getElementById('edit_nama_bank').value || null,
             deskripsi: document.getElementById('edit_deskripsi').value || null,
@@ -279,10 +441,7 @@ function showAkunToast(message, type = 'success') {
     toastEl.setAttribute('aria-atomic', 'true');
     
     // Determine toast header color based on type
-    let headerBg = 'linear-gradient(180deg, #075E54 0%, #128C7E 100%)';
-    if (type === 'error') {
-        headerBg = 'linear-gradient(180deg, #dc3545 0%, #c82333 100%)'; // Red gradient for error
-    }
+    let headerBg = type === 'error' ? 'linear-gradient(180deg, #dc3545 0%, #c82333 100%)' : 'linear-gradient(180deg, #075E54 0%, #128C7E 100%)';
     
     toastEl.innerHTML = `
         <div class="toast-header" style="background: ${headerBg}; border-radius: 10px 10px 0 0 !important;">
@@ -300,11 +459,9 @@ function showAkunToast(message, type = 'success') {
     
     toastContainer.appendChild(toastEl);
     
-    // Initialize and show the toast
     const toast = new bootstrap.Toast(toastEl);
     toast.show();
     
-    // Remove toast element after it's hidden to keep DOM clean
     toastEl.addEventListener('hidden.bs.toast', function() {
         toastEl.remove();
     });

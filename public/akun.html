@@ -6,17 +6,30 @@
     <title>Daftar Akun</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- Select2 Bootstrap 5 Theme -->
+    <link href="https://cdn.jsdelivr.net/npm/select2-theme-bootstrap-5@1.3.0/dist/select2-theme-bootstrap-5.min.css" rel="stylesheet" />
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/css/admin.css">
+    <style>
+        .nav-tabs .nav-link {
+            color: #495057;
+            border-top-left-radius: 0.375rem;
+            border-top-right-radius: 0.375rem;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+    </style>
 </head>
 <body class="bg-light">
     <!-- Sidebar will be loaded here -->
     <div id="sidebar-container"></div>
 
     <!-- Main Content Area -->
-    <div id="main-content" class="flex-grow-1 p-4">
+    <div id="main-content" class="p-4" style="flex-grow: 0;">
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12">
@@ -25,23 +38,65 @@
             </div>
             <div class="row">
                 <div class="col-12">
-                    <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addAkunModal">
-                        Tambah Akun
-                    </button>
-                    <table class="table table-bordered" id="akun-table">
-                        <thead class="table-light">
-                            <tr>
-                                <th>No.</th>
-                                <th>Nama Akun</th>
-                                <th>Saldo Awal</th>
-                                <th>Saldo Akhir</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Data akan diisi oleh JavaScript -->
-                        </tbody>
-                    </table>
+                    <div class="card border-0 shadow-sm rounded-3" style="border-radius: 10px;">
+                        <div class="card-header d-flex justify-content-between align-items-center border-0 py-3" style="background: linear-gradient(180deg, #075E54 0%, #128C7E 100%); border-radius: 10px 10px 0 0 !important;">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-wallet2 me-2 text-white"></i>
+                                <h5 class="card-title mb-0 text-white">Daftar Akun</h5>
+                            </div>
+                            <div class="d-flex">
+                                <div class="input-group me-2">
+                                    <input type="text" class="form-control form-control-sm" id="search-input" placeholder="Cari nama akun...">
+                                    <button class="btn btn-light btn-sm" type="button" id="search-button"><i class="bi bi-search"></i></button>
+                                </div>
+                                <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#addAkunModal" style="min-width: 90px;">
+                                    + Tambah
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0" id="akun-table">
+                                    <thead class="border-0" style="background-color: #f1f8f1;">
+                                        <tr>
+                                            <th scope="col" class="border-0" style="padding: 15px 20px;">No.</th>
+                                            <th scope="col" class="border-0" style="padding: 15px 20px;">Nama Akun</th>
+                                            <th scope="col" class="border-0" style="padding: 15px 20px;">Jenis Akun</th>
+                                            <th scope="col" class="border-0 text-end" style="padding: 15px 20px;">Saldo Awal</th>
+                                            <th scope="col" class="border-0 text-end" style="padding: 15px 20px;">Saldo Akhir</th>
+                                            <th scope="col" class="border-0" style="padding: 15px 20px;">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Data akan diisi oleh JavaScript -->
+                                    </tbody>
+                                    <tfoot id="akun-table-footer">
+                                        <!-- Total summaries will be injected here by JavaScript -->
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-light border-top">
+                            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
+                                <div class="text-muted mb-2 mb-md-0">
+                                    <small style="font-size: 0.75em;">Menampilkan <strong>0</strong> dari <strong>0</strong> entri</small>
+                                </div>
+                                <nav>
+                                    <ul class="pagination mb-0">
+                                        <li class="page-item disabled">
+                                            <a class="page-link" href="#" tabindex="-1">Sebelumnya</a>
+                                        </li>
+                                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="#">Selanjutnya</a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -50,49 +105,85 @@
     <!-- Modal Tambah Akun -->
     <div class="modal fade" id="addAkunModal" tabindex="-1" aria-labelledby="addAkunModalLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addAkunModalLabel">Tambah Akun Baru</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-content border-0 rounded-3">
+                <div class="modal-header" style="background: linear-gradient(180deg, #075E54 0%, #128C7E 100%);">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-plus-circle me-2 text-white"></i>
+                        <h5 class="modal-title text-white" id="addAkunModalLabel">Tambah Akun Baru</h5>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                    <ul class="nav nav-tabs" id="addAkunTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="add-akun-tab" data-bs-toggle="tab" data-bs-target="#add-akun-pane" type="button" role="tab" aria-controls="add-akun-pane" aria-selected="true">Akun</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="add-detail-tab" data-bs-toggle="tab" data-bs-target="#add-detail-pane" type="button" role="tab" aria-controls="add-detail-pane" aria-selected="false">Detail</button>
+                        </li>
+                    </ul>
                     <form id="add-akun-form">
-                        <div class="mb-3">
-                            <label for="nama_akun" class="form-label">Nama Akun</label>
-                            <input type="text" class="form-control" id="nama_akun" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="jenis_akun" class="form-label">Jenis Akun</label>
-                            <select class="form-select" id="jenis_akun" required>
-                                <option value="kas_fisik">Kas Fisik</option>
-                                <option value="rekening_bank">Rekening Bank</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="saldo_awal" class="form-label">Saldo Awal</label>
-                            <input type="number" class="form-control" id="saldo_awal" value="0.00" step="0.01">
-                        </div>
-                        <div class="mb-3">
-                            <label for="nomor_rekening" class="form-label">Nomor Rekening (Opsional)</label>
-                            <input type="text" class="form-control" id="nomor_rekening">
-                        </div>
-                        <div class="mb-3">
-                            <label for="nama_bank" class="form-label">Nama Bank (Opsional)</label>
-                            <input type="text" class="form-control" id="nama_bank">
-                        </div>
-                        <div class="mb-3">
-                            <label for="deskripsi" class="form-label">Deskripsi (Opsional)</label>
-                            <textarea class="form-control" id="deskripsi" rows="2"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="no_referensi" class="form-label">No. Referensi (Opsional)</label>
-                            <input type="text" class="form-control" id="no_referensi">
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                            <button type="submit" class="btn btn-primary">Simpan</button>
+                        <div class="tab-content pt-3" id="addAkunTabContent">
+                            <div class="tab-pane fade show active" id="add-akun-pane" role="tabpanel" aria-labelledby="add-akun-tab">
+                                <div class="form-floating mb-3 position-relative">
+                                    <input type="text" class="form-control" id="nama_akun" placeholder="Masukkan nama akun" required>
+                                    <label for="nama_akun">Nama Akun</label>
+                                    <i class="bi bi-wallet2 position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="border rounded p-3 position-relative">
+                                        <label class="form-label mb-3">Jenis Akun</label>
+                                        <i class="bi bi-tags position-absolute top-0 end-0 mt-3 me-3"></i>
+                                        <div class="d-flex">
+                                            <div class="form-check me-3">
+                                                <input class="form-check-input" type="radio" name="jenis_akun" id="jenis_akun_kas_fisik" value="kas_fisik" checked>
+                                                <label class="form-check-label" for="jenis_akun_kas_fisik">
+                                                    Kas Fisik
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="jenis_akun" id="jenis_akun_rekening_bank" value="rekening_bank">
+                                                <label class="form-check-label" for="jenis_akun_rekening_bank">
+                                                    Rekening Bank
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-floating mb-3 position-relative">
+                                    <input type="number" class="form-control" id="saldo_awal" value="0.00" step="0.01" placeholder="Saldo Awal">
+                                    <label for="saldo_awal">Saldo Awal</label>
+                                    <i class="bi bi-currency-dollar position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="add-detail-pane" role="tabpanel" aria-labelledby="add-detail-tab">
+                                <div class="form-floating mb-3 position-relative">
+                                    <input type="text" class="form-control" id="nomor_rekening" placeholder="Nomor Rekening (Opsional)">
+                                    <label for="nomor_rekening">Nomor Rekening (Opsional)</label>
+                                    <i class="bi bi-credit-card position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                                </div>
+                                <div class="form-floating mb-3 position-relative">
+                                    <input type="text" class="form-control" id="nama_bank" placeholder="Nama Bank (Opsional)">
+                                    <label for="nama_bank">Nama Bank (Opsional)</label>
+                                    <i class="bi bi-bank position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                                </div>
+                                <div class="form-floating mb-3 position-relative">
+                                    <textarea class="form-control" id="deskripsi" rows="2" placeholder="Deskripsi (Opsional)" style="height: 100px;"></textarea>
+                                    <label for="deskripsi">Deskripsi (Opsional)</label>
+                                    <i class="bi bi-card-text position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                                </div>
+                                <div class="form-floating mb-3 position-relative">
+                                    <input type="text" class="form-control" id="no_referensi" placeholder="No. Referensi (Opsional)">
+                                    <label for="no_referensi">No. Referensi (Opsional)</label>
+                                    <i class="bi bi-journal-text position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                                </div>
+                            </div>
                         </div>
                     </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary me-2" data-bs-dismiss="modal"><i class="bi bi-x-lg me-1"></i>Batal</button>
+                    <button type="submit" class="btn btn-whatsapp" form="add-akun-form"><i class="bi bi-save me-1"></i>Simpan</button>
                 </div>
             </div>
         </div>
@@ -101,46 +192,81 @@
     <!-- Modal Edit Akun -->
     <div class="modal fade" id="editAkunModal" tabindex="-1" aria-labelledby="editAkunModalLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editAkunModalLabel">Edit Akun</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-content border-0 rounded-3">
+                <div class="modal-header" style="background: linear-gradient(180deg, #075E54 0%, #128C7E 100%);">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-pencil-square me-2 text-white"></i>
+                        <h5 class="modal-title text-white" id="editAkunModalLabel">Edit Akun</h5>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                    <ul class="nav nav-tabs" id="editAkunTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="edit-akun-tab" data-bs-toggle="tab" data-bs-target="#edit-akun-pane" type="button" role="tab" aria-controls="edit-akun-pane" aria-selected="true">Akun</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="edit-detail-tab" data-bs-toggle="tab" data-bs-target="#edit-detail-pane" type="button" role="tab" aria-controls="edit-detail-pane" aria-selected="false">Detail</button>
+                        </li>
+                    </ul>
                     <form id="edit-akun-form">
-                        <input type="hidden" id="edit_id_akun">
-                        <div class="mb-3">
-                            <label for="edit_nama_akun" class="form-label">Nama Akun</label>
-                            <input type="text" class="form-control" id="edit_nama_akun" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="edit_jenis_akun" class="form-label">Jenis Akun</label>
-                            <select class="form-select" id="edit_jenis_akun" required>
-                                <option value="kas_fisik">Kas Fisik</option>
-                                <option value="rekening_bank">Rekening Bank</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="edit_nomor_rekening" class="form-label">Nomor Rekening (Opsional)</label>
-                            <input type="text" class="form-control" id="edit_nomor_rekening">
-                        </div>
-                        <div class="mb-3">
-                            <label for="edit_nama_bank" class="form-label">Nama Bank (Opsional)</label>
-                            <input type="text" class="form-control" id="edit_nama_bank">
-                        </div>
-                        <div class="mb-3">
-                            <label for="edit_deskripsi" class="form-label">Deskripsi (Opsional)</label>
-                            <textarea class="form-control" id="edit_deskripsi" rows="2"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="edit_no_referensi" class="form-label">No. Referensi (Opsional)</label>
-                            <input type="text" class="form-control" id="edit_no_referensi">
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                            <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                        <div class="tab-content pt-3" id="editAkunTabContent">
+                            <div class="tab-pane fade show active" id="edit-akun-pane" role="tabpanel" aria-labelledby="edit-akun-tab">
+                                <input type="hidden" id="edit_id_akun">
+                                <div class="form-floating mb-3 position-relative">
+                                    <input type="text" class="form-control" id="edit_nama_akun" placeholder="Masukkan nama akun" required>
+                                    <label for="edit_nama_akun">Nama Akun</label>
+                                    <i class="bi bi-wallet2 position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="border rounded p-3 position-relative">
+                                        <label class="form-label mb-3">Jenis Akun</label>
+                                        <i class="bi bi-tags position-absolute top-0 end-0 mt-3 me-3"></i>
+                                        <div class="d-flex">
+                                            <div class="form-check me-3">
+                                                <input class="form-check-input" type="radio" name="edit_jenis_akun" id="edit_jenis_akun_kas_fisik" value="kas_fisik">
+                                                <label class="form-check-label" for="edit_jenis_akun_kas_fisik">
+                                                    Kas Fisik
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="edit_jenis_akun" id="edit_jenis_akun_rekening_bank" value="rekening_bank">
+                                                <label class="form-check-label" for="edit_jenis_akun_rekening_bank">
+                                                    Rekening Bank
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="edit-detail-pane" role="tabpanel" aria-labelledby="edit-detail-tab">
+                                <div class="form-floating mb-3 position-relative">
+                                    <input type="text" class="form-control" id="edit_nomor_rekening" placeholder="Nomor Rekening (Opsional)">
+                                    <label for="edit_nomor_rekening">Nomor Rekening (Opsional)</label>
+                                    <i class="bi bi-credit-card position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                                </div>
+                                <div class="form-floating mb-3 position-relative">
+                                    <input type="text" class="form-control" id="edit_nama_bank" placeholder="Nama Bank (Opsional)">
+                                    <label for="edit_nama_bank">Nama Bank (Opsional)</label>
+                                    <i class="bi bi-bank position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                                </div>
+                                <div class="form-floating mb-3 position-relative">
+                                    <textarea class="form-control" id="edit_deskripsi" rows="2" placeholder="Deskripsi (Opsional)" style="height: 100px;"></textarea>
+                                    <label for="edit_deskripsi">Deskripsi (Opsional)</label>
+                                    <i class="bi bi-card-text position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                                </div>
+                                <div class="form-floating mb-3 position-relative">
+                                    <input type="text" class="form-control" id="edit_no_referensi" placeholder="No. Referensi (Opsional)">
+                                    <label for="edit_no_referensi">No. Referensi (Opsional)</label>
+                                    <i class="bi bi-journal-text position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                                </div>
+                            </div>
                         </div>
                     </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary me-2" data-bs-dismiss="modal"><i class="bi bi-x-lg me-1"></i>Batal</button>
+                    <button type="submit" class="btn btn-whatsapp" form="edit-akun-form"><i class="bi bi-save me-1"></i>Simpan Perubahan</button>
                 </div>
             </div>
         </div>
@@ -150,6 +276,8 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Bootstrap JS Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <!-- Load sidebar component -->
     <script src="/js/sidebar-loader.js"></script>
     <!-- Custom JS -->
