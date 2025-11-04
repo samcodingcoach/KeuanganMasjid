@@ -201,6 +201,10 @@ def mustahik_page():
 def admin_page():
     return send_from_directory('public', 'admin.html')
 
+@app.route('/test')
+def test_page():
+    return send_from_directory('public', 'test_sidebar.html')
+
 @app.route('/login')
 def login():
     return send_from_directory('public', 'login.html')
@@ -213,5 +217,9 @@ def send_css(path):
 def send_js(path):
     return send_from_directory('public/js', path)
 
+@app.route('/components/<path:path>')
+def send_components(path):
+    return send_from_directory('public/components', path)
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0',port=5000, debug=True)
+    app.run(host='0.0.0.0',port=5001, debug=True)

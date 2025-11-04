@@ -157,6 +157,7 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    transition: margin-left 0.3s ease;
 }
 
 /* Mobile Navigation Bar */
@@ -243,14 +244,6 @@ body {
     
     #sidebar.collapsed .profile-settings-btn {
         display: none;
-    }
-    
-    body {
-        padding-left: var(--sidebar-width);
-    }
-    
-    body.sidebar-collapsed {
-        padding-left: 60px;
     }
 }
 
@@ -395,6 +388,27 @@ body {
     color: rgba(255,255,255, 0.6);
 }
 
+/* Main content adjustment for sidebar collapse */
+#main-content {
+    transition: margin-left 0.3s ease;
+    margin-left: 0;
+    flex: 1 1 auto;
+    width: 100%;
+}
+
+/* Desktop: Main content should account for sidebar */
+@media (min-width: 769px) {
+    #main-content {
+        margin-left: var(--sidebar-width);
+        width: calc(100% - var(--sidebar-width));
+    }
+    
+    body.sidebar-collapsed #main-content {
+        margin-left: 60px; /* Match the collapsed sidebar width */
+        width: calc(100% - 60px); /* Adjust width to use available space */
+    }
+}
+
 /* Mobile responsive */
 @media (max-width: 768px) {
     .mobile-navbar {
@@ -404,4 +418,10 @@ body {
     body {
         padding-top: 60px;
     }
+    
+    #main-content {
+        width: 100%;
+        margin-left: 0;
+    }
 }
+

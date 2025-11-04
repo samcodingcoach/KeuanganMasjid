@@ -7,8 +7,8 @@ document.addEventListener('DOMContentLoaded', function() {
         sidebar.classList.toggle('active');
     });
     
-    // Sidebar collapse functionality for desktop
-    if(sidebarCollapse) {
+    // Skip adding event listener if it's already handled by sidebar-loader.js
+    if(sidebarCollapse && !sidebarCollapse.hasAttribute('data-listener-set')) {
         sidebarCollapse.addEventListener('click', function() {
             if (window.innerWidth > 768) { // Only for desktop
                 sidebar.classList.toggle('collapsed');
@@ -25,6 +25,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         });
+        
+        // Mark that event listener has been set to avoid duplication
+        sidebarCollapse.setAttribute('data-listener-set', 'true');
     }
     
     // Close sidebar when clicking outside on mobile
