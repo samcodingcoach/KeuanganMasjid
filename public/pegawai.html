@@ -25,24 +25,58 @@
             </div>
             <div class="row">
                 <div class="col-12">
-                    <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addPegawaiModal">
-                        Tambah Pegawai
-                    </button>
-                    <table class="table table-bordered" id="pegawai-table">
-                        <thead class="table-light">
-                            <tr>
-                                <th>No.</th>
-                                <th>Nama Lengkap</th>
-                                <th>Email</th>
-                                <th>Role</th>
-                                <th>Tanggal Dibuat</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Data akan diisi oleh JavaScript -->
-                        </tbody>
-                    </table>
+                    <div class="card border-0 shadow-sm rounded-3" style="border-radius: 10px;">
+                        <div class="card-header d-flex justify-content-between align-items-center border-0 py-3" style="background: linear-gradient(180deg, #075E54 0%, #128C7E 100%); border-radius: 10px 10px 0 0 !important;">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-people me-2 text-white"></i>
+                                <h5 class="card-title mb-0 text-white">Daftar Pegawai</h5>
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#addPegawaiModal">
+                                    <i class="bi bi-plus-lg me-1"></i>Tambah
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0" id="pegawai-table">
+                                    <thead class="border-0" style="background-color: #f1f8f1;">
+                                        <tr>
+                                            <th scope="col" class="border-0" style="padding: 15px 20px;">No.</th>
+                                            <th scope="col" class="border-0" style="padding: 15px 20px;">Nama Lengkap</th>
+                                            <th scope="col" class="border-0" style="padding: 15px 20px;">Email</th>
+                                            <th scope="col" class="border-0" style="padding: 15px 20px;">Role</th>
+                                            <th scope="col" class="border-0" style="padding: 15px 20px;">Tanggal Dibuat</th>
+                                            <th scope="col" class="border-0" style="padding: 15px 20px;">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Data akan diisi oleh JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-light border-top">
+                            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
+                                <div class="text-muted mb-2 mb-md-0">
+                                    Menampilkan <strong>0</strong> dari <strong>0</strong> entri
+                                </div>
+                                <nav>
+                                    <ul class="pagination mb-0">
+                                        <li class="page-item disabled">
+                                            <a class="page-link" href="#" tabindex="-1">Sebelumnya</a>
+                                        </li>
+                                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="#">Selanjutnya</a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -51,42 +85,45 @@
     <!-- Modal Tambah Pegawai -->
     <div class="modal fade" id="addPegawaiModal" tabindex="-1" aria-labelledby="addPegawaiModalLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addPegawaiModalLabel">Tambah Pegawai Baru</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-content border-0 rounded-3">
+                <div class="modal-header" style="background: linear-gradient(180deg, #075E54 0%, #128C7E 100%);">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-plus-circle me-2 text-white"></i>
+                        <h5 class="modal-title text-white" id="addPegawaiModalLabel">Tambah Pegawai Baru</h5>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form id="add-pegawai-form">
-                        <div class="mb-3">
-                            <label for="nama_lengkap" class="form-label">Nama Lengkap</label>
-                            <input type="text" class="form-control" id="nama_lengkap" required>
+                        <div class="form-floating mb-3 position-relative">
+                            <input type="text" class="form-control" id="nama_lengkap" placeholder="Masukkan nama lengkap" required>
+                            <label for="nama_lengkap">Nama Lengkap</label>
+                            <i class="bi bi-person position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                        </div>
+                        <div class="form-floating mb-3 position-relative">
+                            <input type="email" class="form-control" id="email" placeholder="Masukkan email" required>
+                            <label for="email">Email</label>
+                            <i class="bi bi-envelope position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                        </div>
+                        <div class="form-floating mb-3 position-relative">
+                            <input type="password" class="form-control" id="password" placeholder="Password" required readonly>
+                            <label for="password">Password</label>
+                            <span class="position-absolute end-0 top-50 translate-middle-y pe-3 text-muted" id="togglePassword" style="cursor: pointer;">
+                                <i class="bi bi-eye-slash"></i>
+                            </span>
                         </div>
                         <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Password</label>
-                            <div class="input-group">
-                                <input type="password" class="form-control" id="password" required readonly>
-                                <span class="input-group-text" id="togglePassword" style="cursor: pointer;">
-                                    <i class="bi bi-eye-slash"></i>
-                                </span>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="role" class="form-label">Role</label>
-                            <select class="form-select" id="role" required>
+                            <select class="form-select searchable-select" id="role" aria-label="Role" required>
+                                <option value="">Pilih role</option>
                                 <option value="bendahara">Bendahara</option>
                                 <option value="petugas_ziswaf">Petugas ZISWAF</option>
                             </select>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                            <button type="submit" class="btn btn-primary">Simpan</button>
-                        </div>
                     </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary me-2" data-bs-dismiss="modal"><i class="bi bi-x-lg me-1"></i>Batal</button>
+                    <button type="submit" class="btn btn-whatsapp" form="add-pegawai-form"><i class="bi bi-save me-1"></i>Simpan</button>
                 </div>
             </div>
         </div>
@@ -95,37 +132,47 @@
     <!-- Modal Edit Pegawai -->
     <div class="modal fade" id="editPegawaiModal" tabindex="-1" aria-labelledby="editPegawaiModalLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editPegawaiModalLabel">Edit Pegawai</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-content border-0 rounded-3">
+                <div class="modal-header" style="background: linear-gradient(180deg, #075E54 0%, #128C7E 100%);">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-pencil-square me-2 text-white"></i>
+                        <h5 class="modal-title text-white" id="editPegawaiModalLabel">Edit Pegawai</h5>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form id="edit-pegawai-form">
                         <input type="hidden" id="edit_pegawai_id">
-                        <div class="mb-3">
-                            <label for="edit_nama_lengkap" class="form-label">Nama Lengkap</label>
-                            <input type="text" class="form-control" id="edit_nama_lengkap" required>
+                        <div class="form-floating mb-3 position-relative">
+                            <input type="text" class="form-control" id="edit_nama_lengkap" placeholder="Masukkan nama lengkap" required>
+                            <label for="edit_nama_lengkap">Nama Lengkap</label>
+                            <i class="bi bi-person position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                        </div>
+                        <div class="form-floating mb-3 position-relative">
+                            <input type="email" class="form-control" id="edit_email" placeholder="Masukkan email" required>
+                            <label for="edit_email">Email</label>
+                            <i class="bi bi-envelope position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                        </div>
+                        <div class="form-floating mb-3 position-relative">
+                            <input type="password" class="form-control" id="edit_password" placeholder="Password">
+                            <label for="edit_password">Password</label>
+                            <span class="position-absolute end-0 top-50 translate-middle-y pe-3 text-muted" id="toggleEditPassword" style="cursor: pointer;">
+                                <i class="bi bi-eye-slash"></i>
+                            </span>
                         </div>
                         <div class="mb-3">
-                            <label for="edit_email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="edit_email" required>
+                            <select class="form-select searchable-select" id="edit_role" aria-label="Role">
+                                <option value="">Pilih role</option>
+                                <option value="bendahara">Bendahara</option>
+                                <option value="petugas_ziswaf">Petugas ZISWAF</option>
+                            </select>
                         </div>
-                        <div class="mb-3">
-                            <label for="edit_password" class="form-label">Password</label>
-                            <div class="input-group">
-                                <input type="password" class="form-control" id="edit_password">
-                                <span class="input-group-text" id="toggleEditPassword" style="cursor: pointer;">
-                                    <i class="bi bi-eye-slash"></i>
-                                </span>
-                            </div>
-                            <small class="form-text text-muted">Kosongkan jika tidak ingin mengubah password.</small>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                            <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
-                        </div>
+                        <small class="form-text text-muted d-block">Kosongkan jika tidak ingin mengubah password.</small>
                     </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary me-2" data-bs-dismiss="modal"><i class="bi bi-x-lg me-1"></i>Batal</button>
+                    <button type="submit" class="btn btn-whatsapp" form="edit-pegawai-form"><i class="bi bi-save me-1"></i>Simpan Perubahan</button>
                 </div>
             </div>
         </div>
