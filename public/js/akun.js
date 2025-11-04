@@ -219,6 +219,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    const saldoAwalInput = document.getElementById('saldo_awal');
+    saldoAwalInput.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/[^0-9]/g, '');
+        if (value) {
+            value = parseInt(value, 10);
+            e.target.value = value.toLocaleString('id-ID');
+        } else {
+            e.target.value = '0';
+        }
+    });
+
     // Event listener untuk form tambah akun
     addAkunForm.addEventListener('submit', function(event) {
         event.preventDefault();
@@ -267,17 +278,17 @@ document.addEventListener('DOMContentLoaded', function() {
         submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Menyimpan...';
         submitBtn.disabled = true;
 
+        const saldoAwalValue = document.getElementById('saldo_awal').value.replace(/\./g, '');
         const newAkun = {
             nama_akun: document.getElementById('nama_akun').value,
             jenis_akun: document.querySelector('input[name="jenis_akun"]:checked').value,
-            saldo_awal: parseFloat(document.getElementById('saldo_awal').value) || 0.00,
+            saldo_awal: parseFloat(saldoAwalValue) || 0.00,
             nomor_rekening: document.getElementById('nomor_rekening').value || null,
             nama_bank: document.getElementById('nama_bank').value || null,
             deskripsi: document.getElementById('deskripsi').value || null,
             no_referensi: document.getElementById('no_referensi').value || null,
-            saldo_akhir: parseFloat(document.getElementById('saldo_awal').value) || 0.00 // Saldo akhir sama dengan saldo awal saat pembuatan
+            saldo_akhir: parseFloat(saldoAwalValue) || 0.00 // Saldo akhir sama dengan saldo awal saat pembuatan
         };
-
         fetch('/api/akun.create', {
             method: 'POST',
             headers: {
