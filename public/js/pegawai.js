@@ -45,6 +45,50 @@ document.addEventListener('DOMContentLoaded', function() {
     // Event listener untuk form tambah pegawai
     addPegawaiForm.addEventListener('submit', function(event) {
         event.preventDefault();
+        
+        // Show spinner and disable button
+        const submitBtn = addPegawaiForm.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        const originalDisabled = submitBtn.disabled;
+        
+        // Create spinner overlay inside the modal
+        const modalBody = document.querySelector('#addPegawaiModal .modal-body');
+        
+        // Disable the form
+        const formElements = addPegawaiForm.elements;
+        for (let i = 0; i < formElements.length; i++) {
+            formElements[i].disabled = true;
+        }
+        
+        // Show spinner overlay
+        const spinnerOverlay = document.createElement('div');
+        spinnerOverlay.id = 'add-pegawai-spinner-overlay';
+        spinnerOverlay.style.position = 'absolute';
+        spinnerOverlay.style.top = '0';
+        spinnerOverlay.style.left = '0';
+        spinnerOverlay.style.width = '100%';
+        spinnerOverlay.style.height = '100%';
+        spinnerOverlay.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
+        spinnerOverlay.style.display = 'flex';
+        spinnerOverlay.style.justifyContent = 'center';
+        spinnerOverlay.style.alignItems = 'center';
+        spinnerOverlay.style.zIndex = '9999';
+        spinnerOverlay.style.borderRadius = '0.5rem';
+        
+        spinnerOverlay.innerHTML = `
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        `;
+        
+        // Position the overlay relative to the modal content
+        const modalDialog = document.querySelector('#addPegawaiModal .modal-dialog');
+        modalDialog.style.position = 'relative';
+        modalBody.parentNode.insertBefore(spinnerOverlay, modalBody);
+        
+        // Update button state
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Menyimpan...';
+        submitBtn.disabled = true;
 
         const newPegawai = {
             nama_lengkap: document.getElementById('nama_lengkap').value,
@@ -63,17 +107,33 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert('Pegawai berhasil ditambahkan!');
+                showPegawaiToast('Pegawai berhasil ditambahkan!');
                 addPegawaiModal.hide();
                 addPegawaiForm.reset();
                 fetchAndDisplayPegawai(currentPage);
             } else {
-                alert('Gagal menambahkan pegawai: ' + (data.message || data.error));
+                showPegawaiToast('Gagal menambahkan pegawai: ' + (data.message || data.error), 'error');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Terjadi kesalahan saat menambahkan pegawai.');
+            showPegawaiToast('Terjadi kesalahan saat menambahkan pegawai.', 'error');
+        })
+        .finally(() => {
+            // Remove spinner overlay
+            const spinnerOverlay = document.getElementById('add-pegawai-spinner-overlay');
+            if (spinnerOverlay) {
+                spinnerOverlay.remove();
+            }
+            
+            // Re-enable form elements
+            for (let i = 0; i < formElements.length; i++) {
+                formElements[i].disabled = false;
+            }
+            
+            // Restore button state
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = originalDisabled;
         });
     });
 
@@ -159,7 +219,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Previous button
         const prevItem = document.createElement('li');
         prevItem.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
-        prevItem.innerHTML = `<a class="page-link" href="#" onclick="changePage(${currentPage - 1}); return false;" ${currentPage === 1 ? 'tabindex="-1"' : ''}>Sebelumnya</a>`;
+        prevItem.innerHTML = `<a class="page-link" href="#" onclick="changePage(${currentPage - 1}); return false;" ${currentPage === 1 ? 'tabindex="-1"' : ''}><i class="bi bi-chevron-left"></i></a>`;
         paginationContainer.appendChild(prevItem);
         
         // Page numbers (show first, last, and current page with neighbors)
@@ -197,7 +257,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Next button
         const nextItem = document.createElement('li');
         nextItem.className = `page-item ${currentPage === totalPages || totalPages === 0 ? 'disabled' : ''}`;
-        nextItem.innerHTML = `<a class="page-link" href="#" onclick="changePage(${currentPage + 1}); return false;">Selanjutnya</a>`;
+        nextItem.innerHTML = `<a class="page-link" href="#" onclick="changePage(${currentPage + 1}); return false;"><i class="bi bi-chevron-right"></i></a>`;
         paginationContainer.appendChild(nextItem);
     }
     
@@ -244,6 +304,50 @@ document.addEventListener('DOMContentLoaded', function() {
     // Event listener untuk form edit pegawai
     editPegawaiForm.addEventListener('submit', function(event) {
         event.preventDefault();
+        
+        // Show spinner and disable button
+        const submitBtn = editPegawaiForm.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        const originalDisabled = submitBtn.disabled;
+        
+        // Create spinner overlay inside the modal
+        const modalBody = document.querySelector('#editPegawaiModal .modal-body');
+        
+        // Disable the form
+        const formElements = editPegawaiForm.elements;
+        for (let i = 0; i < formElements.length; i++) {
+            formElements[i].disabled = true;
+        }
+        
+        // Show spinner overlay
+        const spinnerOverlay = document.createElement('div');
+        spinnerOverlay.id = 'edit-pegawai-spinner-overlay';
+        spinnerOverlay.style.position = 'absolute';
+        spinnerOverlay.style.top = '0';
+        spinnerOverlay.style.left = '0';
+        spinnerOverlay.style.width = '100%';
+        spinnerOverlay.style.height = '100%';
+        spinnerOverlay.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
+        spinnerOverlay.style.display = 'flex';
+        spinnerOverlay.style.justifyContent = 'center';
+        spinnerOverlay.style.alignItems = 'center';
+        spinnerOverlay.style.zIndex = '9999';
+        spinnerOverlay.style.borderRadius = '0.5rem';
+        
+        spinnerOverlay.innerHTML = `
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        `;
+        
+        // Position the overlay relative to the modal content
+        const modalDialog = document.querySelector('#editPegawaiModal .modal-dialog');
+        modalDialog.style.position = 'relative';
+        modalBody.parentNode.insertBefore(spinnerOverlay, modalBody);
+        
+        // Update button state
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Menyimpan...';
+        submitBtn.disabled = true;
 
         const id = document.getElementById('edit_pegawai_id').value;
         const updatedData = {
@@ -268,16 +372,32 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert('Data pegawai berhasil diperbarui!');
+                showPegawaiToast('Data pegawai berhasil diperbarui!');
                 editPegawaiModal.hide();
                 fetchAndDisplayPegawai(currentPage);
             } else {
-                alert('Gagal memperbarui data: ' + (data.message || data.error));
+                showPegawaiToast('Gagal memperbarui data: ' + (data.message || data.error), 'error');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Terjadi kesalahan saat memperbarui data.');
+            showPegawaiToast('Terjadi kesalahan saat memperbarui data.', 'error');
+        })
+        .finally(() => {
+            // Remove spinner overlay
+            const spinnerOverlay = document.getElementById('edit-pegawai-spinner-overlay');
+            if (spinnerOverlay) {
+                spinnerOverlay.remove();
+            }
+            
+            // Re-enable form elements
+            for (let i = 0; i < formElements.length; i++) {
+                formElements[i].disabled = false;
+            }
+            
+            // Restore button state
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = originalDisabled;
         });
     });
 
@@ -294,3 +414,56 @@ document.addEventListener('DOMContentLoaded', function() {
     // Panggil fungsi untuk pertama kali memuat data
     fetchAndDisplayPegawai();
 });
+
+// Function to show toast notification for pegawai
+function showPegawaiToast(message, type = 'success') {
+    // Create toast container if it doesn't exist
+    let toastContainer = document.getElementById('toast-container-pegawai');
+    if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.id = 'toast-container-pegawai';
+        toastContainer.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+        toastContainer.style.zIndex = '1100';
+        document.body.appendChild(toastContainer);
+    }
+    
+    // Create toast element
+    const toastId = 'pegawai-toast-' + Date.now();
+    const toastEl = document.createElement('div');
+    toastEl.id = toastId;
+    toastEl.className = 'toast rounded-3';
+    toastEl.setAttribute('role', 'alert');
+    toastEl.setAttribute('aria-live', 'assertive');
+    toastEl.setAttribute('aria-atomic', 'true');
+    
+    // Determine toast header color based on type
+    let headerBg = 'linear-gradient(180deg, #075E54 0%, #128C7E 100%)';
+    if (type === 'error') {
+        headerBg = 'linear-gradient(180deg, #dc3545 0%, #c82333 100%)'; // Red gradient for error
+    }
+    
+    toastEl.innerHTML = `
+        <div class="toast-header" style="background: ${headerBg}; border-radius: 10px 10px 0 0 !important;">
+            <div class="d-flex align-items-center">
+                <i class="bi ${type === 'error' ? 'bi-x-circle' : 'bi-check-circle'} me-2 text-white"></i>
+                <strong class="me-auto text-white">${type === 'error' ? 'Error' : 'Sukses'}</strong>
+            </div>
+            <small class="text-white">Sekarang</small>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            ${message}
+        </div>
+    `;
+    
+    toastContainer.appendChild(toastEl);
+    
+    // Initialize and show the toast
+    const toast = new bootstrap.Toast(toastEl);
+    toast.show();
+    
+    // Remove toast element after it's hidden to keep DOM clean
+    toastEl.addEventListener('hidden.bs.toast', function() {
+        toastEl.remove();
+    });
+}

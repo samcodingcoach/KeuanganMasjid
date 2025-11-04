@@ -20,10 +20,68 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('add-asset-form').addEventListener('submit', async function(e) {
         e.preventDefault();
 
+        // Show spinner and disable button
+        const submitBtn = document.querySelector('#addAssetModal .modal-footer button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        const originalDisabled = submitBtn.disabled;
+        
+        // Create spinner overlay inside the modal
+        const modalBody = document.querySelector('#addAssetModal .modal-body');
+        
+        // Disable the form
+        const formElements = document.getElementById('add-asset-form').elements;
+        for (let i = 0; i < formElements.length; i++) {
+            formElements[i].disabled = true;
+        }
+        
+        // Show spinner overlay
+        const spinnerOverlay = document.createElement('div');
+        spinnerOverlay.id = 'add-asset-spinner-overlay';
+        spinnerOverlay.style.position = 'absolute';
+        spinnerOverlay.style.top = '0';
+        spinnerOverlay.style.left = '0';
+        spinnerOverlay.style.width = '100%';
+        spinnerOverlay.style.height = '100%';
+        spinnerOverlay.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
+        spinnerOverlay.style.display = 'flex';
+        spinnerOverlay.style.justifyContent = 'center';
+        spinnerOverlay.style.alignItems = 'center';
+        spinnerOverlay.style.zIndex = '9999';
+        spinnerOverlay.style.borderRadius = '0.5rem';
+        
+        spinnerOverlay.innerHTML = `
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        `;
+        
+        // Position the overlay relative to the modal content
+        const modalDialog = document.querySelector('#addAssetModal .modal-dialog');
+        modalDialog.style.position = 'relative';
+        modalBody.parentNode.insertBefore(spinnerOverlay, modalBody);
+        
+        // Update button state
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Menyimpan...';
+        submitBtn.disabled = true;
+
         // Get logged in user's ID
         const id_pegawai = getLoggedInUserId();
         if (!id_pegawai) {
-            alert('Anda harus login terlebih dahulu untuk menambahkan asset.');
+            showAssetToast('Anda harus login terlebih dahulu untuk menambahkan asset.', 'error');
+            // Remove spinner overlay
+            const spinnerOverlay = document.getElementById('add-asset-spinner-overlay');
+            if (spinnerOverlay) {
+                spinnerOverlay.remove();
+            }
+            
+            // Re-enable form elements
+            for (let i = 0; i < formElements.length; i++) {
+                formElements[i].disabled = false;
+            }
+            
+            // Restore button state
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = originalDisabled;
             window.location.href = '/login';
             return;
         }
@@ -55,15 +113,30 @@ document.addEventListener('DOMContentLoaded', function() {
             const result = await response.json();
 
             if (result.success) {
-                alert('Asset berhasil ditambahkan!');
+                showAssetToast('Asset berhasil ditambahkan!');
                 document.getElementById('add-asset-form').reset();
                 addAssetModal.hide();
                 loadAssetData(); // Reload data
             } else {
-                alert('Gagal menambahkan asset: ' + (result.error || 'Unknown error'));
+                showAssetToast('Gagal menambahkan asset: ' + (result.error || 'Unknown error'), 'error');
             }
         } catch (error) {
-            alert('Gagal menambahkan asset: ' + error.message);
+            showAssetToast('Gagal menambahkan asset: ' + error.message, 'error');
+        } finally {
+            // Remove spinner overlay
+            const spinnerOverlay = document.getElementById('add-asset-spinner-overlay');
+            if (spinnerOverlay) {
+                spinnerOverlay.remove();
+            }
+            
+            // Re-enable form elements
+            for (let i = 0; i < formElements.length; i++) {
+                formElements[i].disabled = false;
+            }
+            
+            // Restore button state
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = originalDisabled;
         }
     });
 
@@ -71,10 +144,68 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('edit-asset-form').addEventListener('submit', async function(e) {
         e.preventDefault();
 
+        // Show spinner and disable button
+        const submitBtn = document.querySelector('#editAssetModal .modal-footer button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        const originalDisabled = submitBtn.disabled;
+        
+        // Create spinner overlay inside the modal
+        const modalBody = document.querySelector('#editAssetModal .modal-body');
+        
+        // Disable the form
+        const formElements = document.getElementById('edit-asset-form').elements;
+        for (let i = 0; i < formElements.length; i++) {
+            formElements[i].disabled = true;
+        }
+        
+        // Show spinner overlay
+        const spinnerOverlay = document.createElement('div');
+        spinnerOverlay.id = 'edit-asset-spinner-overlay';
+        spinnerOverlay.style.position = 'absolute';
+        spinnerOverlay.style.top = '0';
+        spinnerOverlay.style.left = '0';
+        spinnerOverlay.style.width = '100%';
+        spinnerOverlay.style.height = '100%';
+        spinnerOverlay.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
+        spinnerOverlay.style.display = 'flex';
+        spinnerOverlay.style.justifyContent = 'center';
+        spinnerOverlay.style.alignItems = 'center';
+        spinnerOverlay.style.zIndex = '9999';
+        spinnerOverlay.style.borderRadius = '0.5rem';
+        
+        spinnerOverlay.innerHTML = `
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        `;
+        
+        // Position the overlay relative to the modal content
+        const modalDialog = document.querySelector('#editAssetModal .modal-dialog');
+        modalDialog.style.position = 'relative';
+        modalBody.parentNode.insertBefore(spinnerOverlay, modalBody);
+        
+        // Update button state
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Menyimpan...';
+        submitBtn.disabled = true;
+
         // Get logged in user's ID
         const id_pegawai = getLoggedInUserId();
         if (!id_pegawai) {
-            alert('Anda harus login terlebih dahulu untuk mengedit asset.');
+            showAssetToast('Anda harus login terlebih dahulu untuk mengedit asset.', 'error');
+            // Remove spinner overlay
+            const spinnerOverlay = document.getElementById('edit-asset-spinner-overlay');
+            if (spinnerOverlay) {
+                spinnerOverlay.remove();
+            }
+            
+            // Re-enable form elements
+            for (let i = 0; i < formElements.length; i++) {
+                formElements[i].disabled = false;
+            }
+            
+            // Restore button state
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = originalDisabled;
             window.location.href = '/login';
             return;
         }
@@ -106,14 +237,29 @@ document.addEventListener('DOMContentLoaded', function() {
             const result = await response.json();
 
             if (result.success) {
-                alert('Asset berhasil diperbarui!');
+                showAssetToast('Asset berhasil diperbarui!');
                 editAssetModal.hide();
                 loadAssetData(); // Reload data
             } else {
-                alert('Gagal memperbarui asset: ' + (result.error || 'Unknown error'));
+                showAssetToast('Gagal memperbarui asset: ' + (result.error || 'Unknown error'), 'error');
             }
         } catch (error) {
-            alert('Gagal memperbarui asset: ' + error.message);
+            showAssetToast('Gagal memperbarui asset: ' + error.message, 'error');
+        } finally {
+            // Remove spinner overlay
+            const spinnerOverlay = document.getElementById('edit-asset-spinner-overlay');
+            if (spinnerOverlay) {
+                spinnerOverlay.remove();
+            }
+            
+            // Re-enable form elements
+            for (let i = 0; i < formElements.length; i++) {
+                formElements[i].disabled = false;
+            }
+            
+            // Restore button state
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = originalDisabled;
         }
     });
 
@@ -431,3 +577,56 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
+
+// Function to show toast notification for asset
+function showAssetToast(message, type = 'success') {
+    // Create toast container if it doesn't exist
+    let toastContainer = document.getElementById('toast-container-asset');
+    if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.id = 'toast-container-asset';
+        toastContainer.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+        toastContainer.style.zIndex = '1100';
+        document.body.appendChild(toastContainer);
+    }
+    
+    // Create toast element
+    const toastId = 'asset-toast-' + Date.now();
+    const toastEl = document.createElement('div');
+    toastEl.id = toastId;
+    toastEl.className = 'toast rounded-3';
+    toastEl.setAttribute('role', 'alert');
+    toastEl.setAttribute('aria-live', 'assertive');
+    toastEl.setAttribute('aria-atomic', 'true');
+    
+    // Determine toast header color based on type
+    let headerBg = 'linear-gradient(180deg, #075E54 0%, #128C7E 100%)';
+    if (type === 'error') {
+        headerBg = 'linear-gradient(180deg, #dc3545 0%, #c82333 100%)'; // Red gradient for error
+    }
+    
+    toastEl.innerHTML = `
+        <div class="toast-header" style="background: ${headerBg}; border-radius: 10px 10px 0 0 !important;">
+            <div class="d-flex align-items-center">
+                <i class="bi ${type === 'error' ? 'bi-x-circle' : 'bi-check-circle'} me-2 text-white"></i>
+                <strong class="me-auto text-white">${type === 'error' ? 'Error' : 'Sukses'}</strong>
+            </div>
+            <small class="text-white">Sekarang</small>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            ${message}
+        </div>
+    `;
+    
+    toastContainer.appendChild(toastEl);
+    
+    // Initialize and show the toast
+    const toast = new bootstrap.Toast(toastEl);
+    toast.show();
+    
+    // Remove toast element after it's hidden to keep DOM clean
+    toastEl.addEventListener('hidden.bs.toast', function() {
+        toastEl.remove();
+    });
+}
