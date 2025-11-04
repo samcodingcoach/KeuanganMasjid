@@ -41,4 +41,31 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
+    
+    // Initialize Select2 for searchable selects (from admin.html)
+    if (typeof $ !== 'undefined' && typeof $.fn.select2 !== 'undefined') {
+        function initializeSelect2() {
+            $('.searchable-select').select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Pilih opsi...',
+                allowClear: true,
+                width: '100%',
+                dropdownParent: $(document.body) // Ensure dropdown appears correctly
+            });
+        }
+        
+        // Initialize on page load
+        initializeSelect2();
+        
+        // Also initialize when modals are shown to ensure proper initialization of modal content
+        $('.modal').on('shown.bs.modal', function() {
+            $(this).find('.searchable-select').select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Pilih opsi...',
+                allowClear: true,
+                width: '100%',
+                dropdownParent: $(document.body) // Ensure dropdown appears correctly
+            });
+        });
+    }
 });

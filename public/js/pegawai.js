@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
             nama_lengkap: document.getElementById('nama_lengkap').value,
             email: document.getElementById('email').value,
             password: document.getElementById('password').value,
-            role: document.getElementById('role').value
+            role: document.querySelector('input[name="role"]:checked').value
         };
 
         fetch('/api/pegawai.create', {
@@ -230,8 +230,11 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('edit_nama_lengkap').value = nama;
             document.getElementById('edit_email').value = email;
             document.getElementById('edit_password').value = ''; // Kosongkan password
-            // Set the selected option for role dropdown
-            document.getElementById('edit_role').value = role.toLowerCase().replace(' ', '_');
+            const roleValue = role.toLowerCase().replace(/ /g, '_');
+            const radioToCheck = document.querySelector(`#editPegawaiModal input[name="edit_role"][value="${roleValue}"]`);
+            if (radioToCheck) {
+                radioToCheck.checked = true;
+            }
 
             const editPegawaiModal = new bootstrap.Modal(document.getElementById('editPegawaiModal'));
             editPegawaiModal.show();
@@ -247,7 +250,7 @@ document.addEventListener('DOMContentLoaded', function() {
             id_pegawai: id,
             nama_lengkap: document.getElementById('edit_nama_lengkap').value,
             email: document.getElementById('edit_email').value,
-            role: document.getElementById('edit_role').value
+            role: document.querySelector('input[name="edit_role"]:checked').value
         };
 
         const password = document.getElementById('edit_password').value;
