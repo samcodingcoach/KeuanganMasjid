@@ -10,6 +10,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const addPegawaiModal = new bootstrap.Modal(document.getElementById('addPegawaiModal'));
     const addPegawaiForm = document.getElementById('add-pegawai-form');
 
+    // Data store
+    let allPegawaiData = [];
+    let filteredPegawaiData = [];
+
     // Pagination variables
     let currentPage = 1;
     const itemsPerPage = 10; // Default items per page
@@ -110,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 showPegawaiToast('Pegawai berhasil ditambahkan!');
                 addPegawaiModal.hide();
                 addPegawaiForm.reset();
-                fetchAndDisplayPegawai(currentPage);
+                fetchAndDisplayPegawai(); // Refresh data
             } else {
                 showPegawaiToast('Gagal menambahkan pegawai: ' + (data.message || data.error), 'error');
             }
@@ -137,76 +141,66 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Fungsi untuk mengambil dan menampilkan data pegawai
-    function fetchAndDisplayPegawai(page = 1) {
+    // Fungsi untuk mengambil data pegawai
+    function fetchAndDisplayPegawai() {
         fetch('/api/pegawai.list')
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    const tableBody = document.querySelector('#pegawai-table tbody');
-                    tableBody.innerHTML = ''; // Kosongkan body tabel sebelum mengisi
-                    
-                    // Calculate pagination values
-                    const totalEntries = data.data.length;
-                    const totalPages = Math.ceil(totalEntries / itemsPerPage);
-                    const startIndex = (page - 1) * itemsPerPage;
-                    const endIndex = Math.min(startIndex + itemsPerPage, totalEntries);
-                    const pageData = data.data.slice(startIndex, endIndex);
-                    
-                    // Update pagination info
-                    const paginationInfo = document.querySelector('.card-footer .text-muted');
-                    if (paginationInfo) {
-                        paginationInfo.innerHTML = `Menampilkan <strong>${startIndex + 1}-${endIndex}</strong> dari <strong>${totalEntries}</strong> entri`;
-                    }
-                    
-                    // Update pagination controls
-                    updatePaginationControls(page, totalPages);
-                    
-                    let counter = startIndex + 1;
-                    pageData.forEach(pegawai => {
-                        const row = document.createElement('tr');
-                        row.dataset.id = pegawai.id_pegawai;
-                        row.style = "border-top: 1px solid #eee;";
-                        row.innerHTML = `
-                            <th scope="row" style="padding: 15px 20px;">${counter++}</th>
-                            <td style="padding: 15px 20px; font-weight: 500;">${pegawai.nama_lengkap}</td>
-                            <td style="padding: 15px 20px; color: #666;">${pegawai.email}</td>
-                            <td style="padding: 15px 20px;"><span class="badge bg-light text-whatsapp" style="font-size: 0.8em; text-transform: capitalize;">${pegawai.role}</span></td>
-                            <td style="padding: 15px 20px;">${new Date(pegawai.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
-                            <td style="padding: 15px 20px;">
-                                <button class="btn btn-sm btn-outline-whatsapp p-1 edit-btn" style="border-radius: 8px; width: 36px; height: 36px;">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-                            </td>
-                        `;
-                        tableBody.appendChild(row);
-                    });
+                    allPegawaiData = data.data;
+                    filteredPegawaiData = allPegawaiData;
+                    displayData(1); // Display first page
                 } else {
                     alert('Gagal memuat data pegawai: ' + data.message);
-                    
-                    // Update pagination info to show 0 entries
-                    const paginationInfo = document.querySelector('.card-footer .text-muted');
-                    if (paginationInfo) {
-                        paginationInfo.innerHTML = `Menampilkan <strong>0</strong> dari <strong>0</strong> entri`;
-                    }
-                    
-                    // Reset pagination controls
-                    updatePaginationControls(1, 1);
                 }
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
                 alert('Terjadi kesalahan saat mengambil data.');
-                
-                // Update pagination info to show 0 entries
-                const paginationInfo = document.querySelector('.card-footer .text-muted');
-                if (paginationInfo) {
-                    paginationInfo.innerHTML = `Menampilkan <strong>0</strong> dari <strong>0</strong> entri`;
-                }
-                
-                // Reset pagination controls
-                updatePaginationControls(1, 1);
             });
+    }
+
+    // Fungsi untuk menampilkan data, paginasi, dan event listener
+    function displayData(page) {
+        currentPage = page;
+        const tableBody = document.querySelector('#pegawai-table tbody');
+        tableBody.innerHTML = ''; // Kosongkan body tabel
+
+        // Calculate pagination values
+        const totalEntries = filteredPegawaiData.length;
+        const totalPages = Math.ceil(totalEntries / itemsPerPage);
+        const startIndex = (page - 1) * itemsPerPage;
+        const endIndex = Math.min(startIndex + itemsPerPage, totalEntries);
+        const pageData = filteredPegawaiData.slice(startIndex, endIndex);
+
+        // Update pagination info
+        const paginationInfo = document.querySelector('.card-footer .text-muted');
+        if (paginationInfo) {
+            paginationInfo.innerHTML = `<small style="font-size: 0.75em;">Menampilkan <strong>${totalEntries > 0 ? startIndex + 1 : 0}-${endIndex}</strong> dari <strong>${totalEntries}</strong> entri</small>`;
+        }
+
+        // Update pagination controls
+        updatePaginationControls(page, totalPages);
+
+        let counter = startIndex + 1;
+        pageData.forEach(pegawai => {
+            const row = document.createElement('tr');
+            row.dataset.id = pegawai.id_pegawai;
+            row.style = "border-top: 1px solid #eee;";
+            row.innerHTML = `
+                            <th scope="row" style="padding: 15px 20px; vertical-align: middle; font-size: 0.9em;">${counter++}</th>
+                            <td style="padding: 15px 20px; font-weight: 500; vertical-align: middle; font-size: 0.9em;">${pegawai.nama_lengkap}</td>
+                            <td style="padding: 15px 20px; color: #666; vertical-align: middle; font-size: 0.9em;">${pegawai.email}</td>
+                            <td style="padding: 15px 20px; vertical-align: middle; font-size: 0.9em;"><span class="badge bg-light text-whatsapp" style="font-size: 0.8em; text-transform: capitalize;">${pegawai.role}</span></td>
+                            <td style="padding: 15px 20px; vertical-align: middle; font-size: 0.9em;">${new Date(pegawai.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                            <td style="padding: 15px 20px; vertical-align: middle; font-size: 0.9em;">
+                                <button class="btn btn-sm btn-outline-whatsapp p-1 edit-btn" style="border-radius: 8px; width: 36px; height: 36px;">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                            </td>
+                                                `;
+            tableBody.appendChild(row);
+        });
     }
     
     // Function to update pagination controls
@@ -222,25 +216,24 @@ document.addEventListener('DOMContentLoaded', function() {
         prevItem.innerHTML = `<a class="page-link" href="#" onclick="changePage(${currentPage - 1}); return false;" ${currentPage === 1 ? 'tabindex="-1"' : ''}><i class="bi bi-chevron-left"></i></a>`;
         paginationContainer.appendChild(prevItem);
         
-        // Page numbers (show first, last, and current page with neighbors)
+        // Page numbers
         const pagesToShow = [];
         if (totalPages <= 5) {
-            // Show all pages if there are 5 or fewer
-            for (let i = 1; i <= totalPages; i++) {
-                pagesToShow.push(i);
-            }
+            for (let i = 1; i <= totalPages; i++) pagesToShow.push(i);
         } else {
-            // Show first, last, current and 1 neighbor on each side
             pagesToShow.push(1);
-            if (currentPage > 2) pagesToShow.push('...');
-            if (currentPage > 1) pagesToShow.push(currentPage - 1);
-            pagesToShow.push(currentPage);
-            if (currentPage < totalPages) pagesToShow.push(currentPage + 1);
-            if (currentPage < totalPages - 1) pagesToShow.push('...');
-            if (totalPages > 1) pagesToShow.push(totalPages);
+            if (currentPage > 3) pagesToShow.push('...');
+            if (currentPage > 2) pagesToShow.push(currentPage - 1);
+            if (currentPage > 1 && currentPage < totalPages) pagesToShow.push(currentPage);
+            if (currentPage < totalPages - 1) pagesToShow.push(currentPage + 1);
+            if (currentPage < totalPages - 2) pagesToShow.push('...');
+            pagesToShow.push(totalPages);
         }
         
-        pagesToShow.forEach(page => {
+        // Remove duplicate '...'
+        let uniquePages = [...new Set(pagesToShow)];
+
+        uniquePages.forEach(page => {
             if (page === '...') {
                 const ellipsisItem = document.createElement('li');
                 ellipsisItem.className = 'page-item disabled';
@@ -263,15 +256,33 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Function to change page
     function changePage(page) {
+        const totalPages = Math.ceil(filteredPegawaiData.length / itemsPerPage);
         if (page < 1) page = 1;
-        
-        // Fetch data for the specified page
-        fetchAndDisplayPegawai(page);
-        currentPage = page;
+        if (page > totalPages) page = totalPages;
+        displayData(page);
     }
     
-    // Make changePage function available globally so it can be called from HTML
+    // Make changePage function available globally
     window.changePage = changePage;
+
+    // Search functionality
+    const searchInput = document.getElementById('search-input');
+    const searchButton = document.getElementById('search-button');
+
+    function performSearch() {
+        const searchTerm = searchInput.value.toLowerCase();
+        filteredPegawaiData = allPegawaiData.filter(pegawai => 
+            pegawai.nama_lengkap.toLowerCase().includes(searchTerm)
+        );
+        displayData(1); // Display first page of filtered results
+    }
+
+    searchButton.addEventListener('click', performSearch);
+    searchInput.addEventListener('keyup', function(event) {
+        if (event.key === 'Enter') {
+            performSearch();
+        }
+    });
 
     const editPegawaiModal = new bootstrap.Modal(document.getElementById('editPegawaiModal'));
     const editPegawaiForm = document.getElementById('edit-pegawai-form');
@@ -282,21 +293,21 @@ document.addEventListener('DOMContentLoaded', function() {
             const button = event.target.classList.contains('edit-btn') ? event.target : event.target.closest('.edit-btn');
             const row = button.closest('tr');
             const id = row.dataset.id;
-            const nama = row.cells[1].innerText;
-            const email = row.cells[2].innerText;
-            const role = row.cells[3].innerText; // Get the role value
+            
+            const pegawai = allPegawaiData.find(p => p.id_pegawai == id);
+            if (!pegawai) return;
 
-            document.getElementById('edit_pegawai_id').value = id;
-            document.getElementById('edit_nama_lengkap').value = nama;
-            document.getElementById('edit_email').value = email;
+            document.getElementById('edit_pegawai_id').value = pegawai.id_pegawai;
+            document.getElementById('edit_nama_lengkap').value = pegawai.nama_lengkap;
+            document.getElementById('edit_email').value = pegawai.email;
             document.getElementById('edit_password').value = ''; // Kosongkan password
-            const roleValue = role.toLowerCase().replace(/ /g, '_');
+            
+            const roleValue = pegawai.role.toLowerCase().replace(/ /g, '_');
             const radioToCheck = document.querySelector(`#editPegawaiModal input[name="edit_role"][value="${roleValue}"]`);
             if (radioToCheck) {
                 radioToCheck.checked = true;
             }
 
-            const editPegawaiModal = new bootstrap.Modal(document.getElementById('editPegawaiModal'));
             editPegawaiModal.show();
         }
     });
@@ -310,16 +321,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const originalText = submitBtn.innerHTML;
         const originalDisabled = submitBtn.disabled;
         
-        // Create spinner overlay inside the modal
         const modalBody = document.querySelector('#editPegawaiModal .modal-body');
-        
-        // Disable the form
         const formElements = editPegawaiForm.elements;
         for (let i = 0; i < formElements.length; i++) {
             formElements[i].disabled = true;
         }
         
-        // Show spinner overlay
         const spinnerOverlay = document.createElement('div');
         spinnerOverlay.id = 'edit-pegawai-spinner-overlay';
         spinnerOverlay.style.position = 'absolute';
@@ -333,19 +340,12 @@ document.addEventListener('DOMContentLoaded', function() {
         spinnerOverlay.style.alignItems = 'center';
         spinnerOverlay.style.zIndex = '9999';
         spinnerOverlay.style.borderRadius = '0.5rem';
+        spinnerOverlay.innerHTML = `<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>`;
         
-        spinnerOverlay.innerHTML = `
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-        `;
-        
-        // Position the overlay relative to the modal content
         const modalDialog = document.querySelector('#editPegawaiModal .modal-dialog');
         modalDialog.style.position = 'relative';
         modalBody.parentNode.insertBefore(spinnerOverlay, modalBody);
         
-        // Update button state
         submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Menyimpan...';
         submitBtn.disabled = true;
 
@@ -374,7 +374,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.success) {
                 showPegawaiToast('Data pegawai berhasil diperbarui!');
                 editPegawaiModal.hide();
-                fetchAndDisplayPegawai(currentPage);
+                fetchAndDisplayPegawai(); // Refresh data
             } else {
                 showPegawaiToast('Gagal memperbarui data: ' + (data.message || data.error), 'error');
             }
@@ -384,18 +384,13 @@ document.addEventListener('DOMContentLoaded', function() {
             showPegawaiToast('Terjadi kesalahan saat memperbarui data.', 'error');
         })
         .finally(() => {
-            // Remove spinner overlay
             const spinnerOverlay = document.getElementById('edit-pegawai-spinner-overlay');
-            if (spinnerOverlay) {
-                spinnerOverlay.remove();
-            }
+            if (spinnerOverlay) spinnerOverlay.remove();
             
-            // Re-enable form elements
             for (let i = 0; i < formElements.length; i++) {
                 formElements[i].disabled = false;
             }
             
-            // Restore button state
             submitBtn.innerHTML = originalText;
             submitBtn.disabled = originalDisabled;
         });
@@ -417,7 +412,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Function to show toast notification for pegawai
 function showPegawaiToast(message, type = 'success') {
-    // Create toast container if it doesn't exist
     let toastContainer = document.getElementById('toast-container-pegawai');
     if (!toastContainer) {
         toastContainer = document.createElement('div');
@@ -427,7 +421,6 @@ function showPegawaiToast(message, type = 'success') {
         document.body.appendChild(toastContainer);
     }
     
-    // Create toast element
     const toastId = 'pegawai-toast-' + Date.now();
     const toastEl = document.createElement('div');
     toastEl.id = toastId;
@@ -436,11 +429,7 @@ function showPegawaiToast(message, type = 'success') {
     toastEl.setAttribute('aria-live', 'assertive');
     toastEl.setAttribute('aria-atomic', 'true');
     
-    // Determine toast header color based on type
-    let headerBg = 'linear-gradient(180deg, #075E54 0%, #128C7E 100%)';
-    if (type === 'error') {
-        headerBg = 'linear-gradient(180deg, #dc3545 0%, #c82333 100%)'; // Red gradient for error
-    }
+    let headerBg = type === 'error' ? 'linear-gradient(180deg, #dc3545 0%, #c82333 100%)' : 'linear-gradient(180deg, #075E54 0%, #128C7E 100%)';
     
     toastEl.innerHTML = `
         <div class="toast-header" style="background: ${headerBg}; border-radius: 10px 10px 0 0 !important;">
@@ -458,11 +447,9 @@ function showPegawaiToast(message, type = 'success') {
     
     toastContainer.appendChild(toastEl);
     
-    // Initialize and show the toast
     const toast = new bootstrap.Toast(toastEl);
     toast.show();
     
-    // Remove toast element after it's hidden to keep DOM clean
     toastEl.addEventListener('hidden.bs.toast', function() {
         toastEl.remove();
     });

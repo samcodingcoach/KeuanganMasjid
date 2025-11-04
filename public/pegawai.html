@@ -20,7 +20,7 @@
     <div id="sidebar-container"></div>
 
     <!-- Main Content Area -->
-    <div id="main-content" class="flex-grow-1 p-4">
+    <div id="main-content" class="p-4" style="flex-grow: 0;">
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12">
@@ -35,22 +35,26 @@
                                 <i class="bi bi-people me-2 text-white"></i>
                                 <h5 class="card-title mb-0 text-white">Daftar Pegawai</h5>
                             </div>
-                            <div>
-                                <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#addPegawaiModal">
-                                    <i class="bi bi-plus-lg me-1"></i>Tambah
+                            <div class="d-flex">
+                                <div class="input-group me-2">
+                                    <input type="text" class="form-control form-control-sm" id="search-input" placeholder="Cari nama pegawai...">
+                                    <button class="btn btn-light btn-sm" type="button" id="search-button"><i class="bi bi-search"></i></button>
+                                </div>
+                                <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#addPegawaiModal" style="min-width: 90px;">
+                                    + Tambah
                                 </button>
                             </div>
                         </div>
                         <div class="card-body p-0">
                             <div class="table-responsive">
                                 <table class="table table-hover mb-0" id="pegawai-table">
-                                    <thead class="border-0" style="background-color: #f1f8f1;">
+                                    <thead class="border-0 bg-light" >
                                         <tr>
                                             <th scope="col" class="border-0" style="padding: 15px 20px;">No.</th>
-                                            <th scope="col" class="border-0" style="padding: 15px 20px;">Nama Lengkap</th>
+                                            <th scope="col" class="border-0" style="padding: 15px 20px;">Nama</th>
                                             <th scope="col" class="border-0" style="padding: 15px 20px;">Email</th>
                                             <th scope="col" class="border-0" style="padding: 15px 20px;">Role</th>
-                                            <th scope="col" class="border-0" style="padding: 15px 20px;">Tanggal Dibuat</th>
+                                            <th scope="col" class="border-0" style="padding: 15px 20px;">Tanggal</th>
                                             <th scope="col" class="border-0" style="padding: 15px 20px;">Aksi</th>
                                         </tr>
                                     </thead>
