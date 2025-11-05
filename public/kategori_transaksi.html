@@ -59,10 +59,17 @@
                                 <table class="table table-hover mb-0" id="kategori-table">
                                     <thead class="border-0" style="background-color: #f1f8f1;">
                                         <tr>
+<<<<<<< HEAD
                                             <th scope="col" class="border-0" style="padding: 15px 20px;">No.</th>
                                             <th scope="col" class="border-0" style="padding: 15px 20px;">Nama Kategori</th>
                                             <th scope="col" class="border-0" style="padding: 15px 20px;">Jenis Kategori</th>
                                             <th scope="col" class="border-0" style="padding: 15px 20px;">Aksi</th>
+=======
+                                            <th scope="col" class="border-0 text-center" style="padding: 15px 20px;">No.</th>
+                                            <th scope="col" class="border-0 text-start" style="padding: 15px 20px;">Nama Kategori</th>
+                                            <th scope="col" class="border-0 text-start" style="padding: 15px 20px;">Jenis Kategori</th>
+                                            <th scope="col" class="border-0 text-center" style="padding: 15px 20px;">Aksi</th>
+>>>>>>> ce23015 (fix 90% kategori)
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -113,11 +120,19 @@
                         <div class="form-floating mb-3 position-relative">
                             <input type="text" class="form-control" id="nama_kategori" placeholder="Masukkan nama kategori" required>
                             <label for="nama_kategori">Nama Kategori</label>
+<<<<<<< HEAD
                             <i class="bi bi-tag position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
                         </div>
                         <div class="mb-3">
                             <select class="form-select searchable-select" id="jenis_kategori" required>
                                 <option value="" disabled selected>Pilih Jenis Kategori</option>
+=======
+                            <i class="bi bi-tags position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                        </div>
+                        <div class="mb-3">
+                            <select class="form-select searchable-select" id="jenis_kategori" required>
+                                <option value="">Pilih Jenis Kategori</option>
+>>>>>>> ce23015 (fix 90% kategori)
                                 <option value="Penerimaan">Penerimaan</option>
                                 <option value="Pengeluaran">Pengeluaran</option>
                             </select>
@@ -144,7 +159,13 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                    <ul class="nav nav-tabs" id="editKategoriTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="edit-kategori-tab" data-bs-toggle="tab" data-bs-target="#edit-kategori-pane" type="button" role="tab" aria-controls="edit-kategori-pane" aria-selected="true">Kategori</button>
+                        </li>
+                    </ul>
                     <form id="edit-kategori-form">
+<<<<<<< HEAD
                         <input type="hidden" id="edit_id_kategori">
                         <div class="form-floating mb-3 position-relative">
                             <input type="text" class="form-control" id="edit_nama_kategori" placeholder="Masukkan nama kategori" required>
@@ -158,6 +179,23 @@
                             </select>
                             <label for="edit_jenis_kategori">Jenis Kategori</label>
                             <i class="bi bi-arrow-down-up position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+=======
+                        <div class="tab-content pt-3" id="editKategoriTabContent">
+                            <div class="tab-pane fade show active" id="edit-kategori-pane" role="tabpanel" aria-labelledby="edit-kategori-tab">
+                                <input type="hidden" id="edit_id_kategori">
+                                <div class="form-floating mb-3 position-relative">
+                                    <input type="text" class="form-control" id="edit_nama_kategori" placeholder="Masukkan nama kategori" required>
+                                    <label for="edit_nama_kategori">Nama Kategori</label>
+                                    <i class="bi bi-tags position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                                </div>
+                                <div class="mb-3">
+                                    <select class="form-select searchable-select" id="edit_jenis_kategori" required disabled>
+                                        <option value="Penerimaan">Penerimaan</option>
+                                        <option value="Pengeluaran">Pengeluaran</option>
+                                    </select>
+                                </div>
+                            </div>
+>>>>>>> ce23015 (fix 90% kategori)
                         </div>
                     </form>
                 </div>
@@ -165,6 +203,12 @@
                     <button type="button" class="btn btn-outline-secondary me-2" data-bs-dismiss="modal"><i class="bi bi-x-lg me-1"></i>Batal</button>
                     <button type="submit" class="btn btn-whatsapp" form="edit-kategori-form"><i class="bi bi-save me-1"></i>Simpan Perubahan</button>
                 </div>
+<<<<<<< HEAD
+=======
+            </div>
+        </div>
+    </div>
+>>>>>>> ce23015 (fix 90% kategori)
             </div>
         </div>
     </div>
