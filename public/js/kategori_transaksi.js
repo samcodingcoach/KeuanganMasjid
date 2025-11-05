@@ -369,6 +369,9 @@ document.addEventListener('DOMContentLoaded', function() {
         renderTable();
     }
     
+    // Expose changePage function globally for HTML onclick attributes
+    window.changePage = changePage;
+    
     // Fungsi untuk pencarian
     function setupSearchFunctionality() {
         const searchInput = document.getElementById('search-input');
