@@ -19,32 +19,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const addKategoriModal = new bootstrap.Modal(document.getElementById('addKategoriModal'));
     const addKategoriForm = document.getElementById('add-kategori-form');
     const editKategoriModal = new bootstrap.Modal(document.getElementById('editKategoriModal'));
-<<<<<<< HEAD
     const editKategoriForm = document.getElementById('edit-kategori-form');
 
-    // Data store
-    let allKategoriData = [];
-    let filteredKategoriData = [];
-
-    // Pagination variables
-    let currentPage = 1;
-    const itemsPerPage = 10; // Default items per page
-=======
-    
-    // Debug: Check if form elements exist
-    if (!addKategoriForm) {
-        console.error('Form element #add-kategori-form not found!');
-    }
-    if (!editKategoriForm) {
-        console.error('Form element #edit-kategori-form not found!');
-    }
-    
     // Pagination and search variables
     let allKategoriData = [];
     let currentPage = 1;
     const rowsPerPage = 10;
     let filteredKategoriData = [];
->>>>>>> ce23015 (fix 90% kategori)
 
     // Fungsi untuk mengambil data kategori
     function fetchKategoriData() {
@@ -53,14 +34,9 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 if (data.success) {
                     allKategoriData = data.data;
-<<<<<<< HEAD
-                    filteredKategoriData = allKategoriData;
-                    displayData(1); // Display first page
-=======
                     filteredKategoriData = [...allKategoriData]; // Initialize filtered data
                     currentPage = 1; // Reset to first page
                     renderTable(); // Display the first page
->>>>>>> ce23015 (fix 90% kategori)
                 } else {
                     alert('Gagal memuat data kategori: ' + data.message);
                 }
@@ -71,40 +47,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-<<<<<<< HEAD
-    // Fungsi untuk menampilkan data, paginasi, dan event listener
-    function displayData(page) {
-        currentPage = page;
-        const tableBody = document.querySelector('#kategori-table tbody');
-        tableBody.innerHTML = ''; // Kosongkan body tabel
-
-        // Calculate pagination values
-        const totalEntries = filteredKategoriData.length;
-        const totalPages = Math.ceil(totalEntries / itemsPerPage);
-        const startIndex = (page - 1) * itemsPerPage;
-        const endIndex = Math.min(startIndex + itemsPerPage, totalEntries);
-        const pageData = filteredKategoriData.slice(startIndex, endIndex);
-
-        // Update pagination info
-        const paginationInfo = document.querySelector('.card-footer .text-muted');
-        if (paginationInfo) {
-            paginationInfo.innerHTML = `<small style="font-size: 0.75em;">Menampilkan <strong>${totalEntries > 0 ? startIndex + 1 : 0}-${endIndex}</strong> dari <strong>${totalEntries}</strong> entri</small>`;
-        }
-
-        // Update pagination controls
-        updatePaginationControls(page, totalPages);
-
-        let counter = startIndex + 1;
-        pageData.forEach(kategori => {
-            const row = document.createElement('tr');
-            row.dataset.id = kategori.id_kategori;
-            row.style = "border-top: 1px solid #eee;";
-            row.innerHTML = `
-                <th scope="row" style="padding: 15px 20px; vertical-align: middle; font-size: 0.9em;">${counter++}</th>
-                <td style="padding: 15px 20px; font-weight: 500; vertical-align: middle; font-size: 0.9em;">${kategori.nama_kategori}</td>
-                <td style="padding: 15px 20px; color: #666; vertical-align: middle; font-size: 0.9em;">${kategori.jenis_kategori}</td>
-                <td style="padding: 15px 20px; vertical-align: middle; font-size: 0.9em;">
-=======
     // Fungsi untuk merender tabel dengan data pagination
     function renderTable() {
         const tableBody = document.querySelector('#kategori-table tbody');
@@ -121,156 +63,15 @@ document.addEventListener('DOMContentLoaded', function() {
             const row = document.createElement('tr');
             row.style = "border-top: 1px solid #eee;";
             row.innerHTML = `
-<<<<<<< HEAD
-                <th scope="row" style="padding: 15px 20px; vertical-align: middle; font-size: 0.9em;" class="text-center">${rowIndex + 1}</th>
-                <td style="padding: 15px 20px; font-weight: 500; vertical-align: middle; font-size: 0.9em;">${kategori.nama_kategori}</td>
-                <td style="padding: 15px 20px; color: #666; vertical-align: middle; font-size: 0.9em;">${kategori.jenis_kategori}</td>
-                <td style="padding: 15px 20px; vertical-align: middle; font-size: 0.9em;" class="text-center">
->>>>>>> ce23015 (fix 90% kategori)
-=======
                 <th scope="row" style="padding: 10px 15px; vertical-align: middle; font-size: 0.9em;" class="text-center">${rowIndex + 1}</th>
                 <td style="padding: 10px 15px; font-weight: 500; vertical-align: middle; font-size: 0.9em;">${kategori.nama_kategori}</td>
                 <td style="padding: 10px 15px; color: #666; vertical-align: middle; font-size: 0.9em;">${kategori.jenis_kategori}</td>
                 <td style="padding: 10px 15px; vertical-align: middle; font-size: 0.9em;" class="text-center">
->>>>>>> 2bacae5 (Fix)
                     <button class="btn btn-sm btn-outline-whatsapp p-1 edit-btn" style="border-radius: 8px; width: 36px; height: 36px;">
                         <i class="bi bi-pencil"></i>
                     </button>
                 </td>
             `;
-<<<<<<< HEAD
-            tableBody.appendChild(row);
-        });
-    }
-
-    // Function to update pagination controls
-    function updatePaginationControls(currentPage, totalPages) {
-        const paginationContainer = document.querySelector('.card-footer .pagination');
-        if (!paginationContainer) return;
-        
-        paginationContainer.innerHTML = ''; // Clear existing pagination
-        
-        // Previous button
-        const prevItem = document.createElement('li');
-        prevItem.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
-        prevItem.innerHTML = `<a class="page-link" href="#" onclick="changePage(${currentPage - 1}); return false;" ${currentPage === 1 ? 'tabindex="-1"' : ''}><i class="bi bi-chevron-left"></i></a>`;
-        paginationContainer.appendChild(prevItem);
-        
-        // Page numbers
-        const pagesToShow = [];
-        if (totalPages <= 5) {
-            for (let i = 1; i <= totalPages; i++) pagesToShow.push(i);
-        } else {
-            pagesToShow.push(1);
-            if (currentPage > 3) pagesToShow.push('...');
-            if (currentPage > 2) pagesToShow.push(currentPage - 1);
-            if (currentPage > 1 && currentPage < totalPages) pagesToShow.push(currentPage);
-            if (currentPage < totalPages - 1) pagesToShow.push(currentPage + 1);
-            if (currentPage < totalPages - 2) pagesToShow.push('...');
-            pagesToShow.push(totalPages);
-        }
-        
-        // Remove duplicate '...'
-        let uniquePages = [...new Set(pagesToShow)];
-
-        uniquePages.forEach(page => {
-            if (page === '...') {
-                const ellipsisItem = document.createElement('li');
-                ellipsisItem.className = 'page-item disabled';
-                ellipsisItem.innerHTML = '<span class="page-link">...</span>';
-                paginationContainer.appendChild(ellipsisItem);
-            } else {
-                const pageItem = document.createElement('li');
-                pageItem.className = `page-item ${page === currentPage ? 'active' : ''}`;
-                pageItem.innerHTML = `<a class="page-link" href="#" onclick="changePage(${page}); return false;">${page}</a>`;
-                paginationContainer.appendChild(pageItem);
-            }
-        });
-        
-        // Next button
-        const nextItem = document.createElement('li');
-        nextItem.className = `page-item ${currentPage === totalPages || totalPages === 0 ? 'disabled' : ''}`;
-        nextItem.innerHTML = `<a class="page-link" href="#" onclick="changePage(${currentPage + 1}); return false;"><i class="bi bi-chevron-right"></i></a>`;
-        paginationContainer.appendChild(nextItem);
-    }
-
-    // Function to change page
-    function changePage(page) {
-        const totalPages = Math.ceil(filteredKategoriData.length / itemsPerPage);
-        if (page < 1) page = 1;
-        if (page > totalPages) page = totalPages;
-        displayData(page);
-    }
-
-    // Make changePage function available globally
-    window.changePage = changePage;
-
-    // Search functionality
-    const searchInput = document.getElementById('search-input');
-    const searchButton = document.getElementById('search-button');
-
-    function performSearch() {
-        const searchTerm = searchInput.value.toLowerCase();
-        filteredKategoriData = allKategoriData.filter(kategori => 
-            kategori.nama_kategori.toLowerCase().includes(searchTerm) ||
-            kategori.jenis_kategori.toLowerCase().includes(searchTerm)
-        );
-        displayData(1); // Display first page of filtered results
-    }
-
-    searchButton.addEventListener('click', performSearch);
-    searchInput.addEventListener('keyup', function(event) {
-        if (event.key === 'Enter') {
-            performSearch();
-        }
-    });
-
-    // Event listener untuk tombol edit
-    document.getElementById('kategori-table').addEventListener('click', function(event) {
-        if (event.target.classList.contains('edit-btn') || event.target.closest('.edit-btn')) {
-            const button = event.target.classList.contains('edit-btn') ? event.target : event.target.closest('.edit-.btn');
-            const row = button.closest('tr');
-            const id = row.dataset.id;
-            
-            const kategori = allKategoriData.find(k => k.id_kategori == id);
-            if (!kategori) return;
-
-            document.getElementById('edit_id_kategori').value = kategori.id_kategori;
-            document.getElementById('edit_nama_kategori').value = kategori.nama_kategori;
-            document.getElementById('edit_jenis_kategori').value = kategori.jenis_kategori;
-            
-            editKategoriModal.show();
-        }
-    });
-
-    // Event listener untuk form tambah kategori
-    addKategoriForm.addEventListener('submit', function(event) {
-        event.preventDefault();
-        
-        const submitBtn = addKategoriForm.querySelector('button[type="submit"]');
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Menyimpan...';
-
-        const newKategori = {
-            nama_kategori: document.getElementById('nama_kategori').value,
-            jenis_kategori: document.getElementById('jenis_kategori').value
-        };
-
-        fetch('/api/kategori.create', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(newKategori),
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                showKategoriToast('Kategori berhasil ditambahkan!');
-                addKategoriModal.hide();
-                addKategoriForm.reset();
-                fetchAndDisplayKategori();
-=======
 
             const editButton = row.querySelector('.edit-btn');
             editButton.addEventListener('click', () => {
@@ -334,24 +135,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 ellipsisItem.className = 'page-item disabled';
                 ellipsisItem.innerHTML = '<span class="page-link">...</span>';
                 paginationContainer.appendChild(ellipsisItem);
->>>>>>> ce23015 (fix 90% kategori)
             } else {
                 const pageItem = document.createElement('li');
                 pageItem.className = `page-item ${page === currentPage ? 'active' : ''}`;
                 pageItem.innerHTML = `<a class="page-link" href="#" onclick="changePage(${page}); return false;">${page}</a>`;
                 paginationContainer.appendChild(pageItem);
             }
-<<<<<<< HEAD
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showKategoriToast('Terjadi kesalahan saat menambahkan kategori.', 'error');
-        })
-        .finally(() => {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="bi bi-save me-1"></i>Simpan';
-=======
->>>>>>> ce23015 (fix 90% kategori)
         });
         
         // Next button
@@ -530,45 +319,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Event listener untuk form edit kategori
-<<<<<<< HEAD
-    editKategoriForm.addEventListener('submit', function(event) {
-        event.preventDefault();
-        
-        const submitBtn = editKategoriForm.querySelector('button[type="submit"]');
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Menyimpan...';
-
-        const updatedKategori = {
-            id_kategori: document.getElementById('edit_id_kategori').value,
-            nama_kategori: document.getElementById('edit_nama_kategori').value,
-            jenis_kategori: document.getElementById('edit_jenis_kategori').value
-        };
-
-        fetch('/api/kategori.update', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(updatedKategori),
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                showKategoriToast('Kategori berhasil diperbarui!');
-                editKategoriModal.hide();
-                fetchAndDisplayKategori();
-            } else {
-                showKategoriToast('Gagal memperbarui kategori: ' + (data.message || data.error), 'error');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showKategoriToast('Terjadi kesalahan saat memperbarui kategori.', 'error');
-        })
-        .finally(() => {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="bi bi-save me-1"></i>Simpan Perubahan';
-=======
     if (editKategoriForm) {
         editKategoriForm.addEventListener('submit', function(event) {
             event.preventDefault();
@@ -668,7 +418,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 submitBtn.innerHTML = originalText;
                 submitBtn.disabled = originalDisabled;
             });
->>>>>>> ce23015 (fix 90% kategori)
         });
     } else {
         console.error('Edit form not found, cannot attach submit event listener');
@@ -718,10 +467,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Panggil fungsi untuk pertama kali memuat data
-<<<<<<< HEAD
-    fetchAndDisplayKategori();
-});
-=======
     fetchKategoriData();
     
     // Setup search functionality after DOM is fully loaded
@@ -770,4 +515,3 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
->>>>>>> ce23015 (fix 90% kategori)
