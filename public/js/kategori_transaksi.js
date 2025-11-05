@@ -121,11 +121,18 @@ document.addEventListener('DOMContentLoaded', function() {
             const row = document.createElement('tr');
             row.style = "border-top: 1px solid #eee;";
             row.innerHTML = `
+<<<<<<< HEAD
                 <th scope="row" style="padding: 15px 20px; vertical-align: middle; font-size: 0.9em;" class="text-center">${rowIndex + 1}</th>
                 <td style="padding: 15px 20px; font-weight: 500; vertical-align: middle; font-size: 0.9em;">${kategori.nama_kategori}</td>
                 <td style="padding: 15px 20px; color: #666; vertical-align: middle; font-size: 0.9em;">${kategori.jenis_kategori}</td>
                 <td style="padding: 15px 20px; vertical-align: middle; font-size: 0.9em;" class="text-center">
 >>>>>>> ce23015 (fix 90% kategori)
+=======
+                <th scope="row" style="padding: 10px 15px; vertical-align: middle; font-size: 0.9em;" class="text-center">${rowIndex + 1}</th>
+                <td style="padding: 10px 15px; font-weight: 500; vertical-align: middle; font-size: 0.9em;">${kategori.nama_kategori}</td>
+                <td style="padding: 10px 15px; color: #666; vertical-align: middle; font-size: 0.9em;">${kategori.jenis_kategori}</td>
+                <td style="padding: 10px 15px; vertical-align: middle; font-size: 0.9em;" class="text-center">
+>>>>>>> 2bacae5 (Fix)
                     <button class="btn btn-sm btn-outline-whatsapp p-1 edit-btn" style="border-radius: 8px; width: 36px; height: 36px;">
                         <i class="bi bi-pencil"></i>
                     </button>
