@@ -696,13 +696,11 @@ document.addEventListener('DOMContentLoaded', function() {
         let headerBg = type === 'error' ? 'linear-gradient(180deg, #dc3545 0%, #c82333 100%)' : 'linear-gradient(180deg, #075E54 0%, #128C7E 100%)';
         
         toastEl.innerHTML = `
-            <div class="toast-header" style="background: ${headerBg}; border-radius: 10px 10px 0 0 !important;">
-                <div class="d-flex align-items-center">
-                    <i class="bi ${type === 'error' ? 'bi-x-circle' : 'bi-check-circle'} me-2 text-white"></i>
-                    <strong class="me-auto text-white">${type === 'error' ? 'Error' : 'Sukses'}</strong>
-                </div>
+            <div class="toast-header d-flex align-items-center" style="background: ${headerBg}; border-radius: 10px 10px 0 0 !important;">
+                <i class="bi ${type === 'error' ? 'bi-x-circle' : 'bi-check-circle'} me-2 text-white"></i>
+                <strong class="me-auto text-white">${type === 'error' ? 'Error' : 'Sukses'}</strong>
                 <small class="text-white">Sekarang</small>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white ms-2" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
             <div class="toast-body">
                 ${message}
