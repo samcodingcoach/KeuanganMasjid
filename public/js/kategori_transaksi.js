@@ -37,6 +37,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     filteredKategoriData = [...allKategoriData]; // Initialize filtered data
                     currentPage = 1; // Reset to first page
                     renderTable(); // Display the first page
+
+                    // Calculate and display counts
+                    const penerimaanCount = allKategoriData.filter(k => k.jenis_kategori === 'Penerimaan').length;
+                    const pengeluaranCount = allKategoriData.filter(k => k.jenis_kategori === 'Pengeluaran').length;
+
+                    document.getElementById('penerimaan-count').textContent = penerimaanCount;
+                    document.getElementById('pengeluaran-count').textContent = pengeluaranCount;
                 } else {
                     alert('Gagal memuat data kategori: ' + data.message);
                 }
