@@ -9,163 +9,156 @@ function checkLoginStatus() {
     return true;
 }
 
+let allMustahikData = [];
+
 // Load mustahik data
 async function loadMustahikData() {
     try {
         const response = await fetch('/api/mustahik.list');
         const result = await response.json();
 
-        const mustahikTableBody = document.querySelector('#mustahik-table tbody');
-        
         if (result.success && result.data) {
-            mustahikTableBody.innerHTML = '';
-            
-            result.data.forEach((mustahik, index) => {
-                // Format status as Ya/Tidak
-                const fakirStatus = mustahik.fakir ? 'Ya' : 'Tidak';
-                const aktifStatus = mustahik.aktif ? 'Ya' : 'Tidak';
-                
-                const tanggalLahir = mustahik.tanggal_lahir ? new Date(mustahik.tanggal_lahir).toLocaleDateString('id-ID') : '-';
-                
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td>${mustahik.nama_lengkap}</td>
-                    <td>${mustahik.alamat || ''}</td>
-                    <td>${mustahik.no_telepon || ''}</td>
-                    <td>${mustahik.no_ktp || ''}</td>
-                    <td>${mustahik.gps || '-'}</td>
-                    <td>${fakirStatus}</td>
-                    <td>${tanggalLahir}</td>
-                    <td>${aktifStatus}</td>
-                    <td>${mustahik.keterangan || '-'}</td>
-                    <td>${mustahik.kategori || ''}</td>
-                    <td>
-                        <button class="btn btn-warning btn-sm edit-btn" 
-                                data-id="${mustahik.id_mustahik}"
-                                data-nama="${mustahik.nama_lengkap}"
-                                data-alamat="${mustahik.alamat || ''}"
-                                data-no-telepon="${mustahik.no_telepon || ''}"
-                                data-no-ktp="${mustahik.no_ktp || ''}"
-                                data-gps="${mustahik.gps || ''}"
-                                data-fakir="${mustahik.fakir}"
-                                data-tanggal-lahir="${mustahik.tanggal_lahir || ''}"
-                                data-aktif="${mustahik.aktif}"
-                                data-keterangan="${mustahik.keterangan || ''}"
-                                data-kategori="${mustahik.kategori || ''}">
-                            <i class="bi bi-pencil"></i>
-                        </button>
-                        <button class="btn btn-success btn-sm change-btn ms-1" 
-                                data-id="${mustahik.id_mustahik}"
-                                data-nama="${mustahik.nama_lengkap}"
-                                data-aktif="${mustahik.aktif}">
-                            <i class="bi bi-arrow-repeat"></i>
-                        </button>
-                    </td>
-                `;
-                
-                mustahikTableBody.appendChild(row);
-            });
-            
-            // Add event listeners for edit buttons
-            document.querySelectorAll('.edit-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const id = this.getAttribute('data-id');
-                    const nama = this.getAttribute('data-nama');
-                    const alamat = this.getAttribute('data-alamat');
-                    const noTelepon = this.getAttribute('data-no-telepon');
-                    const noKtp = this.getAttribute('data-no-ktp');
-                    const gps = this.getAttribute('data-gps');
-                    const fakir = this.getAttribute('data-fakir') === 'True' || this.getAttribute('data-fakir') === 'true';
-                    const tanggalLahir = this.getAttribute('data-tanggal-lahir');
-                    const aktif = this.getAttribute('data-aktif') === 'True' || this.getAttribute('data-aktif') === 'true';
-                    const keterangan = this.getAttribute('data-keterangan');
-                    const kategori = this.getAttribute('data-kategori');
-                    
-                    document.getElementById('edit_id_mustahik').value = id;
-                    document.getElementById('edit_nama_lengkap').value = nama;
-                    document.getElementById('edit_alamat').value = alamat;
-                    document.getElementById('edit_no_telepon').value = noTelepon;
-                    document.getElementById('edit_no_ktp').value = noKtp;
-                    document.getElementById('edit_gps').value = gps;
-                    document.getElementById('edit_fakir').checked = fakir;
-                    document.getElementById('edit_tanggal_lahir').value = tanggalLahir;
-                    document.getElementById('edit_aktif').checked = aktif;
-                    document.getElementById('edit_keterangan').value = keterangan;
-                    document.getElementById('edit_kategori').value = kategori;
-                    
-                    const editModal = new bootstrap.Modal(document.getElementById('editMustahikModal'));
-                    editModal.show();
-                });
-            });
-            
-            // Add event listeners for change buttons (toggle active status)
-            document.querySelectorAll('.change-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const id = this.getAttribute('data-id');
-                    const nama = this.getAttribute('data-nama');
-                    const currentAktif = this.getAttribute('data-aktif') === 'True' || this.getAttribute('data-aktif') === 'true';
-                    
-                    toggleMustahikActiveStatus(id, nama, currentAktif);
-                });
-            });
+            allMustahikData = result.data;
+            renderTable(allMustahikData);
         } else {
-            mustahikTableBody.innerHTML = '<tr><td colspan="12" class="text-center">Tidak ada data mustahik</td></tr>';
+            const mustahikTableBody = document.querySelector('#mustahik-table tbody');
+            mustahikTableBody.innerHTML = '<tr><td colspan="5" class="text-center">Tidak ada data mustahik</td></tr>';
         }
     } catch (error) {
         console.error('Error loading mustahik data:', error);
         const mustahikTableBody = document.querySelector('#mustahik-table tbody');
-        mustahikTableBody.innerHTML = `<tr><td colspan="12" class="text-center text-danger">Gagal memuat data: ${error.message}</td></tr>`;
+        mustahikTableBody.innerHTML = `<tr><td colspan="5" class="text-center text-danger">Gagal memuat data: ${error.message}</td></tr>`;
     }
 }
+
+function renderTable(data) {
+    const mustahikTableBody = document.querySelector('#mustahik-table tbody');
+    mustahikTableBody.innerHTML = '';
+
+    if (data.length === 0) {
+        mustahikTableBody.innerHTML = '<tr><td colspan="5" class="text-center">Tidak ada data ditemukan</td></tr>';
+        updatePaginationInfo(0, 0);
+        return;
+    }
+
+    data.forEach((mustahik, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td style="padding: 15px 20px;">${index + 1}</td>
+            <td style="padding: 15px 20px;">${mustahik.nama_lengkap}</td>
+            <td style="padding: 15px 20px;">${mustahik.no_telepon || ''}</td>
+            <td style="padding: 15px 20px;">${mustahik.kategori || ''}</td>
+            <td style="padding: 15px 20px;">
+                <button class="btn btn-info btn-sm detail-btn" data-id="${mustahik.id_mustahik}"><i class="bi bi-eye"></i></button>
+                <button class="btn btn-warning btn-sm edit-btn" data-id="${mustahik.id_mustahik}"><i class="bi bi-pencil"></i></button>
+            </td>
+        `;
+        mustahikTableBody.appendChild(row);
+    });
+
+    updatePaginationInfo(data.length, allMustahikData.length);
+    addEventListeners();
+}
+
+function updatePaginationInfo(displayed, total) {
+    const paginationInfo = document.querySelector('.card-footer small');
+    if (paginationInfo) {
+        paginationInfo.innerHTML = `Menampilkan <strong>${displayed}</strong> dari <strong>${total}</strong> entri`;
+    }
+}
+
+function addEventListeners() {
+    // Add event listeners for detail buttons
+    document.querySelectorAll('.detail-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            const mustahik = allMustahikData.find(m => m.id_mustahik == id);
+            if (mustahik) {
+                showDetailModal(mustahik);
+            }
+        });
+    });
+
+    // Add event listeners for edit buttons
+    document.querySelectorAll('.edit-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            const mustahik = allMustahikData.find(m => m.id_mustahik == id);
+            if (mustahik) {
+                showEditModal(mustahik);
+            }
+        });
+    });
+}
+
+function showDetailModal(mustahik) {
+    const detailContent = document.getElementById('mustahik-detail-content');
+    const fakirStatus = mustahik.fakir ? 'Ya' : 'Tidak';
+    const aktifStatus = mustahik.aktif ? 'Ya' : 'Tidak';
+    const tanggalLahir = mustahik.tanggal_lahir ? new Date(mustahik.tanggal_lahir).toLocaleDateString('id-ID') : '-';
+
+    detailContent.innerHTML = `
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong>Nama Lengkap:</strong> ${mustahik.nama_lengkap}</p>
+                <p><strong>Alamat:</strong> ${mustahik.alamat || '-'}</p>
+                <p><strong>No. Telepon:</strong> ${mustahik.no_telepon || '-'}</p>
+                <p><strong>No. KTP:</strong> ${mustahik.no_ktp || '-'}</p>
+                <p><strong>GPS:</strong> ${mustahik.gps || '-'}</p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Fakir:</strong> ${fakirStatus}</p>
+                <p><strong>Tanggal Lahir:</strong> ${tanggalLahir}</p>
+                <p><strong>Aktif:</strong> ${aktifStatus}</p>
+                <p><strong>Kategori:</strong> ${mustahik.kategori || '-'}</p>
+                <p><strong>Keterangan:</strong> ${mustahik.keterangan || '-'}</p>
+            </div>
+        </div>
+    `;
+    const detailModal = new bootstrap.Modal(document.getElementById('detailMustahikModal'));
+    detailModal.show();
+}
+
+function showEditModal(mustahik) {
+    document.getElementById('edit_id_mustahik').value = mustahik.id_mustahik;
+    document.getElementById('edit_nama_lengkap').value = mustahik.nama_lengkap;
+    document.getElementById('edit_alamat').value = mustahik.alamat || '';
+    document.getElementById('edit_no_telepon').value = mustahik.no_telepon || '';
+    document.getElementById('edit_no_ktp').value = mustahik.no_ktp || '';
+    document.getElementById('edit_gps').value = mustahik.gps || '';
+    document.getElementById('edit_fakir').checked = mustahik.fakir;
+    document.getElementById('edit_tanggal_lahir').value = mustahik.tanggal_lahir || '';
+    document.getElementById('edit_aktif').checked = mustahik.aktif;
+    document.getElementById('edit_keterangan').value = mustahik.keterangan || '';
+    document.getElementById('edit_kategori').value = mustahik.kategori || '';
+    
+    const editModal = new bootstrap.Modal(document.getElementById('editMustahikModal'));
+    editModal.show();
+}
+
+// Handle search
+document.getElementById('search-button').addEventListener('click', () => {
+    const searchTerm = document.getElementById('search-input').value.toLowerCase();
+    const filteredData = allMustahikData.filter(mustahik => 
+        mustahik.nama_lengkap.toLowerCase().includes(searchTerm)
+    );
+    renderTable(filteredData);
+});
+
+document.getElementById('search-input').addEventListener('keyup', (event) => {
+    if (event.key === 'Enter') {
+        const searchTerm = document.getElementById('search-input').value.toLowerCase();
+        const filteredData = allMustahikData.filter(mustahik => 
+            mustahik.nama_lengkap.toLowerCase().includes(searchTerm)
+        );
+        renderTable(filteredData);
+    }
+});
+
 
 // Handle form submission for adding new mustahik
 document.getElementById('save-mustahik-btn').addEventListener('click', async function() {
     if (!checkLoginStatus()) return;
-    
-    // Show spinner and disable button
-    const saveBtn = document.getElementById('save-mustahik-btn');
-    const originalText = saveBtn.innerHTML;
-    const originalDisabled = saveBtn.disabled;
-    
-    // Create spinner overlay inside the modal
-    const modalBody = document.querySelector('#addMustahikModal .modal-body');
-    
-    // Disable the form
-    const formElements = document.getElementById('add-mustahik-form').elements;
-    for (let i = 0; i < formElements.length; i++) {
-        formElements[i].disabled = true;
-    }
-    
-    // Show spinner overlay
-    const spinnerOverlay = document.createElement('div');
-    spinnerOverlay.id = 'save-mustahik-spinner-overlay';
-    spinnerOverlay.style.position = 'absolute';
-    spinnerOverlay.style.top = '0';
-    spinnerOverlay.style.left = '0';
-    spinnerOverlay.style.width = '100%';
-    spinnerOverlay.style.height = '100%';
-    spinnerOverlay.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
-    spinnerOverlay.style.display = 'flex';
-    spinnerOverlay.style.justifyContent = 'center';
-    spinnerOverlay.style.alignItems = 'center';
-    spinnerOverlay.style.zIndex = '9999';
-    spinnerOverlay.style.borderRadius = '0.5rem';
-    
-    spinnerOverlay.innerHTML = `
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-    `;
-    
-    // Position the overlay relative to the modal content
-    const modalDialog = document.querySelector('#addMustahikModal .modal-dialog');
-    modalDialog.style.position = 'relative';
-    modalBody.parentNode.insertBefore(spinnerOverlay, modalBody);
-    
-    // Update button state
-    saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Menyimpan...';
-    saveBtn.disabled = true;
     
     const formData = {
         nama_lengkap: document.getElementById('nama_lengkap').value,
@@ -202,71 +195,12 @@ document.getElementById('save-mustahik-btn').addEventListener('click', async fun
         }
     } catch (error) {
         showMustahikToast('Gagal menambahkan mustahik: ' + error.message, 'error');
-    } finally {
-        // Remove spinner overlay
-        const spinnerOverlay = document.getElementById('save-mustahik-spinner-overlay');
-        if (spinnerOverlay) {
-            spinnerOverlay.remove();
-        }
-        
-        // Re-enable form elements
-        for (let i = 0; i < formElements.length; i++) {
-            formElements[i].disabled = false;
-        }
-        
-        // Restore button state
-        saveBtn.innerHTML = originalText;
-        saveBtn.disabled = originalDisabled;
     }
 });
 
 // Handle form submission for editing mustahik
 document.getElementById('update-mustahik-btn').addEventListener('click', async function() {
     if (!checkLoginStatus()) return;
-    
-    // Show spinner and disable button
-    const updateBtn = document.getElementById('update-mustahik-btn');
-    const originalText = updateBtn.innerHTML;
-    const originalDisabled = updateBtn.disabled;
-    
-    // Create spinner overlay inside the modal
-    const modalBody = document.querySelector('#editMustahikModal .modal-body');
-    
-    // Disable the form
-    const formElements = document.getElementById('edit-mustahik-form').elements;
-    for (let i = 0; i < formElements.length; i++) {
-        formElements[i].disabled = true;
-    }
-    
-    // Show spinner overlay
-    const spinnerOverlay = document.createElement('div');
-    spinnerOverlay.id = 'update-mustahik-spinner-overlay';
-    spinnerOverlay.style.position = 'absolute';
-    spinnerOverlay.style.top = '0';
-    spinnerOverlay.style.left = '0';
-    spinnerOverlay.style.width = '100%';
-    spinnerOverlay.style.height = '100%';
-    spinnerOverlay.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
-    spinnerOverlay.style.display = 'flex';
-    spinnerOverlay.style.justifyContent = 'center';
-    spinnerOverlay.style.alignItems = 'center';
-    spinnerOverlay.style.zIndex = '9999';
-    spinnerOverlay.style.borderRadius = '0.5rem';
-    
-    spinnerOverlay.innerHTML = `
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-    `;
-    
-    // Position the overlay relative to the modal content
-    const modalDialog = document.querySelector('#editMustahikModal .modal-dialog');
-    modalDialog.style.position = 'relative';
-    modalBody.parentNode.insertBefore(spinnerOverlay, modalBody);
-    
-    // Update button state
-    updateBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Menyimpan...';
-    updateBtn.disabled = true;
     
     const formData = {
         id_mustahik: document.getElementById('edit_id_mustahik').value,
@@ -303,64 +237,12 @@ document.getElementById('update-mustahik-btn').addEventListener('click', async f
         }
     } catch (error) {
         showMustahikToast('Gagal memperbarui mustahik: ' + error.message, 'error');
-    } finally {
-        // Remove spinner overlay
-        const spinnerOverlay = document.getElementById('update-mustahik-spinner-overlay');
-        if (spinnerOverlay) {
-            spinnerOverlay.remove();
-        }
-        
-        // Re-enable form elements
-        for (let i = 0; i < formElements.length; i++) {
-            formElements[i].disabled = false;
-        }
-        
-        // Restore button state
-        updateBtn.innerHTML = originalText;
-        updateBtn.disabled = originalDisabled;
     }
 });
 
-// Function to toggle mustahik active status
-async function toggleMustahikActiveStatus(id, nama, currentAktif) {
-    if (!checkLoginStatus()) return;
-    
-    const newAktifStatus = !currentAktif;
-    const statusText = newAktifStatus ? 'aktif' : 'non-aktif';
-    
-    if (confirm(`Apakah Anda yakin ingin mengubah status mustahik "${nama}" menjadi ${statusText}?`)) {
-        try {
-            // Get the current mustahik data to update only the aktif field
-            const formData = {
-                id_mustahik: id,
-                aktif: newAktifStatus
-            };
-
-            const response = await fetch('/api/mustahik.update', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData)
-            });
-
-            const result = await response.json();
-
-            if (result.success) {
-                alert(`Status mustahik "${nama}" berhasil diubah menjadi ${statusText}!`);
-                loadMustahikData(); // Reload data to reflect changes
-            } else {
-                alert('Gagal mengubah status mustahik: ' + (result.message || result.error || 'Unknown error'));
-            }
-        } catch (error) {
-            alert('Gagal mengubah status mustahik: ' + error.message);
-        }
-    }
-}
 
 // Function to show toast notification for mustahik
 function showMustahikToast(message, type = 'success') {
-    // Create toast container if it doesn't exist
     let toastContainer = document.getElementById('toast-container-mustahik');
     if (!toastContainer) {
         toastContainer = document.createElement('div');
@@ -370,7 +252,6 @@ function showMustahikToast(message, type = 'success') {
         document.body.appendChild(toastContainer);
     }
     
-    // Create toast element
     const toastId = 'mustahik-toast-' + Date.now();
     const toastEl = document.createElement('div');
     toastEl.id = toastId;
@@ -379,10 +260,9 @@ function showMustahikToast(message, type = 'success') {
     toastEl.setAttribute('aria-live', 'assertive');
     toastEl.setAttribute('aria-atomic', 'true');
     
-    // Determine toast header color based on type
     let headerBg = 'linear-gradient(180deg, #075E54 0%, #128C7E 100%)';
     if (type === 'error') {
-        headerBg = 'linear-gradient(180deg, #dc3545 0%, #c82333 100%)'; // Red gradient for error
+        headerBg = 'linear-gradient(180deg, #dc3545 0%, #c82333 100%)';
     }
     
     toastEl.innerHTML = `
@@ -401,11 +281,9 @@ function showMustahikToast(message, type = 'success') {
     
     toastContainer.appendChild(toastEl);
     
-    // Initialize and show the toast
     const toast = new bootstrap.Toast(toastEl);
     toast.show();
     
-    // Remove toast element after it's hidden to keep DOM clean
     toastEl.addEventListener('hidden.bs.toast', function() {
         toastEl.remove();
     });
@@ -413,5 +291,7 @@ function showMustahikToast(message, type = 'success') {
 
 // Load data when page loads
 document.addEventListener('DOMContentLoaded', function() {
-    loadMustahikData();
+    if (checkLoginStatus()) {
+        loadMustahikData();
+    }
 });
