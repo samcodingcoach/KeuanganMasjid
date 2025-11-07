@@ -96,16 +96,18 @@ function showDetailModal(mustahik) {
     const fakirStatus = mustahik.fakir ? '<span class="badge bg-info">Ya</span>' : '<span class="badge bg-secondary">Tidak</span>';
     const tanggalLahir = mustahik.tanggal_lahir ? new Date(mustahik.tanggal_lahir).toLocaleDateString('id-ID') : '-';
 
-    document.getElementById('detail_nama_lengkap').textContent = mustahik.nama_lengkap;
-    document.getElementById('detail_tanggal_lahir').textContent = tanggalLahir;
-    document.getElementById('detail_no_ktp').textContent = mustahik.no_ktp || '-';
-    document.getElementById('detail_alamat').textContent = mustahik.alamat || '-';
-    document.getElementById('detail_gps').textContent = mustahik.gps || '-';
-    document.getElementById('detail_no_telepon').textContent = mustahik.no_telepon || '-';
-    document.getElementById('detail_kategori').textContent = mustahik.kategori || '-';
-    document.getElementById('detail_keterangan').textContent = mustahik.keterangan || '-';
-    document.getElementById('detail_aktif').innerHTML = aktifStatus;
-    document.getElementById('detail_fakir').innerHTML = fakirStatus;
+    document.querySelector('#detail-biodata-pane #detail_nama_lengkap').textContent = mustahik.nama_lengkap;
+    document.querySelector('#detail-biodata-pane #detail_tanggal_lahir').textContent = tanggalLahir;
+    document.querySelector('#detail-biodata-pane #detail_no_ktp').textContent = mustahik.no_ktp || '-';
+
+    document.querySelector('#detail-alamat-pane #detail_alamat').textContent = mustahik.alamat || '-';
+    document.querySelector('#detail-alamat-pane #detail_gps').textContent = mustahik.gps || '-';
+
+    document.querySelector('#detail-lainnya-pane #detail_no_telepon').textContent = mustahik.no_telepon || '-';
+    document.querySelector('#detail-lainnya-pane #detail_kategori').textContent = mustahik.kategori || '-';
+    document.querySelector('#detail-lainnya-pane #detail_keterangan').textContent = mustahik.keterangan || '-';
+    document.querySelector('#detail-lainnya-pane #detail_aktif').innerHTML = aktifStatus;
+    document.querySelector('#detail-lainnya-pane #detail_fakir').innerHTML = fakirStatus;
 
     const detailModal = new bootstrap.Modal(document.getElementById('detailMustahikModal'));
     detailModal.show();

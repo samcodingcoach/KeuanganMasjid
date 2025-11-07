@@ -23,11 +23,21 @@
             border-bottom-right-radius: 0;
         }
         .nav-tabs .nav-link:not(.active) {
-            color: #6c757d;
+            color: #6c757d; /* Bootstrap's secondary text color */
+            background-color: #e9ecef; /* A light grey background for inactive tabs */
+        }
+        .nav-tabs .nav-link.active {
+            color: #075E54; /* Active tab text color */
+            background-color: #fff; /* Active tab background color */
+            border-color: #dee2e6 #dee2e6 #fff;
         }
         .select2-results__options {
             max-height: 200px;
             overflow-y: auto;
+        }
+        .select2-container--bootstrap-5 .select2-selection--single .select2-selection__clear {
+            margin-right: 1rem;
+            font-size: 1.25rem;
         }
         #mustahik-table td, #mustahik-table th {
             font-size: 0.875rem;
@@ -35,6 +45,9 @@
         .detail-card {
             background-color: #f8f9fa;
             border-radius: 10px;
+        }
+        #detailMustahikModal .row {
+            font-size: 0.9rem;
         }
     </style>
 </head>
@@ -309,53 +322,118 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
-                    <div class="p-3 detail-card">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h5><i class="bi bi-person-badge me-2 text-whatsapp"></i>Biodata</h5>
-                                <hr>
-                                <dl class="row">
-                                    <dt class="col-sm-5">Nama Lengkap</dt>
-                                    <dd class="col-sm-7" id="detail_nama_lengkap"></dd>
-
-                                    <dt class="col-sm-5">Tanggal Lahir</dt>
-                                    <dd class="col-sm-7" id="detail_tanggal_lahir"></dd>
-
-                                    <dt class="col-sm-5">No. KTP</dt>
-                                    <dd class="col-sm-7" id="detail_no_ktp"></dd>
-                                </dl>
-                            </div>
-                            <div class="col-md-6">
-                                <h5><i class="bi bi-geo-alt me-2 text-whatsapp"></i>Alamat</h5>
-                                <hr>
-                                <dl class="row">
-                                    <dt class="col-sm-5">Alamat</dt>
-                                    <dd class="col-sm-7" id="detail_alamat"></dd>
-
-                                    <dt class="col-sm-5">GPS</dt>
-                                    <dd class="col-sm-7" id="detail_gps"></dd>
-                                </dl>
+                    <ul class="nav nav-tabs mb-3" id="detailMustahikTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="detail-biodata-tab" data-bs-toggle="tab" data-bs-target="#detail-biodata-pane" type="button" role="tab" aria-controls="detail-biodata-pane" aria-selected="true">Biodata</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="detail-alamat-tab" data-bs-toggle="tab" data-bs-target="#detail-alamat-pane" type="button" role="tab" aria-controls="detail-alamat-pane" aria-selected="false">Alamat</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="detail-lainnya-tab" data-bs-toggle="tab" data-bs-target="#detail-lainnya-pane" type="button" role="tab" aria-controls="detail-lainnya-pane" aria-selected="false">Detail Lainnya</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="detailMustahikTabContent">
+                        <div class="tab-pane fade show active" id="detail-biodata-pane" role="tabpanel" aria-labelledby="detail-biodata-tab">
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <div class="d-flex align-items-center p-2 bg-light rounded-3 shadow-sm">
+                                        <i class="bi bi-person-fill fs-4 text-whatsapp me-3"></i>
+                                        <div>
+                                            <small class="text-muted d-block">Nama Lengkap</small>
+                                            <p class="fw-bold mb-0" id="detail_nama_lengkap"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center p-2 bg-light rounded-3 shadow-sm">
+                                        <i class="bi bi-calendar-event fs-4 text-whatsapp me-3"></i>
+                                        <div>
+                                            <small class="text-muted d-block">Tanggal Lahir</small>
+                                            <p class="fw-bold mb-0" id="detail_tanggal_lahir"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center p-2 bg-light rounded-3 shadow-sm">
+                                        <i class="bi bi-person-vcard fs-4 text-whatsapp me-3"></i>
+                                        <div>
+                                            <small class="text-muted d-block">No. KTP</small>
+                                            <p class="fw-bold mb-0" id="detail_no_ktp"></p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="row mt-3">
-                            <div class="col-12">
-                                <h5><i class="bi bi-info-circle me-2 text-whatsapp"></i>Detail Lainnya</h5>
-                                <hr>
-                                <dl class="row">
-                                    <dt class="col-sm-4">No. Telepon</dt>
-                                    <dd class="col-sm-8" id="detail_no_telepon"></dd>
-
-                                    <dt class="col-sm-4">Kategori</dt>
-                                    <dd class="col-sm-8" id="detail_kategori"></dd>
-
-                                    <dt class="col-sm-4">Keterangan</dt>
-                                    <dd class="col-sm-8" id="detail_keterangan"></dd>
-
-                                    <dt class="col-sm-4">Status</dt>
-                                    <dd class="col-sm-8" id="detail_aktif"></dd>
-                                    <dt class="col-sm-4">Termasuk Fakir</dt>
-                                    <dd class="col-sm-8" id="detail_fakir"></dd>
-                                </dl>
+                        <div class="tab-pane fade" id="detail-alamat-pane" role="tabpanel" aria-labelledby="detail-alamat-tab">
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <div class="d-flex align-items-start p-2 bg-light rounded-3 shadow-sm">
+                                        <i class="bi bi-geo-alt-fill fs-4 text-whatsapp me-3"></i>
+                                        <div>
+                                            <small class="text-muted d-block">Alamat</small>
+                                            <p class="fw-bold mb-0" id="detail_alamat"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="d-flex align-items-center p-2 bg-light rounded-3 shadow-sm">
+                                        <i class="bi bi-geo-position fs-4 text-whatsapp me-3"></i>
+                                        <div>
+                                            <small class="text-muted d-block">GPS</small>
+                                            <p class="fw-bold mb-0" id="detail_gps"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="detail-lainnya-pane" role="tabpanel" aria-labelledby="detail-lainnya-tab">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center p-2 bg-light rounded-3 shadow-sm">
+                                        <i class="bi bi-telephone-fill fs-4 text-whatsapp me-3"></i>
+                                        <div>
+                                            <small class="text-muted d-block">No. Telepon</small>
+                                            <p class="fw-bold mb-0" id="detail_no_telepon"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center p-2 bg-light rounded-3 shadow-sm">
+                                        <i class="bi bi-tags-fill fs-4 text-whatsapp me-3"></i>
+                                        <div>
+                                            <small class="text-muted d-block">Kategori</small>
+                                            <p class="fw-bold mb-0" id="detail_kategori"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="d-flex align-items-start p-2 bg-light rounded-3 shadow-sm">
+                                        <i class="bi bi-card-text fs-4 text-whatsapp me-3"></i>
+                                        <div>
+                                            <small class="text-muted d-block">Keterangan</small>
+                                            <p class="fw-bold mb-0" id="detail_keterangan"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center p-2 bg-light rounded-3 shadow-sm">
+                                        <i class="bi bi-toggle-on fs-4 text-whatsapp me-3"></i>
+                                        <div>
+                                            <small class="text-muted d-block">Status</small>
+                                            <p class="fw-bold mb-0" id="detail_aktif"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center p-2 bg-light rounded-3 shadow-sm">
+                                        <i class="bi bi-person-check-fill fs-4 text-whatsapp me-3"></i>
+                                        <div>
+                                            <small class="text-muted d-block">Termasuk Fakir</small>
+                                            <p class="fw-bold mb-0" id="detail_fakir"></p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
