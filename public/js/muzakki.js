@@ -22,12 +22,12 @@ async function loadMuzakkiData() {
             renderTable(allMuzakkiData);
         } else {
             const muzakkiTableBody = document.querySelector('#muzakki-table tbody');
-            muzakkiTableBody.innerHTML = '<tr><td colspan="12" class="text-center">Tidak ada data muzakki</td></tr>';
+            muzakkiTableBody.innerHTML = '<tr><td colspan="5" class="text-center">Tidak ada data muzakki</td></tr>';
         }
     } catch (error) {
         console.error('Error loading muzakki data:', error);
         const muzakkiTableBody = document.querySelector('#muzakki-table tbody');
-        muzakkiTableBody.innerHTML = `<tr><td colspan="12" class="text-center text-danger">Gagal memuat data: ${error.message}</td></tr>`;
+        muzakkiTableBody.innerHTML = `<tr><td colspan="5" class="text-center text-danger">Gagal memuat data: ${error.message}</td></tr>`;
     }
 }
 
@@ -36,30 +36,20 @@ function renderTable(data) {
     muzakkiTableBody.innerHTML = '';
 
     if (data.length === 0) {
-        muzakkiTableBody.innerHTML = '<tr><td colspan="12" class="text-center">Tidak ada data ditemukan</td></tr>';
+        muzakkiTableBody.innerHTML = '<tr><td colspan="5" class="text-center">Tidak ada data ditemukan</td></tr>';
         updatePaginationInfo(0, 0);
         return;
     }
 
     data.forEach((muzakki, index) => {
         const row = document.createElement('tr');
-        const fakirStatus = muzakki.fakir ? 'Ya' : 'Tidak';
-        const aktifStatus = muzakki.aktif ? 'Ya' : 'Tidak';
-        const tanggalLahir = muzakki.tanggal_lahir ? new Date(muzakki.tanggal_lahir).toLocaleDateString('id-ID') : '-';
-
         row.innerHTML = `
             <td>${index + 1}</td>
             <td>${muzakki.nama_lengkap}</td>
-            <td>${muzakki.alamat || ''}</td>
             <td>${muzakki.no_telepon || ''}</td>
-            <td>${muzakki.no_ktp || ''}</td>
-            <td>${muzakki.gps || '-'}</td>
-            <td>${fakirStatus}</td>
-            <td>${tanggalLahir}</td>
-            <td>${aktifStatus}</td>
-            <td>${muzakki.keterangan || '-'}</td>
             <td>${muzakki.kategori || ''}</td>
             <td>
+                <button class="btn btn-info btn-sm detail-btn" data-id="${muzakki.id_muzakki}"><i class="bi bi-eye"></i></button>
                 <button class="btn btn-warning btn-sm edit-btn" data-id="${muzakki.id_muzakki}"><i class="bi bi-pencil"></i></button>
             </td>
         `;
@@ -78,6 +68,17 @@ function updatePaginationInfo(displayed, total) {
 }
 
 function addEventListeners() {
+    // Add event listeners for detail buttons
+    document.querySelectorAll('.detail-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            const muzakki = allMuzakkiData.find(m => m.id_muzakki == id);
+            if (muzakki) {
+                showDetailModal(muzakki);
+            }
+        });
+    });
+
     // Add event listeners for edit buttons
     document.querySelectorAll('.edit-btn').forEach(button => {
         button.addEventListener('click', function() {
@@ -88,6 +89,28 @@ function addEventListeners() {
             }
         });
     });
+}
+
+function showDetailModal(muzakki) {
+    const aktifStatus = muzakki.aktif ? '<span class="badge bg-success">Aktif</span>' : '<span class="badge bg-danger">Tidak Aktif</span>';
+    const fakirStatus = muzakki.fakir ? '<span class="badge bg-info">Ya</span>' : '<span class="badge bg-secondary">Tidak</span>';
+    const tanggalLahir = muzakki.tanggal_lahir ? new Date(muzakki.tanggal_lahir).toLocaleDateString('id-ID') : '-';
+
+    document.querySelector('#detail-biodata-pane #detail_nama_lengkap').textContent = muzakki.nama_lengkap;
+    document.querySelector('#detail-biodata-pane #detail_tanggal_lahir').textContent = tanggalLahir;
+    document.querySelector('#detail-biodata-pane #detail_no_ktp').textContent = muzakki.no_ktp || '-';
+
+    document.querySelector('#detail-alamat-pane #detail_alamat').textContent = muzakki.alamat || '-';
+    document.querySelector('#detail-alamat-pane #detail_gps').textContent = muzakki.gps || '-';
+
+    document.querySelector('#detail-lainnya-pane #detail_no_telepon').textContent = muzakki.no_telepon || '-';
+    document.querySelector('#detail-lainnya-pane #detail_kategori').textContent = muzakki.kategori || '-';
+    document.querySelector('#detail-lainnya-pane #detail_keterangan').textContent = muzakki.keterangan || '-';
+    document.querySelector('#detail-lainnya-pane #detail_aktif').innerHTML = aktifStatus;
+    document.querySelector('#detail-lainnya-pane #detail_fakir').innerHTML = fakirStatus;
+
+    const detailModal = new bootstrap.Modal(document.getElementById('detailMuzakkiModal'));
+    detailModal.show();
 }
 
 function showEditModal(muzakki) {
