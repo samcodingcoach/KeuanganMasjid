@@ -254,10 +254,7 @@ function showMustahikToast(message, type = 'success') {
     toastEl.setAttribute('aria-live', 'assertive');
     toastEl.setAttribute('aria-atomic', 'true');
     
-    let headerBg = 'linear-gradient(180deg, #075E54 0%, #128C7E 100%)';
-    if (type === 'error') {
-        headerBg = 'linear-gradient(180deg, #dc3545 0%, #c82333 100%)';
-    }
+    let headerBg = type === 'error' ? 'linear-gradient(180deg, #dc3545 0%, #c82333 100%)' : 'linear-gradient(180deg, #075E54 0%, #128C7E 100%)';
     
     toastEl.innerHTML = `
         <div class="toast-header d-flex align-items-center" style="background: ${headerBg}; border-radius: 10px 10px 0 0 !important;">
