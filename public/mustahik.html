@@ -14,6 +14,15 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/css/admin.css">
+    <style>
+        .nav-tabs .nav-link {
+            color: #495057;
+            border-top-left-radius: 0.375rem;
+            border-top-right-radius: 0.375rem;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+    </style>
 </head>
 <body class="bg-light">
     <!-- Sidebar will be loaded here -->
@@ -99,49 +108,55 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                    <ul class="nav nav-tabs" id="addMustahikTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="add-biodata-tab" data-bs-toggle="tab" data-bs-target="#add-biodata-pane" type="button" role="tab" aria-controls="add-biodata-pane" aria-selected="true">Biodata</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="add-alamat-tab" data-bs-toggle="tab" data-bs-target="#add-alamat-pane" type="button" role="tab" aria-controls="add-alamat-pane" aria-selected="false">Alamat</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="add-detail-tab" data-bs-toggle="tab" data-bs-target="#add-detail-pane" type="button" role="tab" aria-controls="add-detail-pane" aria-selected="false">Detail</button>
+                        </li>
+                    </ul>
                     <form id="add-mustahik-form">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="nama_lengkap" class="form-label">Nama Lengkap</label>
-                                    <input type="text" class="form-control" id="nama_lengkap" required>
+                        <div class="tab-content pt-3" id="addMustahikTabContent">
+                            <div class="tab-pane fade show active" id="add-biodata-pane" role="tabpanel" aria-labelledby="add-biodata-tab">
+                                <div class="form-floating mb-3 position-relative">
+                                    <input type="text" class="form-control" id="nama_lengkap" placeholder="Masukkan nama lengkap" required>
+                                    <label for="nama_lengkap">Nama Lengkap</label>
+                                    <i class="bi bi-person-fill position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
                                 </div>
-                                <div class="mb-3">
-                                    <label for="alamat" class="form-label">Alamat</label>
-                                    <textarea class="form-control" id="alamat" rows="3" required></textarea>
+                                <div class="form-floating mb-3 position-relative">
+                                    <input type="date" class="form-control" id="tanggal_lahir" placeholder="Tanggal Lahir">
+                                    <label for="tanggal_lahir">Tanggal Lahir</label>
+                                    <i class="bi bi-calendar-event position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
                                 </div>
-                                <div class="mb-3">
-                                    <label for="no_telepon" class="form-label">No. Telepon</label>
-                                    <input type="text" class="form-control" id="no_telepon" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="no_ktp" class="form-label">No. KTP</label>
-                                    <input type="text" class="form-control" id="no_ktp" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="gps" class="form-label">GPS</label>
-                                    <input type="text" class="form-control" id="gps" placeholder="Contoh: -6.200000,106.816666">
+                                <div class="form-floating mb-3 position-relative">
+                                    <input type="text" class="form-control" id="no_ktp" placeholder="Masukkan nomor KTP" required>
+                                    <label for="no_ktp">No. KTP</label>
+                                    <i class="bi bi-person-vcard position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="mb-3 form-check">
-                                    <input type="checkbox" class="form-check-input" id="fakir">
-                                    <label class="form-check-label" for="fakir">Fakir</label>
+                            <div class="tab-pane fade" id="add-alamat-pane" role="tabpanel" aria-labelledby="add-alamat-tab">
+                                <div class="form-floating mb-3 position-relative">
+                                    <textarea class="form-control" id="alamat" rows="3" placeholder="Masukkan alamat" required style="height: 100px;"></textarea>
+                                    <label for="alamat">Alamat</label>
+                                    <i class="bi bi-geo-alt-fill position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
                                 </div>
-                                <div class="mb-3">
-                                    <label for="tanggal_lahir" class="form-label">Tanggal Lahir</label>
-                                    <input type="date" class="form-control" id="tanggal_lahir">
+                                <div class="form-floating mb-3 position-relative">
+                                    <input type="text" class="form-control" id="gps" placeholder="Contoh: -6.200000,106.816666">
+                                    <label for="gps">GPS</label>
+                                    <i class="bi bi-geo-position position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
                                 </div>
-                                <div class="mb-3 form-check">
-                                    <input type="checkbox" class="form-check-input" id="aktif" checked>
-                                    <label class="form-check-label" for="aktif">Aktif</label>
+                            </div>
+                            <div class="tab-pane fade" id="add-detail-pane" role="tabpanel" aria-labelledby="add-detail-tab">
+                                <div class="form-floating mb-3 position-relative">
+                                    <input type="text" class="form-control" id="no_telepon" placeholder="Masukkan nomor telepon" required>
+                                    <label for="no_telepon">No. Telepon</label>
+                                    <i class="bi bi-telephone-fill position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
                                 </div>
-                                <div class="mb-3">
-                                    <label for="keterangan" class="form-label">Keterangan</label>
-                                    <textarea class="form-control" id="keterangan" rows="3"></textarea>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="kategori" class="form-label">Kategori</label>
+                                <div class="form-floating mb-3 position-relative">
                                     <select class="form-select" id="kategori" required>
                                         <option value="">Pilih Kategori</option>
                                         <option value="Fakir">Fakir</option>
@@ -152,6 +167,20 @@
                                         <option value="Ibnu Sabil">Ibnu Sabil</option>
                                         <option value="Riqab">Riqab</option>
                                     </select>
+                                    <label for="kategori">Kategori</label>
+                                </div>
+                                <div class="form-floating mb-3 position-relative">
+                                    <textarea class="form-control" id="keterangan" rows="3" placeholder="Masukkan keterangan" style="height: 100px;"></textarea>
+                                    <label for="keterangan">Keterangan</label>
+                                    <i class="bi bi-card-text position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                                </div>
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="aktif" checked>
+                                    <label class="form-check-label" for="aktif">Aktif</label>
+                                </div>
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="fakir">
+                                    <label class="form-check-label" for="fakir">Fakir</label>
                                 </div>
                             </div>
                         </div>
@@ -177,50 +206,56 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                    <ul class="nav nav-tabs" id="editMustahikTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="edit-biodata-tab" data-bs-toggle="tab" data-bs-target="#edit-biodata-pane" type="button" role="tab" aria-controls="edit-biodata-pane" aria-selected="true">Biodata</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="edit-alamat-tab" data-bs-toggle="tab" data-bs-target="#edit-alamat-pane" type="button" role="tab" aria-controls="edit-alamat-pane" aria-selected="false">Alamat</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="edit-detail-tab" data-bs-toggle="tab" data-bs-target="#edit-detail-pane" type="button" role="tab" aria-controls="edit-detail-pane" aria-selected="false">Detail</button>
+                        </li>
+                    </ul>
                     <form id="edit-mustahik-form">
                         <input type="hidden" id="edit_id_mustahik">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="edit_nama_lengkap" class="form-label">Nama Lengkap</label>
-                                    <input type="text" class="form-control" id="edit_nama_lengkap" required>
+                        <div class="tab-content pt-3" id="editMustahikTabContent">
+                            <div class="tab-pane fade show active" id="edit-biodata-pane" role="tabpanel" aria-labelledby="edit-biodata-tab">
+                                <div class="form-floating mb-3 position-relative">
+                                    <input type="text" class="form-control" id="edit_nama_lengkap" placeholder="Masukkan nama lengkap" required>
+                                    <label for="edit_nama_lengkap">Nama Lengkap</label>
+                                    <i class="bi bi-person-fill position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
                                 </div>
-                                <div class="mb-3">
-                                    <label for="edit_alamat" class="form-label">Alamat</label>
-                                    <textarea class="form-control" id="edit_alamat" rows="3" required></textarea>
+                                <div class="form-floating mb-3 position-relative">
+                                    <input type="date" class="form-control" id="edit_tanggal_lahir" placeholder="Tanggal Lahir">
+                                    <label for="edit_tanggal_lahir">Tanggal Lahir</label>
+                                    <i class="bi bi-calendar-event position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
                                 </div>
-                                <div class="mb-3">
-                                    <label for="edit_no_telepon" class="form-label">No. Telepon</label>
-                                    <input type="text" class="form-control" id="edit_no_telepon" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="edit_no_ktp" class="form-label">No. KTP</label>
-                                    <input type="text" class="form-control" id="edit_no_ktp" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="edit_gps" class="form-label">GPS</label>
-                                    <input type="text" class="form-control" id="edit_gps" placeholder="Contoh: -6.200000,106.816666">
+                                <div class="form-floating mb-3 position-relative">
+                                    <input type="text" class="form-control" id="edit_no_ktp" placeholder="Masukkan nomor KTP" required>
+                                    <label for="edit_no_ktp">No. KTP</label>
+                                    <i class="bi bi-person-vcard position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="mb-3 form-check">
-                                    <input type="checkbox" class="form-check-input" id="edit_fakir">
-                                    <label class="form-check-label" for="edit_fakir">Fakir</label>
+                            <div class="tab-pane fade" id="edit-alamat-pane" role="tabpanel" aria-labelledby="edit-alamat-tab">
+                                <div class="form-floating mb-3 position-relative">
+                                    <textarea class="form-control" id="edit_alamat" rows="3" placeholder="Masukkan alamat" required style="height: 100px;"></textarea>
+                                    <label for="edit_alamat">Alamat</label>
+                                    <i class="bi bi-geo-alt-fill position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
                                 </div>
-                                <div class="mb-3">
-                                    <label for="edit_tanggal_lahir" class="form-label">Tanggal Lahir</label>
-                                    <input type="date" class="form-control" id="edit_tanggal_lahir">
+                                <div class="form-floating mb-3 position-relative">
+                                    <input type="text" class="form-control" id="edit_gps" placeholder="Contoh: -6.200000,106.816666">
+                                    <label for="edit_gps">GPS</label>
+                                    <i class="bi bi-geo-position position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
                                 </div>
-                                <div class="mb-3 form-check">
-                                    <input type="checkbox" class="form-check-input" id="edit_aktif">
-                                    <label class="form-check-label" for="edit_aktif">Aktif</label>
+                            </div>
+                            <div class="tab-pane fade" id="edit-detail-pane" role="tabpanel" aria-labelledby="edit-detail-tab">
+                                <div class="form-floating mb-3 position-relative">
+                                    <input type="text" class="form-control" id="edit_no_telepon" placeholder="Masukkan nomor telepon" required>
+                                    <label for="edit_no_telepon">No. Telepon</label>
+                                    <i class="bi bi-telephone-fill position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
                                 </div>
-                                <div class="mb-3">
-                                    <label for="edit_keterangan" class="form-label">Keterangan</label>
-                                    <textarea class="form-control" id="edit_keterangan" rows="3"></textarea>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="edit_kategori" class="form-label">Kategori</label>
+                                <div class="form-floating mb-3 position-relative">
                                     <select class="form-select" id="edit_kategori" required>
                                         <option value="">Pilih Kategori</option>
                                         <option value="Fakir">Fakir</option>
@@ -231,6 +266,20 @@
                                         <option value="Ibnu Sabil">Ibnu Sabil</option>
                                         <option value="Riqab">Riqab</option>
                                     </select>
+                                    <label for="edit_kategori">Kategori</label>
+                                </div>
+                                <div class="form-floating mb-3 position-relative">
+                                    <textarea class="form-control" id="edit_keterangan" rows="3" placeholder="Masukkan keterangan" style="height: 100px;"></textarea>
+                                    <label for="edit_keterangan">Keterangan</label>
+                                    <i class="bi bi-card-text position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                                </div>
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="edit_aktif">
+                                    <label class="form-check-label" for="edit_aktif">Aktif</label>
+                                </div>
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="edit_fakir">
+                                    <label class="form-check-label" for="edit_fakir">Fakir</label>
                                 </div>
                             </div>
                         </div>
