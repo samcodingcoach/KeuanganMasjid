@@ -260,13 +260,11 @@ function showMustahikToast(message, type = 'success') {
     }
     
     toastEl.innerHTML = `
-        <div class="toast-header" style="background: ${headerBg}; border-radius: 10px 10px 0 0 !important;">
-            <div class="d-flex align-items-center">
-                <i class="bi ${type === 'error' ? 'bi-x-circle' : 'bi-check-circle'} me-2 text-white"></i>
-                <strong class="me-auto text-white">${type === 'error' ? 'Error' : 'Sukses'}</strong>
-            </div>
+        <div class="toast-header d-flex align-items-center" style="background: ${headerBg}; border-radius: 10px 10px 0 0 !important;">
+            <i class="bi ${type === 'error' ? 'bi-x-circle' : 'bi-check-circle'} me-2 text-white"></i>
+            <strong class="me-auto text-white">${type === 'error' ? 'Error' : 'Sukses'}</strong>
             <small class="text-white">Sekarang</small>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+            <button type="button" class="btn-close btn-close-white ms-2" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
         <div class="toast-body">
             ${message}
