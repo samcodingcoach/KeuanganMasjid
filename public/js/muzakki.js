@@ -43,6 +43,7 @@ function renderTable(data) {
 
     data.forEach((muzakki, index) => {
         const row = document.createElement('tr');
+        row.style = "border-top: 1px solid #eee;";
         row.innerHTML = `
             <td>${index + 1}</td>
             <td>${muzakki.nama_lengkap}</td>
