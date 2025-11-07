@@ -22,6 +22,10 @@
             border-bottom-left-radius: 0;
             border-bottom-right-radius: 0;
         }
+        .select2-results__options {
+            max-height: 200px;
+            overflow-y: auto;
+        }
     </style>
 </head>
 <body class="bg-light">
@@ -156,9 +160,9 @@
                                     <label for="no_telepon">No. Telepon</label>
                                     <i class="bi bi-telephone-fill position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
                                 </div>
-                                <div class="form-floating mb-3 position-relative">
-                                    <select class="form-select" id="kategori" required>
-                                        <option value="">Pilih Kategori</option>
+                                <div class="mb-3">
+                                    <select class="form-select searchable-select" id="kategori" required>
+                                        <option></option>
                                         <option value="Fakir">Fakir</option>
                                         <option value="Miskin">Miskin</option>
                                         <option value="Amil">Amil</option>
@@ -167,7 +171,6 @@
                                         <option value="Ibnu Sabil">Ibnu Sabil</option>
                                         <option value="Riqab">Riqab</option>
                                     </select>
-                                    <label for="kategori">Kategori</label>
                                 </div>
                                 <div class="form-floating mb-3 position-relative">
                                     <textarea class="form-control" id="keterangan" rows="3" placeholder="Masukkan keterangan" style="height: 100px;"></textarea>
@@ -255,9 +258,9 @@
                                     <label for="edit_no_telepon">No. Telepon</label>
                                     <i class="bi bi-telephone-fill position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
                                 </div>
-                                <div class="form-floating mb-3 position-relative">
-                                    <select class="form-select" id="edit_kategori" required>
-                                        <option value="">Pilih Kategori</option>
+                                <div class="mb-3">
+                                    <select class="form-select searchable-select" id="edit_kategori" required>
+                                        <option></option>
                                         <option value="Fakir">Fakir</option>
                                         <option value="Miskin">Miskin</option>
                                         <option value="Amil">Amil</option>
@@ -266,7 +269,6 @@
                                         <option value="Ibnu Sabil">Ibnu Sabil</option>
                                         <option value="Riqab">Riqab</option>
                                     </select>
-                                    <label for="edit_kategori">Kategori</label>
                                 </div>
                                 <div class="form-floating mb-3 position-relative">
                                     <textarea class="form-control" id="edit_keterangan" rows="3" placeholder="Masukkan keterangan" style="height: 100px;"></textarea>

@@ -130,7 +130,9 @@ function showEditModal(mustahik) {
     document.getElementById('edit_tanggal_lahir').value = mustahik.tanggal_lahir || '';
     document.getElementById('edit_aktif').checked = mustahik.aktif;
     document.getElementById('edit_keterangan').value = mustahik.keterangan || '';
-    document.getElementById('edit_kategori').value = mustahik.kategori || '';
+    
+    // Set value for Select2
+    $('#edit_kategori').val(mustahik.kategori).trigger('change');
     
     const editModal = new bootstrap.Modal(document.getElementById('editMustahikModal'));
     editModal.show();
@@ -170,7 +172,7 @@ document.getElementById('save-mustahik-btn').addEventListener('click', async fun
         tanggal_lahir: document.getElementById('tanggal_lahir').value || null,
         aktif: document.getElementById('aktif').checked,
         keterangan: document.getElementById('keterangan').value || null,
-        kategori: document.getElementById('kategori').value
+        kategori: $('#kategori').val()
     };
 
     try {
@@ -187,6 +189,7 @@ document.getElementById('save-mustahik-btn').addEventListener('click', async fun
         if (result.success) {
             showMustahikToast('Mustahik berhasil ditambahkan!');
             document.getElementById('add-mustahik-form').reset();
+            $('#kategori').val(null).trigger('change');
             const addModal = bootstrap.Modal.getInstance(document.getElementById('addMustahikModal'));
             addModal.hide();
             loadMustahikData(); // Reload data
@@ -213,7 +216,7 @@ document.getElementById('update-mustahik-btn').addEventListener('click', async f
         tanggal_lahir: document.getElementById('edit_tanggal_lahir').value || null,
         aktif: document.getElementById('edit_aktif').checked,
         keterangan: document.getElementById('edit_keterangan').value || null,
-        kategori: document.getElementById('edit_kategori').value
+        kategori: $('#edit_kategori').val()
     };
 
     try {
@@ -294,4 +297,25 @@ document.addEventListener('DOMContentLoaded', function() {
     if (checkLoginStatus()) {
         loadMustahikData();
     }
+
+    // Initialize Select2 for modals
+    $('#addMustahikModal').on('shown.bs.modal', function () {
+        $('#kategori').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Pilih Kategori',
+            allowClear: true,
+            width: '100%',
+            dropdownParent: $('#addMustahikModal')
+        });
+    });
+
+    $('#editMustahikModal').on('shown.bs.modal', function () {
+        $('#edit_kategori').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Pilih Kategori',
+            allowClear: true,
+            width: '100%',
+            dropdownParent: $('#editMustahikModal')
+        });
+    });
 });
