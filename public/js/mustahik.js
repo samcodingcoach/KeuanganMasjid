@@ -44,11 +44,11 @@ function renderTable(data) {
     data.forEach((mustahik, index) => {
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td style="padding: 15px 20px;">${index + 1}</td>
-            <td style="padding: 15px 20px;">${mustahik.nama_lengkap}</td>
-            <td style="padding: 15px 20px;">${mustahik.no_telepon || ''}</td>
-            <td style="padding: 15px 20px;">${mustahik.kategori || ''}</td>
-            <td style="padding: 15px 20px;">
+            <td style="padding: 15px 20px; font-size: 0.9rem;">${index + 1}</td>
+            <td style="padding: 15px 20px; font-size: 0.9rem;">${mustahik.nama_lengkap}</td>
+            <td style="padding: 15px 20px; font-size: 0.9rem;">${mustahik.no_telepon || ''}</td>
+            <td style="padding: 15px 20px; font-size: 0.9rem;">${mustahik.kategori || ''}</td>
+            <td style="padding: 15px 20px; font-size: 0.9rem;">
                 <button class="btn btn-info btn-sm detail-btn" data-id="${mustahik.id_mustahik}"><i class="bi bi-eye"></i></button>
                 <button class="btn btn-warning btn-sm edit-btn" data-id="${mustahik.id_mustahik}"><i class="bi bi-pencil"></i></button>
             </td>
