@@ -22,9 +22,19 @@
             border-bottom-left-radius: 0;
             border-bottom-right-radius: 0;
         }
+        .nav-tabs .nav-link:not(.active) {
+            color: #6c757d;
+        }
         .select2-results__options {
             max-height: 200px;
             overflow-y: auto;
+        }
+        #mustahik-table td, #mustahik-table th {
+            font-size: 0.875rem;
+        }
+        .detail-card {
+            background-color: #f8f9fa;
+            border-radius: 10px;
         }
     </style>
 </head>
@@ -54,7 +64,7 @@
                                     <button class="btn btn-light btn-sm" type="button" id="search-button"><i class="bi bi-search"></i></button>
                                 </div>
                                 <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#addMustahikModal" style="min-width: 90px;">
-                                    + Tambah
+                                    <i class="bi bi-plus-lg"></i> Tambah
                                 </button>
                             </div>
                         </div>
@@ -111,7 +121,7 @@
                     </div>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
                     <ul class="nav nav-tabs" id="addMustahikTab" role="tablist">
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active" id="add-biodata-tab" data-bs-toggle="tab" data-bs-target="#add-biodata-pane" type="button" role="tab" aria-controls="add-biodata-pane" aria-selected="true">Biodata</button>
@@ -161,7 +171,7 @@
                                     <i class="bi bi-telephone-fill position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
                                 </div>
                                 <div class="mb-3">
-                                    <select class="form-select searchable-select" id="kategori" required>
+                                    <select class="form-select searchable-select" id="kategori" data-placeholder="Pilih Kategori" required>
                                         <option></option>
                                         <option value="Fakir">Fakir</option>
                                         <option value="Miskin">Miskin</option>
@@ -180,10 +190,6 @@
                                 <div class="form-check form-switch mb-3">
                                     <input class="form-check-input" type="checkbox" id="aktif" checked>
                                     <label class="form-check-label" for="aktif">Aktif</label>
-                                </div>
-                                <div class="form-check form-switch mb-3">
-                                    <input class="form-check-input" type="checkbox" id="fakir">
-                                    <label class="form-check-label" for="fakir">Fakir</label>
                                 </div>
                             </div>
                         </div>
@@ -208,7 +214,7 @@
                     </div>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
                     <ul class="nav nav-tabs" id="editMustahikTab" role="tablist">
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active" id="edit-biodata-tab" data-bs-toggle="tab" data-bs-target="#edit-biodata-pane" type="button" role="tab" aria-controls="edit-biodata-pane" aria-selected="true">Biodata</button>
@@ -259,7 +265,7 @@
                                     <i class="bi bi-telephone-fill position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
                                 </div>
                                 <div class="mb-3">
-                                    <select class="form-select searchable-select" id="edit_kategori" required>
+                                    <select class="form-select searchable-select" id="edit_kategori" data-placeholder="Pilih Kategori" required>
                                         <option></option>
                                         <option value="Fakir">Fakir</option>
                                         <option value="Miskin">Miskin</option>
@@ -278,10 +284,6 @@
                                 <div class="form-check form-switch mb-3">
                                     <input class="form-check-input" type="checkbox" id="edit_aktif">
                                     <label class="form-check-label" for="edit_aktif">Aktif</label>
-                                </div>
-                                <div class="form-check form-switch mb-3">
-                                    <input class="form-check-input" type="checkbox" id="edit_fakir">
-                                    <label class="form-check-label" for="edit_fakir">Fakir</label>
                                 </div>
                             </div>
                         </div>
@@ -306,9 +308,56 @@
                     </div>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <div id="mustahik-detail-content">
-                        <!-- Detail content will be loaded here by JavaScript -->
+                <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                    <div class="p-3 detail-card">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5><i class="bi bi-person-badge me-2 text-whatsapp"></i>Biodata</h5>
+                                <hr>
+                                <dl class="row">
+                                    <dt class="col-sm-5">Nama Lengkap</dt>
+                                    <dd class="col-sm-7" id="detail_nama_lengkap"></dd>
+
+                                    <dt class="col-sm-5">Tanggal Lahir</dt>
+                                    <dd class="col-sm-7" id="detail_tanggal_lahir"></dd>
+
+                                    <dt class="col-sm-5">No. KTP</dt>
+                                    <dd class="col-sm-7" id="detail_no_ktp"></dd>
+                                </dl>
+                            </div>
+                            <div class="col-md-6">
+                                <h5><i class="bi bi-geo-alt me-2 text-whatsapp"></i>Alamat</h5>
+                                <hr>
+                                <dl class="row">
+                                    <dt class="col-sm-5">Alamat</dt>
+                                    <dd class="col-sm-7" id="detail_alamat"></dd>
+
+                                    <dt class="col-sm-5">GPS</dt>
+                                    <dd class="col-sm-7" id="detail_gps"></dd>
+                                </dl>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <h5><i class="bi bi-info-circle me-2 text-whatsapp"></i>Detail Lainnya</h5>
+                                <hr>
+                                <dl class="row">
+                                    <dt class="col-sm-4">No. Telepon</dt>
+                                    <dd class="col-sm-8" id="detail_no_telepon"></dd>
+
+                                    <dt class="col-sm-4">Kategori</dt>
+                                    <dd class="col-sm-8" id="detail_kategori"></dd>
+
+                                    <dt class="col-sm-4">Keterangan</dt>
+                                    <dd class="col-sm-8" id="detail_keterangan"></dd>
+
+                                    <dt class="col-sm-4">Status</dt>
+                                    <dd class="col-sm-8" id="detail_aktif"></dd>
+                                    <dt class="col-sm-4">Termasuk Fakir</dt>
+                                    <dd class="col-sm-8" id="detail_fakir"></dd>
+                                </dl>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">

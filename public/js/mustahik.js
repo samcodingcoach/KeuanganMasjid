@@ -44,11 +44,11 @@ function renderTable(data) {
     data.forEach((mustahik, index) => {
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td style="padding: 15px 20px; font-size: 0.9rem;">${index + 1}</td>
-            <td style="padding: 15px 20px; font-size: 0.9rem;">${mustahik.nama_lengkap}</td>
-            <td style="padding: 15px 20px; font-size: 0.9rem;">${mustahik.no_telepon || ''}</td>
-            <td style="padding: 15px 20px; font-size: 0.9rem;">${mustahik.kategori || ''}</td>
-            <td style="padding: 15px 20px; font-size: 0.9rem;">
+            <td>${index + 1}</td>
+            <td>${mustahik.nama_lengkap}</td>
+            <td>${mustahik.no_telepon || ''}</td>
+            <td>${mustahik.kategori || ''}</td>
+            <td>
                 <button class="btn btn-info btn-sm detail-btn" data-id="${mustahik.id_mustahik}"><i class="bi bi-eye"></i></button>
                 <button class="btn btn-warning btn-sm edit-btn" data-id="${mustahik.id_mustahik}"><i class="bi bi-pencil"></i></button>
             </td>
@@ -92,29 +92,21 @@ function addEventListeners() {
 }
 
 function showDetailModal(mustahik) {
-    const detailContent = document.getElementById('mustahik-detail-content');
-    const fakirStatus = mustahik.fakir ? 'Ya' : 'Tidak';
-    const aktifStatus = mustahik.aktif ? 'Ya' : 'Tidak';
+    const aktifStatus = mustahik.aktif ? '<span class="badge bg-success">Aktif</span>' : '<span class="badge bg-danger">Tidak Aktif</span>';
+    const fakirStatus = mustahik.fakir ? '<span class="badge bg-info">Ya</span>' : '<span class="badge bg-secondary">Tidak</span>';
     const tanggalLahir = mustahik.tanggal_lahir ? new Date(mustahik.tanggal_lahir).toLocaleDateString('id-ID') : '-';
 
-    detailContent.innerHTML = `
-        <div class="row">
-            <div class="col-md-6">
-                <p><strong>Nama Lengkap:</strong> ${mustahik.nama_lengkap}</p>
-                <p><strong>Alamat:</strong> ${mustahik.alamat || '-'}</p>
-                <p><strong>No. Telepon:</strong> ${mustahik.no_telepon || '-'}</p>
-                <p><strong>No. KTP:</strong> ${mustahik.no_ktp || '-'}</p>
-                <p><strong>GPS:</strong> ${mustahik.gps || '-'}</p>
-            </div>
-            <div class="col-md-6">
-                <p><strong>Fakir:</strong> ${fakirStatus}</p>
-                <p><strong>Tanggal Lahir:</strong> ${tanggalLahir}</p>
-                <p><strong>Aktif:</strong> ${aktifStatus}</p>
-                <p><strong>Kategori:</strong> ${mustahik.kategori || '-'}</p>
-                <p><strong>Keterangan:</strong> ${mustahik.keterangan || '-'}</p>
-            </div>
-        </div>
-    `;
+    document.getElementById('detail_nama_lengkap').textContent = mustahik.nama_lengkap;
+    document.getElementById('detail_tanggal_lahir').textContent = tanggalLahir;
+    document.getElementById('detail_no_ktp').textContent = mustahik.no_ktp || '-';
+    document.getElementById('detail_alamat').textContent = mustahik.alamat || '-';
+    document.getElementById('detail_gps').textContent = mustahik.gps || '-';
+    document.getElementById('detail_no_telepon').textContent = mustahik.no_telepon || '-';
+    document.getElementById('detail_kategori').textContent = mustahik.kategori || '-';
+    document.getElementById('detail_keterangan').textContent = mustahik.keterangan || '-';
+    document.getElementById('detail_aktif').innerHTML = aktifStatus;
+    document.getElementById('detail_fakir').innerHTML = fakirStatus;
+
     const detailModal = new bootstrap.Modal(document.getElementById('detailMustahikModal'));
     detailModal.show();
 }
@@ -126,7 +118,6 @@ function showEditModal(mustahik) {
     document.getElementById('edit_no_telepon').value = mustahik.no_telepon || '';
     document.getElementById('edit_no_ktp').value = mustahik.no_ktp || '';
     document.getElementById('edit_gps').value = mustahik.gps || '';
-    document.getElementById('edit_fakir').checked = mustahik.fakir;
     document.getElementById('edit_tanggal_lahir').value = mustahik.tanggal_lahir || '';
     document.getElementById('edit_aktif').checked = mustahik.aktif;
     document.getElementById('edit_keterangan').value = mustahik.keterangan || '';
@@ -168,7 +159,6 @@ document.getElementById('save-mustahik-btn').addEventListener('click', async fun
         no_telepon: document.getElementById('no_telepon').value,
         no_ktp: document.getElementById('no_ktp').value,
         gps: document.getElementById('gps').value || null,
-        fakir: document.getElementById('fakir').checked,
         tanggal_lahir: document.getElementById('tanggal_lahir').value || null,
         aktif: document.getElementById('aktif').checked,
         keterangan: document.getElementById('keterangan').value || null,
@@ -212,7 +202,6 @@ document.getElementById('update-mustahik-btn').addEventListener('click', async f
         no_telepon: document.getElementById('edit_no_telepon').value,
         no_ktp: document.getElementById('edit_no_ktp').value,
         gps: document.getElementById('edit_gps').value || null,
-        fakir: document.getElementById('edit_fakir').checked,
         tanggal_lahir: document.getElementById('edit_tanggal_lahir').value || null,
         aktif: document.getElementById('edit_aktif').checked,
         keterangan: document.getElementById('edit_keterangan').value || null,
