@@ -21,7 +21,11 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
 
         // Show spinner and disable button
-        const submitBtn = document.querySelector('#addAssetModal .modal-footer button[type="submit"]');
+        const submitBtn = document.getElementById('save-asset-btn');
+        if (!submitBtn) {
+            console.error('Submit button not found');
+            return;
+        }
         const originalText = submitBtn.innerHTML;
         const originalDisabled = submitBtn.disabled;
 
@@ -115,6 +119,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if (result.success) {
                 showAssetToast('Asset berhasil ditambahkan!');
                 document.getElementById('add-asset-form').reset();
+                // Reset Select2 elements after form reset
+                $('#jenis_asset').val(null).trigger('change');
                 addAssetModal.hide();
                 loadAssetData(); // Reload data
             } else {
@@ -145,7 +151,11 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
 
         // Show spinner and disable button
-        const submitBtn = document.querySelector('#editAssetModal .modal-footer button[type="submit"]');
+        const submitBtn = document.getElementById('update-asset-btn');
+        if (!submitBtn) {
+            console.error('Update button not found');
+            return;
+        }
         const originalText = submitBtn.innerHTML;
         const originalDisabled = submitBtn.disabled;
 
@@ -285,6 +295,11 @@ document.addEventListener('DOMContentLoaded', function() {
         return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
 
+    // Function to unformat number (remove thousands separators)
+    function unformatNumber(str) {
+        return str.replace(/\./g, '');
+    }
+
     // Function to render asset table
     function renderAssetTable(assets) {
         assetTableBody.innerHTML = '';
@@ -310,20 +325,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <td>${asset.created_at}</td>
                 <td>${formattedHarga}</td>
                 <td>
-                    <button class="btn btn-warning btn-sm edit-btn"
-                            data-id="${asset.id_asset}"
-                            data-kode="${asset.kode_barang}"
-                            data-nama="${asset.nama_barang}"
-                            data-jenis="${asset.jenis_asset}"
-                            data-harga="${asset.harga}"
-                            data-pegawai="${asset.id_pegawai}"
-                            data-hibah="${asset.isHibah}"
-                            data-aktif="${asset.aktif}"
-                            data-broken="${asset.isBroken}"
-                            data-url-gambar="${asset.url_gambar || ''}">
-                        <i class="bi bi-pencil"></i>
-                    </button>
-                    <button class="btn btn-info btn-sm detail-btn ms-1"
+                    <button class="btn btn-sm btn-outline-info p-1 detail-btn" style="border-radius: 8px; width: 36px; height: 36px; margin-right: 0.25rem;"
                             data-id="${asset.id_asset}"
                             data-kode="${asset.kode_barang}"
                             data-nama="${asset.nama_barang}"
@@ -336,6 +338,19 @@ document.addEventListener('DOMContentLoaded', function() {
                             data-url-gambar="${asset.url_gambar || ''}"
                             data-created-at="${asset.created_at}">
                         <i class="bi bi-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-whatsapp p-1 edit-btn" style="border-radius: 8px; width: 36px; height: 36px;"
+                            data-id="${asset.id_asset}"
+                            data-kode="${asset.kode_barang}"
+                            data-nama="${asset.nama_barang}"
+                            data-jenis="${asset.jenis_asset}"
+                            data-harga="${asset.harga}"
+                            data-pegawai="${asset.id_pegawai}"
+                            data-hibah="${asset.isHibah}"
+                            data-aktif="${asset.aktif}"
+                            data-broken="${asset.isBroken}"
+                            data-url-gambar="${asset.url_gambar || ''}">
+                        <i class="bi bi-pencil"></i>
                     </button>
                 </td>
             `;
@@ -361,10 +376,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('edit_kode_barang').value = kodeBarang;
                 document.getElementById('edit_kode_barang_display').value = kodeBarang; // Update for the display field
                 document.getElementById('edit_nama_barang').value = namaBarang;
-                document.getElementById('edit_jenis_asset').value = jenisAsset;
-
-                // Update the custom searchable dropdown display
-                updateSearchableDropdownDisplay('edit_jenis_asset', jenisAsset);
+                // Update Select2 value
+                $('#edit_jenis_asset').val(jenisAsset).trigger('change');
 
                 document.getElementById('edit_harga').value = formatNumber(harga);
                 document.getElementById('edit_gambar_url').value = gambarUrl;
@@ -447,14 +460,69 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Initialize select2 for searchable selects
+    // Initialize select2 for searchable selects specifically for asset modals
     $(document).ready(function() {
-        $('.searchable-select').select2({
-            theme: 'bootstrap-5',
-            width: '100%',
-            placeholder: $(this).data('placeholder'),
-            allowClear: true
+        // Initialize jenis_asset select for add modal
+        if ($('#jenis_asset').length) {
+            $('#jenis_asset').select2({
+                theme: 'bootstrap-5',
+                width: '100%',
+                placeholder: 'Pilih Jenis Asset',
+                allowClear: true,
+                dropdownParent: $('#addAssetModal') // Ensure dropdown appears within modal
+            });
+        }
+        
+        // Initialize jenis_asset select for edit modal
+        if ($('#edit_jenis_asset').length) {
+            $('#edit_jenis_asset').select2({
+                theme: 'bootstrap-5',
+                width: '100%',
+                placeholder: 'Pilih Jenis Asset',
+                allowClear: true,
+                dropdownParent: $('#editAssetModal') // Ensure dropdown appears within modal
+            });
+        }
+        
+        // Reinitialize Select2 when modals are shown to ensure proper positioning
+        $('#addAssetModal').on('shown.bs.modal', function() {
+            if ($('#jenis_asset').length) {
+                $('#jenis_asset').select2({
+                    theme: 'bootstrap-5',
+                    width: '100%',
+                    placeholder: 'Pilih Jenis Asset',
+                    allowClear: true,
+                    dropdownParent: $('#addAssetModal')
+                });
+            }
         });
+        
+        $('#editAssetModal').on('shown.bs.modal', function() {
+            if ($('#edit_jenis_asset').length) {
+                $('#edit_jenis_asset').select2({
+                    theme: 'bootstrap-5',
+                    width: '100%',
+                    placeholder: 'Pilih Jenis Asset',
+                    allowClear: true,
+                    dropdownParent: $('#editAssetModal')
+                });
+            }
+        });
+    });
+
+    // Add event listeners to price inputs for thousands separator formatting
+    document.getElementById('harga').addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if(value) {
+            e.target.value = formatNumber(value);
+        }
+    });
+
+    document.getElementById('edit_harga').addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if(value) {
+            e.target.value = formatNumber(value);
+        }
     });
 
     // Update save button event for add modal
@@ -490,19 +558,14 @@ function showAssetToast(message, type = 'success') {
     toastEl.setAttribute('aria-atomic', 'true');
 
     // Determine toast header color based on type
-    let headerBg = 'linear-gradient(180deg, #075E54 0%, #128C7E 100%)';
-    if (type === 'error') {
-        headerBg = 'linear-gradient(180deg, #dc3545 0%, #c82333 100%)'; // Red gradient for error
-    }
+    let headerBg = type === 'error' ? 'linear-gradient(180deg, #dc3545 0%, #c82333 100%)' : 'linear-gradient(180deg, #075E54 0%, #128C7E 100%)';
 
     toastEl.innerHTML = `
-        <div class="toast-header" style="background: ${headerBg}; border-radius: 10px 10px 0 0 !important;">
-            <div class="d-flex align-items-center">
-                <i class="bi ${type === 'error' ? 'bi-x-circle' : 'bi-check-circle'} me-2 text-white"></i>
-                <strong class="me-auto text-white">${type === 'error' ? 'Error' : 'Sukses'}</strong>
-            </div>
+        <div class="toast-header d-flex align-items-center" style="background: ${headerBg}; border-radius: 10px 10px 0 0 !important;">
+            <i class="bi ${type === 'error' ? 'bi-x-circle' : 'bi-check-circle'} me-2 text-white"></i>
+            <strong class="me-auto text-white">${type === 'error' ? 'Error' : 'Sukses'}</strong>
             <small class="text-white">Sekarang</small>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+            <button type="button" class="btn-close btn-close-white ms-2" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
         <div class="toast-body">
             ${message}
