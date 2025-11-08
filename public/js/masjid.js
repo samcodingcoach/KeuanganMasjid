@@ -7,6 +7,10 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
+    const detailMasjidModal = new bootstrap.Modal(document.getElementById('detailMasjidModal'));
+    const editMasjidModal = new bootstrap.Modal(document.getElementById('editMasjidModal'));
+    const editMasjidForm = document.getElementById('edit-masjid-form');
+
     // Data store
     let allMasjidData = [];
     let filteredMasjidData = [];
@@ -66,9 +70,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 <td style="padding: 15px 20px;  vertical-align: middle; font-size: 0.9em;">${masjid.nama_mesjid}</td>
                 <td style="padding: 15px 20px; vertical-align: middle; font-size: 0.9em;">${masjid.alamat}</td>
                 <td style="padding: 15px 20px; vertical-align: middle; font-size: 0.9em;">${masjid.kota}</td>
-                <td style="padding: 15px 20px; vertical-align: middle; font-size: 0.9em;">${masjid.provinsi}</td>
-                <td style="padding: 15px 20px; vertical-align: middle; font-size: 0.9em;">${masjid.email}</td>
                 <td style="padding: 15px 20px; vertical-align: middle; font-size: 0.9em;">
+                    <button class="btn btn-sm btn-outline-info p-1 detail-btn" style="border-radius: 8px; width: 36px; height: 36px;">
+                        <i class="bi bi-eye"></i>
+                    </button>
                     <button class="btn btn-sm btn-outline-whatsapp p-1 edit-btn" style="border-radius: 8px; width: 36px; height: 36px;">
                         <i class="bi bi-pencil"></i>
                     </button>
@@ -159,16 +164,32 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    const editMasjidModal = new bootstrap.Modal(document.getElementById('editMasjidModal'));
-    const editMasjidForm = document.getElementById('edit-masjid-form');
-
-    // Event listener untuk tombol edit
+    // Event listener untuk tombol detail dan edit
     document.getElementById('masjid-table').addEventListener('click', function(event) {
-        if (event.target.classList.contains('edit-btn') || event.target.closest('.edit-btn')) {
-            const button = event.target.classList.contains('edit-btn') ? event.target : event.target.closest('.edit-btn');
-            const row = button.closest('tr');
+        const target = event.target;
+        const detailButton = target.closest('.detail-btn');
+        const editButton = target.closest('.edit-btn');
+
+        if (detailButton) {
+            const row = detailButton.closest('tr');
             const id = row.dataset.id;
-            
+            const masjid = allMasjidData.find(m => m.id_masjid == id);
+            if (!masjid) return;
+
+            document.getElementById('detail_nama_mesjid').textContent = masjid.nama_mesjid;
+            document.getElementById('detail_alamat').textContent = masjid.alamat;
+            document.getElementById('detail_kota').textContent = masjid.kota;
+            document.getElementById('detail_provinsi').textContent = masjid.provinsi;
+            document.getElementById('detail_email').textContent = masjid.email;
+            document.getElementById('detail_gps').textContent = masjid.gps;
+            document.getElementById('detail_mushola').textContent = masjid.mushola ? 'Ya' : 'Tidak';
+
+            detailMasjidModal.show();
+        }
+
+        if (editButton) {
+            const row = editButton.closest('tr');
+            const id = row.dataset.id;
             const masjid = allMasjidData.find(m => m.id_masjid == id);
             if (!masjid) return;
 

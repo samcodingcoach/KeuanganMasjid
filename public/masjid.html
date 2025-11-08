@@ -51,8 +51,6 @@
                                             <th scope="col" class="border-0" style="padding: 15px 20px;">Nama Masjid</th>
                                             <th scope="col" class="border-0" style="padding: 15px 20px;">Alamat</th>
                                             <th scope="col" class="border-0" style="padding: 15px 20px;">Kota</th>
-                                            <th scope="col" class="border-0" style="padding: 15px 20px;">Provinsi</th>
-                                            <th scope="col" class="border-0" style="padding: 15px 20px;">Email</th>
                                             <th scope="col" class="border-0" style="padding: 15px 20px;">Aksi</th>
                                         </tr>
                                     </thead>
@@ -86,9 +84,94 @@
         </div>
     </div>
 
+    <!-- Modal Detail Masjid -->
+    <div class="modal fade" id="detailMasjidModal" tabindex="-1" aria-labelledby="detailMasjidModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content border-0 rounded-3">
+                <div class="modal-header" style="background: linear-gradient(180deg, #075E54 0%, #128C7E 100%);">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-person-lines-fill me-2 text-white"></i>
+                        <h5 class="modal-title text-white" id="detailMasjidModalLabel">Detail Masjid</h5>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <div class="d-flex align-items-center p-2 bg-light rounded-3 shadow-sm">
+                                <i class="bi bi-person-vcard fs-4 text-whatsapp me-3"></i>
+                                <div>
+                                    <small class="text-muted d-block">Nama Masjid</small>
+                                    <p class="fw-bold mb-0" id="detail_nama_mesjid"></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="d-flex align-items-start p-2 bg-light rounded-3 shadow-sm">
+                                <i class="bi bi-geo-alt-fill fs-4 text-whatsapp me-3"></i>
+                                <div>
+                                    <small class="text-muted d-block">Alamat</small>
+                                    <p class="fw-bold mb-0" id="detail_alamat"></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center p-2 bg-light rounded-3 shadow-sm">
+                                <i class="bi bi-building fs-4 text-whatsapp me-3"></i>
+                                <div>
+                                    <small class="text-muted d-block">Kota</small>
+                                    <p class="fw-bold mb-0" id="detail_kota"></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center p-2 bg-light rounded-3 shadow-sm">
+                                <i class="bi bi-map fs-4 text-whatsapp me-3"></i>
+                                <div>
+                                    <small class="text-muted d-block">Provinsi</small>
+                                    <p class="fw-bold mb-0" id="detail_provinsi"></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center p-2 bg-light rounded-3 shadow-sm">
+                                <i class="bi bi-envelope-fill fs-4 text-whatsapp me-3"></i>
+                                <div>
+                                    <small class="text-muted d-block">Email</small>
+                                    <p class="fw-bold mb-0" id="detail_email"></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center p-2 bg-light rounded-3 shadow-sm">
+                                <i class="bi bi-geo-position fs-4 text-whatsapp me-3"></i>
+                                <div>
+                                    <small class="text-muted d-block">GPS</small>
+                                    <p class="fw-bold mb-0" id="detail_gps"></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center p-2 bg-light rounded-3 shadow-sm">
+                                <i class="bi bi-check-circle-fill fs-4 text-whatsapp me-3"></i>
+                                <div>
+                                    <small class="text-muted d-block">Mushola</small>
+                                    <p class="fw-bold mb-0" id="detail_mushola"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal"><i class="bi bi-x-lg me-1"></i>Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal Edit Masjid -->
     <div class="modal fade" id="editMasjidModal" tabindex="-1" aria-labelledby="editMasjidModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content border-0 rounded-3">
                 <div class="modal-header" style="background: linear-gradient(180deg, #075E54 0%, #128C7E 100%);">
                     <div class="d-flex align-items-center">
@@ -97,7 +180,7 @@
                     </div>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
                     <form id="edit-masjid-form">
                         <input type="hidden" id="edit_id_masjid">
                         <div class="form-floating mb-3">
