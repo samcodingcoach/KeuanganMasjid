@@ -24,16 +24,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const submitBtn = document.querySelector('#addAssetModal .modal-footer button[type="submit"]');
         const originalText = submitBtn.innerHTML;
         const originalDisabled = submitBtn.disabled;
-
+        
         // Create spinner overlay inside the modal
         const modalBody = document.querySelector('#addAssetModal .modal-body');
-
+        
         // Disable the form
         const formElements = document.getElementById('add-asset-form').elements;
         for (let i = 0; i < formElements.length; i++) {
             formElements[i].disabled = true;
         }
-
+        
         // Show spinner overlay
         const spinnerOverlay = document.createElement('div');
         spinnerOverlay.id = 'add-asset-spinner-overlay';
@@ -48,18 +48,18 @@ document.addEventListener('DOMContentLoaded', function() {
         spinnerOverlay.style.alignItems = 'center';
         spinnerOverlay.style.zIndex = '9999';
         spinnerOverlay.style.borderRadius = '0.5rem';
-
+        
         spinnerOverlay.innerHTML = `
             <div class="spinner-border text-primary" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>
         `;
-
+        
         // Position the overlay relative to the modal content
         const modalDialog = document.querySelector('#addAssetModal .modal-dialog');
         modalDialog.style.position = 'relative';
         modalBody.parentNode.insertBefore(spinnerOverlay, modalBody);
-
+        
         // Update button state
         submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Menyimpan...';
         submitBtn.disabled = true;
@@ -73,12 +73,12 @@ document.addEventListener('DOMContentLoaded', function() {
             if (spinnerOverlay) {
                 spinnerOverlay.remove();
             }
-
+            
             // Re-enable form elements
             for (let i = 0; i < formElements.length; i++) {
                 formElements[i].disabled = false;
             }
-
+            
             // Restore button state
             submitBtn.innerHTML = originalText;
             submitBtn.disabled = originalDisabled;
@@ -128,12 +128,12 @@ document.addEventListener('DOMContentLoaded', function() {
             if (spinnerOverlay) {
                 spinnerOverlay.remove();
             }
-
+            
             // Re-enable form elements
             for (let i = 0; i < formElements.length; i++) {
                 formElements[i].disabled = false;
             }
-
+            
             // Restore button state
             submitBtn.innerHTML = originalText;
             submitBtn.disabled = originalDisabled;
@@ -148,16 +148,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const submitBtn = document.querySelector('#editAssetModal .modal-footer button[type="submit"]');
         const originalText = submitBtn.innerHTML;
         const originalDisabled = submitBtn.disabled;
-
+        
         // Create spinner overlay inside the modal
         const modalBody = document.querySelector('#editAssetModal .modal-body');
-
+        
         // Disable the form
         const formElements = document.getElementById('edit-asset-form').elements;
         for (let i = 0; i < formElements.length; i++) {
             formElements[i].disabled = true;
         }
-
+        
         // Show spinner overlay
         const spinnerOverlay = document.createElement('div');
         spinnerOverlay.id = 'edit-asset-spinner-overlay';
@@ -172,18 +172,18 @@ document.addEventListener('DOMContentLoaded', function() {
         spinnerOverlay.style.alignItems = 'center';
         spinnerOverlay.style.zIndex = '9999';
         spinnerOverlay.style.borderRadius = '0.5rem';
-
+        
         spinnerOverlay.innerHTML = `
             <div class="spinner-border text-primary" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>
         `;
-
+        
         // Position the overlay relative to the modal content
         const modalDialog = document.querySelector('#editAssetModal .modal-dialog');
         modalDialog.style.position = 'relative';
         modalBody.parentNode.insertBefore(spinnerOverlay, modalBody);
-
+        
         // Update button state
         submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Menyimpan...';
         submitBtn.disabled = true;
@@ -197,12 +197,12 @@ document.addEventListener('DOMContentLoaded', function() {
             if (spinnerOverlay) {
                 spinnerOverlay.remove();
             }
-
+            
             // Re-enable form elements
             for (let i = 0; i < formElements.length; i++) {
                 formElements[i].disabled = false;
             }
-
+            
             // Restore button state
             submitBtn.innerHTML = originalText;
             submitBtn.disabled = originalDisabled;
@@ -220,8 +220,8 @@ document.addEventListener('DOMContentLoaded', function() {
             harga: harga,
             id_pegawai: id_pegawai, // Get from session storage
             isHibah: document.getElementById('edit_isHibah').checked,
-            aktif: document.getElementById('edit_aktif').checked,
-            isBroken: document.getElementById('edit_isBroken').checked,
+            aktif: document.getElementById('edit_aktif_status').value === 'true' || document.getElementById('edit_aktif_status').value === true,
+            isBroken: document.getElementById('edit_rusak_status').value === 'true' || document.getElementById('edit_rusak_status').value === true,
             url_gambar: document.getElementById('edit_gambar_url').value // Add the image URL
         };
 
@@ -251,12 +251,12 @@ document.addEventListener('DOMContentLoaded', function() {
             if (spinnerOverlay) {
                 spinnerOverlay.remove();
             }
-
+            
             // Re-enable form elements
             for (let i = 0; i < formElements.length; i++) {
                 formElements[i].disabled = false;
             }
-
+            
             // Restore button state
             submitBtn.innerHTML = originalText;
             submitBtn.disabled = originalDisabled;
@@ -272,11 +272,11 @@ document.addEventListener('DOMContentLoaded', function() {
             if (result.success && result.data) {
                 renderAssetTable(result.data);
             } else {
-                assetTableBody.innerHTML = '<tr><td colspan="5" class="text-center">Tidak ada data asset</td></tr>';
+                assetTableBody.innerHTML = '<tr><td colspan="11" class="text-center">Tidak ada data asset</td></tr>';
             }
         } catch (error) {
             console.error('Error loading asset data:', error);
-            assetTableBody.innerHTML = `<tr><td colspan="5" class="text-center text-danger">Gagal memuat data: ${error.message}</td></tr>`;
+            assetTableBody.innerHTML = `<tr><td colspan="11" class="text-center text-danger">Gagal memuat data: ${error.message}</td></tr>`;
         }
     }
 
@@ -290,7 +290,7 @@ document.addEventListener('DOMContentLoaded', function() {
         assetTableBody.innerHTML = '';
 
         if (assets.length === 0) {
-            assetTableBody.innerHTML = '<tr><td colspan="5" class="text-center">Tidak ada data asset</td></tr>';
+            assetTableBody.innerHTML = '<tr><td colspan="11" class="text-center">Tidak ada data asset</td></tr>';
             return;
         }
 
@@ -303,14 +303,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 maximumFractionDigits: 0
             }).format(asset.harga);
 
+            // Format status as Ya/Tidak
+            const hibahStatus = asset.isHibah ? 'Ya' : 'Tidak';
+            const aktifStatus = asset.aktif ? 'Ya' : 'Tidak';
+            const brokenStatus = asset.isBroken ? 'Ya' : 'Tidak';
+
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${index + 1}</td>
                 <td>${asset.nama_barang}</td>
+                <td>${asset.kode_barang}</td>
                 <td>${asset.created_at}</td>
+                <td>${asset.jenis_asset}</td>
                 <td>${formattedHarga}</td>
+                <td>${asset.nama_lengkap}</td>
+                <td>${hibahStatus}</td>
+                <td>${aktifStatus}</td>
+                <td>${brokenStatus}</td>
                 <td>
-                    <button class="btn btn-warning btn-sm edit-btn"
+                    <button class="btn btn-warning btn-sm edit-btn" 
                             data-id="${asset.id_asset}"
                             data-kode="${asset.kode_barang}"
                             data-nama="${asset.nama_barang}"
@@ -323,19 +334,10 @@ document.addEventListener('DOMContentLoaded', function() {
                             data-url-gambar="${asset.url_gambar || ''}">
                         <i class="bi bi-pencil"></i>
                     </button>
-                    <button class="btn btn-info btn-sm detail-btn ms-1"
-                            data-id="${asset.id_asset}"
+                    <button class="btn btn-success btn-sm change-btn ms-1" 
                             data-kode="${asset.kode_barang}"
-                            data-nama="${asset.nama_barang}"
-                            data-jenis="${asset.jenis_asset}"
-                            data-harga="${asset.harga}"
-                            data-pegawai="${asset.nama_lengkap}"
-                            data-aktif="${asset.aktif}"
-                            data-hibah="${asset.isHibah}"
-                            data-broken="${asset.isBroken}"
-                            data-url-gambar="${asset.url_gambar || ''}"
-                            data-created-at="${asset.created_at}">
-                        <i class="bi bi-eye"></i>
+                            data-nama="${asset.nama_barang}">
+                        <i class="bi bi-arrow-repeat"></i>
                     </button>
                 </td>
             `;
@@ -359,68 +361,84 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 document.getElementById('edit_id_asset').value = assetId;
                 document.getElementById('edit_kode_barang').value = kodeBarang;
-                document.getElementById('edit_kode_barang_display').value = kodeBarang; // Update for the display field
                 document.getElementById('edit_nama_barang').value = namaBarang;
                 document.getElementById('edit_jenis_asset').value = jenisAsset;
-
+                
                 // Update the custom searchable dropdown display
                 updateSearchableDropdownDisplay('edit_jenis_asset', jenisAsset);
-
+                
                 document.getElementById('edit_harga').value = formatNumber(harga);
                 document.getElementById('edit_gambar_url').value = gambarUrl;
                 document.getElementById('edit_isHibah').checked = isHibah;
-                document.getElementById('edit_aktif').checked = aktif;
-                document.getElementById('edit_isBroken').checked = isBroken;
+                
+                // Store the current status in hidden fields
+                document.getElementById('edit_aktif_status').value = aktif;
+                document.getElementById('edit_rusak_status').value = isBroken;
 
                 editAssetModal.show();
             });
         });
 
-        // Add event listeners for detail buttons
-        document.querySelectorAll('.detail-btn').forEach(button => {
+        // Calculate summary values
+        let totalHarga = 0;
+        let totalHibah = 0;
+        let totalAktif = 0;
+        let totalRusak = 0;
+
+        assets.forEach(asset => {
+            totalHarga += asset.harga;
+            if (asset.isHibah) totalHibah++;
+            if (asset.aktif) totalAktif++;
+            if (asset.isBroken) totalRusak++;
+        });
+
+        // Format summary values
+        const formattedTotalHarga = new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }).format(totalHarga);
+
+        // Add summary rows at the bottom of the table
+        const summaryRow1 = document.createElement('tr');
+        summaryRow1.style.fontWeight = 'bold';
+        summaryRow1.style.backgroundColor = '#f8f9fa';
+        summaryRow1.innerHTML = `
+            <td colspan="5" class="text-end">TOTAL</td>
+            <td>${formattedTotalHarga}</td>
+            <td></td>
+            <td>${totalHibah}</td>
+            <td>${totalAktif}</td>
+            <td>${totalRusak}</td>
+            <td></td>
+        `;
+
+        assetTableBody.appendChild(summaryRow1);
+
+        // Add event listeners for change buttons
+        document.querySelectorAll('.change-btn').forEach(button => {
             button.addEventListener('click', function() {
-                const assetId = this.getAttribute('data-id');
                 const kodeBarang = this.getAttribute('data-kode');
                 const namaBarang = this.getAttribute('data-nama');
-                const jenisAsset = this.getAttribute('data-jenis');
-                const harga = this.getAttribute('data-harga');
-                const namaPegawai = this.getAttribute('data-pegawai');
-                const aktif = this.getAttribute('data-aktif') === 'True' || this.getAttribute('data-aktif') === 'true';
-                const isHibah = this.getAttribute('data-hibah') === 'True' || this.getAttribute('data-hibah') === 'true';
-                const isBroken = this.getAttribute('data-broken') === 'True' || this.getAttribute('data-broken') === 'true';
-                const urlGambar = this.getAttribute('data-url-gambar');
-                const createdAt = this.getAttribute('data-created-at');
-
-                // Format harga to currency without decimals for detail
-                const formattedHarga = new Intl.NumberFormat('id-ID', {
-                    style: 'currency',
-                    currency: 'IDR',
-                    minimumFractionDigits: 0,
-                    maximumFractionDigits: 0
-                }).format(harga);
-
-                // Format status as Ya/Tidak
-                const aktifStatus = aktif ? 'Ya' : 'Tidak';
-                const hibahStatus = isHibah ? 'Ya' : 'Tidak';
-                const brokenStatus = isBroken ? 'Ya' : 'Tidak';
-
-                // Fill the detail modal with asset data
-                document.getElementById('detail_nama_barang').textContent = namaBarang;
-                document.getElementById('detail_kode_barang').textContent = kodeBarang;
-                document.getElementById('detail_created_at').textContent = createdAt;
-                document.getElementById('detail_harga').textContent = formattedHarga;
-                document.getElementById('detail_jenis_asset').textContent = jenisAsset;
-                document.getElementById('detail_nama_lengkap').textContent = namaPegawai;
-                document.getElementById('detail_aktif').textContent = aktifStatus;
-                document.getElementById('detail_isHibah').textContent = hibahStatus;
-                document.getElementById('detail_isBroken').textContent = brokenStatus;
-                document.getElementById('detail_url_gambar').textContent = urlGambar || 'Tidak ada';
-
-                // Show the detail modal
-                const detailModal = new bootstrap.Modal(document.getElementById('detailAssetModal'));
-                detailModal.show();
+                
+                // Show a modal or prompt to change the asset status
+                showChangeStatusModal(kodeBarang, namaBarang);
             });
         });
+    }
+
+    // Function to delete asset (placeholder - implement as needed)
+    async function deleteAsset(kode_barang) {
+        try {
+            // In a real application, you would make an API call to delete the asset
+            // For now, we'll just show an alert
+            alert(`Asset dengan kode ${kode_barang} akan dihapus. Fungsi delete belum diimplementasikan sepenuhnya.`);
+            // await fetch(`/api/asset.delete/${kode_barang}`, { method: 'DELETE' });
+            // loadAssetData(); // Reload data
+        } catch (error) {
+            alert('Gagal menghapus asset: ' + error.message);
+        }
     }
 
     // Helper function to update the display of searchable dropdown
@@ -428,18 +446,18 @@ document.addEventListener('DOMContentLoaded', function() {
         // Find the original select element
         const selectElement = document.getElementById(selectId);
         if (!selectElement) return;
-
+        
         // Set the value of the hidden select element
         selectElement.value = value;
-
+        
         // Find the custom dropdown container that replaces the select
         const container = selectElement.parentNode.querySelector('.searchable-dropdown');
         if (!container) return;
-
+        
         // Find the dropdown button and update its text to match the selected option
         const dropdownButton = container.querySelector('.dropdown-button');
         if (!dropdownButton) return;
-
+        
         // Find the text for the selected option
         const selectedOption = Array.from(selectElement.options).find(option => option.value === value);
         if (selectedOption) {
@@ -447,28 +465,120 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Initialize select2 for searchable selects
-    $(document).ready(function() {
-        $('.searchable-select').select2({
-            theme: 'bootstrap-5',
-            width: '100%',
-            placeholder: $(this).data('placeholder'),
-            allowClear: true
-        });
-    });
+    // Function to show change status modal
+    function showChangeStatusModal(kodeBarang, namaBarang) {
+        // Create a simple prompt using built-in confirm dialog
+        // First check current status (this would normally come from the table data)
+        const row = document.querySelector(`.change-btn[data-kode="${kodeBarang}"]`).closest('tr');
+        const aktifStatus = row.cells[8].textContent; // Aktif column (0-indexed as 8)
+        const brokenStatus = row.cells[9].textContent; // Rusak column (0-indexed as 9)
+        
+        const currentAktif = aktifStatus === 'Ya' ? true : false;
+        const currentBroken = brokenStatus === 'Ya' ? true : false;
+        
+        // Show a custom modal or dialog to change status
+        showChangeStatusDialog(kodeBarang, namaBarang, currentAktif, currentBroken);
+    }
 
-    // Update save button event for add modal
-    document.getElementById('save-asset-btn').addEventListener('click', function() {
-        document.getElementById('add-asset-form').dispatchEvent(new Event('submit'));
-    });
+    // Function to show a dialog for changing status
+    function showChangeStatusDialog(kodeBarang, namaBarang, currentAktif, currentBroken) {
+        // Create a temporary modal HTML
+        const modalHtml = `
+            <div class="modal fade" id="changeStatusModal" tabindex="-1" aria-labelledby="changeStatusModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="changeStatusModalLabel">Ubah Status Asset</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Asset: <strong>${namaBarang}</strong> (Kode: ${kodeBarang})</p>
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="change_aktif" ${currentAktif ? 'checked' : ''}>
+                                    <label class="form-check-label" for="change_aktif">Aktif</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="change_rusak" ${currentBroken ? 'checked' : ''}>
+                                    <label class="form-check-label" for="change_rusak">Rusak</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                            <button type="button" class="btn btn-primary" id="save-status-changes">Simpan Perubahan</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Add modal to the page if it doesn't exist
+        if (!document.getElementById('changeStatusModal')) {
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+        
+        // Show the modal
+        const modalElement = document.getElementById('changeStatusModal');
+        const bootstrapModal = new bootstrap.Modal(modalElement);
+        bootstrapModal.show();
+        
+        // Handle save button click
+        document.getElementById('save-status-changes').onclick = function() {
+            const newAktif = document.getElementById('change_aktif').checked;
+            const newBroken = document.getElementById('change_rusak').checked;
+            
+            // Call update function
+            updateAssetStatus(kodeBarang, newAktif, newBroken);
+            
+            // Hide modal
+            bootstrapModal.hide();
+        };
+    }
 
-    // Update save button event for edit modal
-    document.getElementById('update-asset-btn').addEventListener('click', function() {
-        document.getElementById('edit-asset-form').dispatchEvent(new Event('submit'));
-    });
+    // Function to update asset status
+    async function updateAssetStatus(kodeBarang, aktif, isBroken) {
+        try {
+            // Get logged in user's ID
+            const id_pegawai = getLoggedInUserId();
+            if (!id_pegawai) {
+                alert('Anda harus login terlebih dahulu untuk mengubah status asset.');
+                window.location.href = '/login';
+                return;
+            }
+            
+            const formData = {
+                kode_barang: kodeBarang,
+                aktif: aktif,
+                isBroken: isBroken,
+                id_pegawai: id_pegawai
+            };
+            
+            const response = await fetch('/api/asset.update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert('Status asset berhasil diperbarui!');
+                loadAssetData(); // Reload data to reflect changes
+            } else {
+                alert('Gagal memperbarui status asset: ' + (result.error || 'Unknown error'));
+            }
+        } catch (error) {
+            alert('Gagal memperbarui status asset: ' + error.message);
+        }
+    }
 });
 
-// Function to show toast notification
+// Function to show toast notification for asset
 function showAssetToast(message, type = 'success') {
     // Create toast container if it doesn't exist
     let toastContainer = document.getElementById('toast-container-asset');
@@ -479,7 +589,7 @@ function showAssetToast(message, type = 'success') {
         toastContainer.style.zIndex = '1100';
         document.body.appendChild(toastContainer);
     }
-
+    
     // Create toast element
     const toastId = 'asset-toast-' + Date.now();
     const toastEl = document.createElement('div');
@@ -488,13 +598,13 @@ function showAssetToast(message, type = 'success') {
     toastEl.setAttribute('role', 'alert');
     toastEl.setAttribute('aria-live', 'assertive');
     toastEl.setAttribute('aria-atomic', 'true');
-
+    
     // Determine toast header color based on type
     let headerBg = 'linear-gradient(180deg, #075E54 0%, #128C7E 100%)';
     if (type === 'error') {
         headerBg = 'linear-gradient(180deg, #dc3545 0%, #c82333 100%)'; // Red gradient for error
     }
-
+    
     toastEl.innerHTML = `
         <div class="toast-header" style="background: ${headerBg}; border-radius: 10px 10px 0 0 !important;">
             <div class="d-flex align-items-center">
@@ -508,13 +618,13 @@ function showAssetToast(message, type = 'success') {
             ${message}
         </div>
     `;
-
+    
     toastContainer.appendChild(toastEl);
-
+    
     // Initialize and show the toast
     const toast = new bootstrap.Toast(toastEl);
     toast.show();
-
+    
     // Remove toast element after it's hidden to keep DOM clean
     toastEl.addEventListener('hidden.bs.toast', function() {
         toastEl.remove();

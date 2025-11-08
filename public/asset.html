@@ -4,116 +4,201 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Asset</title>
-    <!-- Bootstrap CSS -->
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- Select2 Bootstrap 5 Theme -->
+    <link href="https://cdn.jsdelivr.net/npm/select2-theme-bootstrap-5@1.3.0/dist/select2-theme-bootstrap-5.min.css" rel="stylesheet" />
+    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/admin.css">
     <style>
-        .searchable-dropdown {
-            position: relative;
-            display: inline-block;
-            width: 100%;
+        .nav-tabs .nav-link {
+            color: #495057;
+            border-top-left-radius: 0.375rem;
+            border-top-right-radius: 0.375rem;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
         }
-        
-        .search-input {
-            margin-bottom: 5px;
+        .nav-tabs .nav-link:not(.active) {
+            color: #6c757d; /* Bootstrap's secondary text color */
+            background-color: #e9ecef; /* A light grey background for inactive tabs */
         }
-        
-        .dropdown-menu-searchable {
-            width: 100%;
+        .nav-tabs .nav-link.active {
+            color: #075E54; /* Active tab text color */
+            background-color: #fff; /* Active tab background color */
+            border-color: #dee2e6 #dee2e6 #fff;
+        }
+        .select2-results__options {
             max-height: 200px;
             overflow-y: auto;
-            z-index: 1051; /* above bootstrap modal */
         }
-        
-        .dropdown-item {
-            padding: 0.5rem 1rem;
+        .select2-container--bootstrap-5 .select2-selection--single .select2-selection__clear {
+            margin-right: 1rem;
+            font-size: 1.25rem;
+        }
+        #asset-table td, #asset-table th {
+            font-size: 0.875rem;
+            padding: 15px 20px;
+            vertical-align: middle;
+        }
+        .detail-card {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+        }
+        #detailAssetModal .row {
+            font-size: 0.8rem;
         }
     </style>
 </head>
-<body>
+<body class="bg-light">
+    <!-- Sidebar will be loaded here -->
+    <div id="sidebar-container"></div>
 
-    <div class="container mt-4">
-        <h1>Data Asset</h1>
-        <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addAssetModal">
-            Tambah Asset
-        </button>
-        <table class="table table-bordered" id="asset-table">
-            <thead class="table-light">
-                <tr>
-                    <th>No.</th>
-                    <th>Nama Barang</th>
-                    <th>Kode</th>
-                    <th>Tanggal</th>
-                    <th>Jenis</th>
-                    <th>Harga</th>
-                    <th>Pegawai</th>
-                    <th>Hibah</th>
-                    <th>Aktif</th>
-                    <th>Rusak</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Data will be filled by JavaScript -->
-            </tbody>
-        </table>
+    <!-- Main Content Area -->
+    <div id="main-content" class="p-4" style="flex-grow: 0;">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <h2 class="mb-4 text-whatsapp">Daftar Asset</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm rounded-3" style="border-radius: 10px;">
+                        <div class="card-header d-flex justify-content-between align-items-center border-0 py-3" style="background: linear-gradient(180deg, #075E54 0%, #128C7E 100%); border-radius: 10px 10px 0 0 !important;">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-boxes me-2 text-white"></i>
+                                <h5 class="card-title mb-0 text-white">Daftar Asset</h5>
+                            </div>
+                            <div class="d-flex">
+                                <div class="input-group me-2">
+                                    <input type="text" class="form-control form-control-sm" id="search-input" placeholder="Cari nama asset...">
+                                    <button class="btn btn-light btn-sm" type="button" id="search-button"><i class="bi bi-search"></i></button>
+                                </div>
+                                <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#addAssetModal" style="min-width: 90px;">
+                                    <i class="bi bi-plus-lg"></i> Tambah
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0" id="asset-table">
+                                    <thead style="background-color: #f1f8f1; border-bottom: 1px solid #dee2e6;">
+                                        <tr>
+                                            <th scope="col">No.</th>
+                                            <th scope="col">Nama Barang</th>
+                                            <th scope="col">Tanggal</th>
+                                            <th scope="col">Harga</th>
+                                            <th scope="col">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Data will be filled by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-light border-top">
+                            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
+                                <div class="text-muted mb-2 mb-md-0">
+                                    <small style="font-size: 0.75em;">Menampilkan <strong>0</strong> dari <strong>0</strong> entri</small>
+                                </div>
+                                <nav>
+                                    <ul class="pagination mb-0">
+                                        <li class="page-item disabled">
+                                            <a class="page-link" href="#" tabindex="-1"><i class="bi bi-chevron-left"></i></a>
+                                        </li>
+                                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="#"><i class="bi bi-chevron-right"></i></a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Modal Tambah Asset -->
     <div class="modal fade" id="addAssetModal" tabindex="-1" aria-labelledby="addAssetModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addAssetModalLabel">Tambah Asset Baru</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content border-0 rounded-3">
+                <div class="modal-header" style="background: linear-gradient(180deg, #075E54 0%, #128C7E 100%);">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-plus-circle me-2 text-white"></i>
+                        <h5 class="modal-title text-white" id="addAssetModalLabel">Tambah Asset Baru</h5>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                    <ul class="nav nav-tabs" id="addAssetTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="add-biodata-tab" data-bs-toggle="tab" data-bs-target="#add-biodata-pane" type="button" role="tab" aria-controls="add-biodata-pane" aria-selected="true">Biodata</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="add-detail-tab" data-bs-toggle="tab" data-bs-target="#add-detail-pane" type="button" role="tab" aria-controls="add-detail-pane" aria-selected="false">Detail</button>
+                        </li>
+                    </ul>
                     <form id="add-asset-form">
-                        <div class="mb-3">
-                            <label for="nama_barang" class="form-label">Nama Barang</label>
-                            <input type="text" class="form-control" id="nama_barang" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="kode_barang" class="form-label">Kode Barang</label>
-                            <input type="text" class="form-control" id="kode_barang" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="jenis_asset" class="form-label">Jenis Asset</label>
-                            <select class="form-select" id="jenis_asset" required>
-                                <option value="">Pilih Jenis Asset</option>
-                                <option value="Elektronik">Elektronik</option>
-                                <option value="Furniture">Furniture</option>
-                                <option value="Peralatan">Peralatan</option>
-                                <option value="Bangunan">Bangunan</option>
-                                <option value="Lainnya">Lainnya</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="harga" class="form-label">Harga</label>
-                            <input type="text" class="form-control" id="harga" required>
-                            <div class="form-text">Format: 19.000 (dengan titik ribuan)</div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="gambar_url" class="form-label">Gambar URL</label>
-                            <input type="text" class="form-control" id="gambar_url" placeholder="Paste URL gambar disini">
-                        </div>
-                        <div class="mb-3 form-check">
-                            <input type="checkbox" class="form-check-input" id="isHibah">
-                            <label class="form-check-label" for="isHibah">Hibah</label>
-                        </div>
-                        <div class="mb-3 form-check">
-                            <input type="checkbox" class="form-check-input" id="aktif" checked>
-                            <label class="form-check-label" for="aktif">Aktif</label>
-                        </div>
-                        <div class="mb-3 form-check">
-                            <input type="checkbox" class="form-check-input" id="isBroken">
-                            <label class="form-check-label" for="isBroken">Rusak</label>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                            <button type="submit" class="btn btn-primary">Simpan</button>
+                        <div class="tab-content pt-3" id="addAssetTabContent">
+                            <div class="tab-pane fade show active" id="add-biodata-pane" role="tabpanel" aria-labelledby="add-biodata-tab">
+                                <div class="form-floating mb-3 position-relative">
+                                    <input type="text" class="form-control" id="nama_barang" placeholder="Masukkan nama barang" required>
+                                    <label for="nama_barang">Nama Barang</label>
+                                    <i class="bi bi-card-text position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                                </div>
+                                <div class="form-floating mb-3 position-relative">
+                                    <input type="text" class="form-control" id="kode_barang" placeholder="Masukkan kode barang" required>
+                                    <label for="kode_barang">Kode Barang</label>
+                                    <i class="bi bi-hash position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                                </div>
+                                <div class="form-floating mb-3 position-relative">
+                                    <input type="text" class="form-control" id="harga" placeholder="Masukkan harga" required>
+                                    <label for="harga">Harga</label>
+                                    <i class="bi bi-currency-dollar position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="add-detail-pane" role="tabpanel" aria-labelledby="add-detail-tab">
+                                <div class="mb-3">
+                                    <select class="form-select searchable-select" id="jenis_asset" data-placeholder="Pilih Jenis Asset" required>
+                                        <option></option>
+                                        <option value="Elektronik">Elektronik</option>
+                                        <option value="Furniture">Furniture</option>
+                                        <option value="Peralatan">Peralatan</option>
+                                        <option value="Bangunan">Bangunan</option>
+                                        <option value="Lainnya">Lainnya</option>
+                                    </select>
+                                </div>
+                                <div class="form-floating mb-3 position-relative">
+                                    <input type="text" class="form-control" id="gambar_url" placeholder="Paste URL gambar disini">
+                                    <label for="gambar_url">Gambar URL</label>
+                                    <i class="bi bi-link position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                                </div>
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="isHibah">
+                                    <label class="form-check-label" for="isHibah">Hibah</label>
+                                </div>
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="aktif" checked>
+                                    <label class="form-check-label" for="aktif">Aktif</label>
+                                </div>
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="isBroken">
+                                    <label class="form-check-label" for="isBroken">Rusak</label>
+                                </div>
+                            </div>
                         </div>
                     </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary me-2" data-bs-dismiss="modal"><i class="bi bi-x-lg me-1"></i>Batal</button>
+                    <button type="button" class="btn btn-whatsapp" id="save-asset-btn"><i class="bi bi-save me-1"></i>Simpan</button>
                 </div>
             </div>
         </div>
@@ -121,183 +206,223 @@
 
     <!-- Modal Edit Asset -->
     <div class="modal fade" id="editAssetModal" tabindex="-1" aria-labelledby="editAssetModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editAssetModalLabel">Edit Asset</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content border-0 rounded-3">
+                <div class="modal-header" style="background: linear-gradient(180deg, #075E54 0%, #128C7E 100%);">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-pencil-square me-2 text-white"></i>
+                        <h5 class="modal-title text-white" id="editAssetModalLabel">Edit Asset</h5>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                    <ul class="nav nav-tabs" id="editAssetTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="edit-biodata-tab" data-bs-toggle="tab" data-bs-target="#edit-biodata-pane" type="button" role="tab" aria-controls="edit-biodata-pane" aria-selected="true">Biodata</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="edit-detail-tab" data-bs-toggle="tab" data-bs-target="#edit-detail-pane" type="button" role="tab" aria-controls="edit-detail-pane" aria-selected="false">Detail</button>
+                        </li>
+                    </ul>
                     <form id="edit-asset-form">
                         <input type="hidden" id="edit_id_asset">
-                        <div class="mb-3">
-                            <label for="edit_nama_barang" class="form-label">Nama Barang</label>
-                            <input type="text" class="form-control" id="edit_nama_barang" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="edit_kode_barang" class="form-label">Kode Barang</label>
-                            <input type="text" class="form-control" id="edit_kode_barang" required readonly>
-                        </div>
-                        <div class="mb-3">
-                            <label for="edit_jenis_asset" class="form-label">Jenis Asset</label>
-                            <select class="form-select" id="edit_jenis_asset" required>
-                                <option value="">Pilih Jenis Asset</option>
-                                <option value="Elektronik">Elektronik</option>
-                                <option value="Furniture">Furniture</option>
-                                <option value="Peralatan">Peralatan</option>
-                                <option value="Bangunan">Bangunan</option>
-                                <option value="Lainnya">Lainnya</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="edit_harga" class="form-label">Harga</label>
-                            <input type="text" class="form-control" id="edit_harga" required>
-                            <div class="form-text">Format: 19.000 (dengan titik ribuan)</div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="edit_gambar_url" class="form-label">Gambar URL</label>
-                            <input type="text" class="form-control" id="edit_gambar_url" placeholder="Paste URL gambar disini">
-                        </div>
-                        <input type="hidden" id="edit_aktif_status" value="">
-                        <input type="hidden" id="edit_rusak_status" value="">
-                        <div class="mb-3 form-check">
-                            <input type="checkbox" class="form-check-input" id="edit_isHibah">
-                            <label class="form-check-label" for="edit_isHibah">Hibah</label>
-                        </div>
-
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                            <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                        <input type="hidden" id="edit_kode_barang">
+                        <div class="tab-content pt-3" id="editAssetTabContent">
+                            <div class="tab-pane fade show active" id="edit-biodata-pane" role="tabpanel" aria-labelledby="edit-biodata-tab">
+                                <div class="form-floating mb-3 position-relative">
+                                    <input type="text" class="form-control" id="edit_nama_barang" placeholder="Masukkan nama barang" required>
+                                    <label for="edit_nama_barang">Nama Barang</label>
+                                    <i class="bi bi-card-text position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                                </div>
+                                <div class="form-floating mb-3 position-relative">
+                                    <input type="text" class="form-control" id="edit_kode_barang_display" placeholder="Kode barang" readonly>
+                                    <label for="edit_kode_barang_display">Kode Barang</label>
+                                    <i class="bi bi-hash position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                                </div>
+                                <div class="form-floating mb-3 position-relative">
+                                    <input type="text" class="form-control" id="edit_harga" placeholder="Masukkan harga" required>
+                                    <label for="edit_harga">Harga</label>
+                                    <i class="bi bi-currency-dollar position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="edit-detail-pane" role="tabpanel" aria-labelledby="edit-detail-tab">
+                                <div class="mb-3">
+                                    <select class="form-select searchable-select" id="edit_jenis_asset" data-placeholder="Pilih Jenis Asset" required>
+                                        <option></option>
+                                        <option value="Elektronik">Elektronik</option>
+                                        <option value="Furniture">Furniture</option>
+                                        <option value="Peralatan">Peralatan</option>
+                                        <option value="Bangunan">Bangunan</option>
+                                        <option value="Lainnya">Lainnya</option>
+                                    </select>
+                                </div>
+                                <div class="form-floating mb-3 position-relative">
+                                    <input type="text" class="form-control" id="edit_gambar_url" placeholder="Paste URL gambar disini">
+                                    <label for="edit_gambar_url">Gambar URL</label>
+                                    <i class="bi bi-link position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                                </div>
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="edit_isHibah">
+                                    <label class="form-check-label" for="edit_isHibah">Hibah</label>
+                                </div>
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="edit_aktif">
+                                    <label class="form-check-label" for="edit_aktif">Aktif</label>
+                                </div>
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="edit_isBroken">
+                                    <label class="form-check-label" for="edit_isBroken">Rusak</label>
+                                </div>
+                            </div>
                         </div>
                     </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary me-2" data-bs-dismiss="modal"><i class="bi bi-x-lg me-1"></i>Batal</button>
+                    <button type="button" class="btn btn-whatsapp" id="update-asset-btn"><i class="bi bi-save me-1"></i>Simpan Perubahan</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/js/asset.js"></script>
-    
-    <script>
-        // Format number with thousands separators
-        function formatNumber(num) {
-            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-        }
-        
-        // Unformat number (remove thousands separators)
-        function unformatNumber(str) {
-            return str.replace(/\./g, '');
-        }
-        
-        // Add event listeners to price inputs
-        document.getElementById('harga').addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
-            if(value) {
-                e.target.value = formatNumber(value);
-            }
-        });
-        
-        document.getElementById('edit_harga').addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
-            if(value) {
-                e.target.value = formatNumber(value);
-            }
-        });
-        
-        // Create searchable dropdown functionality
-        function createSearchableDropdown(selectElement) {
-            const options = Array.from(selectElement.options);
-            const container = document.createElement('div');
-            container.className = 'searchable-dropdown';
-            
-            // Create search input
-            const searchInput = document.createElement('input');
-            searchInput.type = 'text';
-            searchInput.className = 'form-control search-input';
-            searchInput.placeholder = 'Cari...';
-            
-            // Create dropdown button
-            const dropdownButton = document.createElement('button');
-            dropdownButton.type = 'button';
-            dropdownButton.className = 'btn btn-outline-secondary dropdown-toggle dropdown-button';
-            dropdownButton.innerHTML = selectElement.options[selectElement.selectedIndex].text + ' <span class="caret"></span>';
-            
-            // Create dropdown menu
-            const dropdownMenu = document.createElement('div');
-            dropdownMenu.className = 'dropdown-menu dropdown-menu-searchable';
-            dropdownMenu.style.maxHeight = '200px';
-            dropdownMenu.style.overflowY = 'auto';
-            dropdownMenu.style.display = 'none';
-            
-            // Add options to dropdown menu
-            options.forEach(option => {
-                if(option.value) { // Skip empty option
-                    const menuItem = document.createElement('button');
-                    menuItem.type = 'button';
-                    menuItem.className = 'dropdown-item';
-                    menuItem.textContent = option.text;
-                    menuItem.dataset.value = option.value;
-                    
-                    menuItem.addEventListener('click', function() {
-                        selectElement.value = this.dataset.value;
-                        dropdownButton.innerHTML = this.textContent + ' <span class="caret"></span>';
-                        dropdownMenu.style.display = 'none';
-                    });
-                    
-                    dropdownMenu.appendChild(menuItem);
-                }
-            });
-            
-            // Add event listener to search input
-            searchInput.addEventListener('input', function() {
-                const searchTerm = this.value.toLowerCase();
-                const menuItems = dropdownMenu.querySelectorAll('.dropdown-item');
-                
-                menuItems.forEach(item => {
-                    const text = item.textContent.toLowerCase();
-                    if(text.includes(searchTerm)) {
-                        item.style.display = '';
-                    } else {
-                        item.style.display = 'none';
-                    }
-                });
-            });
-            
-            // Toggle dropdown visibility
-            dropdownButton.addEventListener('click', function() {
-                const isShown = dropdownMenu.style.display !== 'none';
-                dropdownMenu.style.display = isShown ? 'none' : 'block';
-                
-                // Close other dropdowns
-                document.querySelectorAll('.dropdown-menu-searchable').forEach(menu => {
-                    if(menu !== dropdownMenu) {
-                        menu.style.display = 'none';
-                    }
-                });
-            });
-            
-            // Close dropdown when clicking outside
-            document.addEventListener('click', function(e) {
-                if(!container.contains(e.target)) {
-                    dropdownMenu.style.display = 'none';
-                }
-            });
-            
-            // Replace select with custom dropdown
-            selectElement.style.display = 'none';
-            container.appendChild(searchInput);
-            container.appendChild(dropdownButton);
-            container.appendChild(dropdownMenu);
-            selectElement.parentNode.insertBefore(container, selectElement);
-        }
-        
-        // Initialize searchable dropdowns when the page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            createSearchableDropdown(document.getElementById('jenis_asset'));
-            createSearchableDropdown(document.getElementById('edit_jenis_asset'));
-        });
-    </script>
+    <!-- Modal Detail Asset -->
+    <div class="modal fade" id="detailAssetModal" tabindex="-1" aria-labelledby="detailAssetModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content border-0 rounded-3">
+                <div class="modal-header" style="background: linear-gradient(180deg, #075E54 0%, #128C7E 100%);">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-box me-2 text-white"></i>
+                        <h5 class="modal-title text-white" id="detailAssetModalLabel">Detail Asset</h5>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                    <ul class="nav nav-tabs mb-3" id="detailAssetTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="detail-biodata-tab" data-bs-toggle="tab" data-bs-target="#detail-biodata-pane" type="button" role="tab" aria-controls="detail-biodata-pane" aria-selected="true">Biodata</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="detail-detail-tab" data-bs-toggle="tab" data-bs-target="#detail-detail-pane" type="button" role="tab" aria-controls="detail-detail-pane" aria-selected="false">Detail Lainnya</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="detailAssetTabContent">
+                        <div class="tab-pane fade show active" id="detail-biodata-pane" role="tabpanel" aria-labelledby="detail-biodata-tab">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center p-2 bg-light rounded-3 shadow-sm">
+                                        <i class="bi bi-card-text fs-4 text-whatsapp me-3"></i>
+                                        <div>
+                                            <small class="text-muted d-block">Nama Barang</small>
+                                            <p class="fw-bold mb-0" id="detail_nama_barang"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center p-2 bg-light rounded-3 shadow-sm">
+                                        <i class="bi bi-hash fs-4 text-whatsapp me-3"></i>
+                                        <div>
+                                            <small class="text-muted d-block">Kode Barang</small>
+                                            <p class="fw-bold mb-0" id="detail_kode_barang"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center p-2 bg-light rounded-3 shadow-sm">
+                                        <i class="bi bi-calendar fs-4 text-whatsapp me-3"></i>
+                                        <div>
+                                            <small class="text-muted d-block">Tanggal</small>
+                                            <p class="fw-bold mb-0" id="detail_created_at"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center p-2 bg-light rounded-3 shadow-sm">
+                                        <i class="bi bi-currency-dollar fs-4 text-whatsapp me-3"></i>
+                                        <div>
+                                            <small class="text-muted d-block">Harga</small>
+                                            <p class="fw-bold mb-0" id="detail_harga"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="detail-detail-pane" role="tabpanel" aria-labelledby="detail-detail-tab">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center p-2 bg-light rounded-3 shadow-sm">
+                                        <i class="bi bi-tag fs-4 text-whatsapp me-3"></i>
+                                        <div>
+                                            <small class="text-muted d-block">Jenis Asset</small>
+                                            <p class="fw-bold mb-0" id="detail_jenis_asset"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center p-2 bg-light rounded-3 shadow-sm">
+                                        <i class="bi bi-person-fill fs-4 text-whatsapp me-3"></i>
+                                        <div>
+                                            <small class="text-muted d-block">Pegawai</small>
+                                            <p class="fw-bold mb-0" id="detail_nama_lengkap"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center p-2 bg-light rounded-3 shadow-sm">
+                                        <i class="bi bi-toggle-on fs-4 text-whatsapp me-3"></i>
+                                        <div>
+                                            <small class="text-muted d-block">Status</small>
+                                            <p class="fw-bold mb-0" id="detail_aktif"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center p-2 bg-light rounded-3 shadow-sm">
+                                        <i class="bi bi-gift fs-4 text-whatsapp me-3"></i>
+                                        <div>
+                                            <small class="text-muted d-block">Hibah</small>
+                                            <p class="fw-bold mb-0" id="detail_isHibah"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center p-2 bg-light rounded-3 shadow-sm">
+                                        <i class="bi bi-exclamation-circle fs-4 text-whatsapp me-3"></i>
+                                        <div>
+                                            <small class="text-muted d-block">Rusak</small>
+                                            <p class="fw-bold mb-0" id="detail_isBroken"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="d-flex align-items-start p-2 bg-light rounded-3 shadow-sm">
+                                        <i class="bi bi-link fs-4 text-whatsapp me-3"></i>
+                                        <div>
+                                            <small class="text-muted d-block">Gambar URL</small>
+                                            <p class="fw-bold mb-0" id="detail_url_gambar"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal"><i class="bi bi-x-lg me-1"></i>Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <!-- Load sidebar component -->
+    <script src="/js/sidebar-loader.js"></script>
+    <!-- Custom JS -->
+    <script src="/js/admin.js"></script>
+    <script src="/js/asset.js"></script>
 </body>
 </html>
