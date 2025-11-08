@@ -306,6 +306,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (assets.length === 0) {
             assetTableBody.innerHTML = '<tr><td colspan="5" class="text-center">Tidak ada data asset</td></tr>';
+            updatePaginationInfo(0, 0);
             return;
         }
 
@@ -434,6 +435,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 detailModal.show();
             });
         });
+
+        updatePaginationInfo(assets.length, assets.length); // Update pagination info with actual data count
+    }
+
+    // Function to update pagination info
+    function updatePaginationInfo(displayed, total) {
+        const paginationInfo = document.querySelector('.card-footer small');
+        if (paginationInfo) {
+            paginationInfo.innerHTML = `Menampilkan <strong>${displayed}</strong> dari <strong>${total}</strong> entri`;
+        }
     }
 
     // Helper function to update the display of searchable dropdown
