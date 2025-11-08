@@ -209,6 +209,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Event listener untuk form edit masjid
     editMasjidForm.addEventListener('submit', function(event) {
         event.preventDefault();
+        console.log('Edit form submitted');
         
         const submitBtn = editMasjidForm.querySelector('button[type="submit"]');
         const originalText = submitBtn.innerHTML;
@@ -226,6 +227,7 @@ document.addEventListener('DOMContentLoaded', function() {
             gps: document.getElementById('edit_gps').value,
             mushola: document.getElementById('edit_mushola').checked
         };
+        console.log('Data to be sent:', updatedData);
 
         fetch('/api/masjid.update', {
             method: 'POST',
@@ -236,6 +238,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => response.json())
         .then(data => {
+            console.log('Server response:', data);
             if (data.success) {
                 showMasjidToast('Data masjid berhasil diperbarui!');
                 editMasjidModal.hide();
