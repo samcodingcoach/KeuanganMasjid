@@ -183,29 +183,35 @@
                 <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
                     <form id="edit-masjid-form">
                         <input type="hidden" id="edit_id_masjid">
-                        <div class="form-floating mb-3">
+                        <div class="form-floating mb-3 position-relative">
                             <input type="text" class="form-control" id="edit_nama_mesjid" placeholder="Nama Masjid" required>
                             <label for="edit_nama_mesjid">Nama Masjid</label>
+                            <i class="bi bi-person-vcard position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
                         </div>
-                        <div class="form-floating mb-3">
+                        <div class="form-floating mb-3 position-relative">
                             <input type="text" class="form-control" id="edit_alamat" placeholder="Alamat" required>
                             <label for="edit_alamat">Alamat</label>
+                            <i class="bi bi-geo-alt position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
                         </div>
-                        <div class="form-floating mb-3">
+                        <div class="form-floating mb-3 position-relative">
                             <input type="text" class="form-control" id="edit_kota" placeholder="Kota" required>
                             <label for="edit_kota">Kota</label>
+                            <i class="bi bi-building position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
                         </div>
-                        <div class="form-floating mb-3">
+                        <div class="form-floating mb-3 position-relative">
                             <input type="text" class="form-control" id="edit_provinsi" placeholder="Provinsi" required>
                             <label for="edit_provinsi">Provinsi</label>
+                            <i class="bi bi-map position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
                         </div>
-                        <div class="form-floating mb-3">
+                        <div class="form-floating mb-3 position-relative">
                             <input type="email" class="form-control" id="edit_email" placeholder="Email" required>
                             <label for="edit_email">Email</label>
+                            <i class="bi bi-envelope position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
                         </div>
-                        <div class="form-floating mb-3">
+                        <div class="form-floating mb-3 position-relative">
                             <input type="text" class="form-control" id="edit_gps" placeholder="GPS">
                             <label for="edit_gps">GPS</label>
+                            <i class="bi bi-geo-position position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
                         </div>
                         <div class="form-check mb-3">
                             <input class="form-check-input" type="checkbox" id="edit_mushola">
@@ -213,11 +219,11 @@
                                 Mushola
                             </label>
                         </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary me-2" data-bs-dismiss="modal"><i class="bi bi-x-lg me-1"></i>Batal</button>
+                            <button type="submit" class="btn btn-whatsapp"><i class="bi bi-save me-1"></i>Simpan Perubahan</button>
+                        </div>
                     </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary me-2" data-bs-dismiss="modal"><i class="bi bi-x-lg me-1"></i>Batal</button>
-                    <button type="submit" class="btn btn-whatsapp" form="edit-masjid-form"><i class="bi bi-save me-1"></i>Simpan Perubahan</button>
                 </div>
             </div>
         </div>
