@@ -209,6 +209,10 @@ def muzakki_page():
 def mustahik_page():
     return send_from_directory('public', 'mustahik.html')
 
+@app.route('/masjid')
+def masjid_page():
+    return send_from_directory('public', 'masjid.html')
+
 @app.route('/admin')
 def admin_page():
     return send_from_directory('public', 'admin.html')
