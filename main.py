@@ -32,6 +32,8 @@ from api.muzakki.update import update_muzakki
 from api.transaksi.list_tx import get_transaksi_list
 from api.transaksi.list_tx_detail import get_transaksi_detail_list
 from api.transaksi.new_tx import create_transaksi
+from api.masjid.masjid import get_masjid
+from api.masjid.update import update_masjid
 
 # Initialize Supabase client
 supabase_url = os.getenv("SUPABASE_URL")
@@ -168,6 +170,16 @@ def list_transaksi():
 def list_transaksi_detail():
     return get_transaksi_detail_list(supabase)
 
+# GET: Mengambil semua data masjid
+@app.route('/api/masjid.list', methods=['GET'])
+def list_masjid():
+    return get_masjid(supabase)
+
+# POST: Mengupdate data masjid
+@app.route('/api/masjid.update', methods=['POST'])
+def update_masjid_route():
+    return update_masjid(supabase, request)
+
 # POST: Membuat transaksi baru
 @app.route('/api/transaksi.create', methods=['POST'])
 def new_transaksi():
@@ -222,4 +234,4 @@ def send_components(path):
     return send_from_directory('public/components', path)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0',port=5001, debug=True)
+    app.run(host='0.0.0.0',port=5002, debug=True)
