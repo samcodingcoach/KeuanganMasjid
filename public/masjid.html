@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Masjid</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- Select2 Bootstrap 5 Theme -->
+    <link href="https://cdn.jsdelivr.net/npm/select2-theme-bootstrap-5@1.3.0/dist/select2-theme-bootstrap-5.min.css" rel="stylesheet" />
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="bg-light">
+    <!-- Sidebar will be loaded here -->
+    <div id="sidebar-container"></div>
+
+    <!-- Main Content Area -->
+    <div id="main-content" class="p-4" style="flex-grow: 0;">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <h2 class="mb-4 text-whatsapp">Data Masjid</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm rounded-3" style="border-radius: 10px;">
+                        <div class="card-header d-flex justify-content-between align-items-center border-0 py-3" style="background: linear-gradient(180deg, #075E54 0%, #128C7E 100%); border-radius: 10px 10px 0 0 !important;">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-person-vcard me-2 text-white"></i>
+                                <h5 class="card-title mb-0 text-white">Data Masjid</h5>
+                            </div>
+                            <div class="d-flex">
+                                <div class="input-group me-2">
+                                    <input type="text" class="form-control form-control-sm" id="search-input" placeholder="Cari nama masjid...">
+                                    <button class="btn btn-light btn-sm" type="button" id="search-button"><i class="bi bi-search"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0" id="masjid-table">
+                                    <thead class="border-0 bg-light" >
+                                        <tr>
+                                            <th scope="col" class="border-0" style="padding: 15px 20px;">No.</th>
+                                            <th scope="col" class="border-0" style="padding: 15px 20px;">Nama Masjid</th>
+                                            <th scope="col" class="border-0" style="padding: 15px 20px;">Alamat</th>
+                                            <th scope="col" class="border-0" style="padding: 15px 20px;">Kota</th>
+                                            <th scope="col" class="border-0" style="padding: 15px 20px;">Provinsi</th>
+                                            <th scope="col" class="border-0" style="padding: 15px 20px;">Email</th>
+                                            <th scope="col" class="border-0" style="padding: 15px 20px;">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Data akan diisi oleh JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-light border-top">
+                            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
+                                <div class="text-muted mb-2 mb-md-0">
+                                    Menampilkan <strong>0</strong> dari <strong>0</strong> entri
+                                </div>
+                                <nav>
+                                    <ul class="pagination mb-0">
+                                        <li class="page-item disabled">
+                                            <a class="page-link" href="#" tabindex="-1">Sebelumnya</a>
+                                        </li>
+                                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="#">Selanjutnya</a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Edit Masjid -->
+    <div class="modal fade" id="editMasjidModal" tabindex="-1" aria-labelledby="editMasjidModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content border-0 rounded-3">
+                <div class="modal-header" style="background: linear-gradient(180deg, #075E54 0%, #128C7E 100%);">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-pencil-square me-2 text-white"></i>
+                        <h5 class="modal-title text-white" id="editMasjidModalLabel">Edit Data Masjid</h5>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="edit-masjid-form">
+                        <input type="hidden" id="edit_id_masjid">
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="edit_nama_mesjid" placeholder="Nama Masjid" required>
+                            <label for="edit_nama_mesjid">Nama Masjid</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="edit_alamat" placeholder="Alamat" required>
+                            <label for="edit_alamat">Alamat</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="edit_kota" placeholder="Kota" required>
+                            <label for="edit_kota">Kota</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="edit_provinsi" placeholder="Provinsi" required>
+                            <label for="edit_provinsi">Provinsi</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="email" class="form-control" id="edit_email" placeholder="Email" required>
+                            <label for="edit_email">Email</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="edit_gps" placeholder="GPS">
+                            <label for="edit_gps">GPS</label>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="edit_mushola">
+                            <label class="form-check-label" for="edit_mushola">
+                                Mushola
+                            </label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary me-2" data-bs-dismiss="modal"><i class="bi bi-x-lg me-1"></i>Batal</button>
+                    <button type="submit" class="btn btn-whatsapp" form="edit-masjid-form"><i class="bi bi-save me-1"></i>Simpan Perubahan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <!-- Load sidebar component -->
+    <script src="/js/sidebar-loader.js"></script>
+    <!-- Custom JS -->
+    <script src="/js/admin.js"></script>
+    <script src="/js/masjid.js"></script>
+</body>
+</html>
