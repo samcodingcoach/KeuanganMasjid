@@ -50,8 +50,12 @@ function renderTable(data) {
             <td>${mustahik.no_telepon || ''}</td>
             <td>${mustahik.kategori || ''}</td>
             <td>
-                <button class="btn btn-info btn-sm detail-btn" data-id="${mustahik.id_mustahik}"><i class="bi bi-eye"></i></button>
-                <button class="btn btn-warning btn-sm edit-btn" data-id="${mustahik.id_mustahik}"><i class="bi bi-pencil"></i></button>
+                <button class="btn btn-sm btn-outline-info p-1 detail-btn" style="border-radius: 8px; width: 36px; height: 36px; margin-right: 0.25rem;">
+                    <i class="bi bi-eye"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-whatsapp p-1 edit-btn" style="border-radius: 8px; width: 36px; height: 36px;">
+                    <i class="bi bi-pencil"></i>
+                </button>
             </td>
         `;
         mustahikTableBody.appendChild(row);
