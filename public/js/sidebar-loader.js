@@ -195,30 +195,81 @@ function setupPasswordToggle() {
 function setupProfileFormValidation() {
     const btnSave = document.getElementById('btnSimpanPerubahan');
     const profileForm = document.getElementById('profileForm');
-    
+
     if (btnSave && profileForm) {
-        btnSave.addEventListener('click', function() {
+        btnSave.addEventListener('click', async function() {
+            const namaLengkap = document.getElementById('profileNamaLengkap').value;
+            const email = document.getElementById('profileEmail').value;
             const password = document.getElementById('profilePassword').value;
             const confirmPassword = document.getElementById('profileConfirmPassword').value;
-            
+
             // Check if passwords match
             if (password !== '' && password !== confirmPassword) {
                 alert('Password baru dan konfirmasi password tidak cocok!');
                 return;
             }
-            
+
             // Form is valid, proceed with update
-            // Note: Actual update functionality will be implemented later
-            alert('Profil akan diperbarui. Fitur update akan diimplementasikan nanti.');
-            
-            // Close modal
-            const modalElement = document.getElementById('profileModal');
-            const modal = bootstrap.Modal.getInstance(modalElement);
-            if (modal) {
-                modal.hide();
+            const userData = JSON.parse(sessionStorage.getItem('userData'));
+            if (!userData || !userData.id_pegawai) {
+                alert('Data pengguna tidak ditemukan. Silakan login kembali.');
+                logout();
+                return;
+            }
+
+            try {
+                // Show loading state
+                btnSave.innerHTML = 'Memproses...';
+                btnSave.disabled = true;
+
+                const response = await fetch('/api/pegawai.update_pribadi', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        id_pegawai: userData.id_pegawai,
+                        nama_lengkap: namaLengkap,
+                        email: email,
+                        password: password
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Update user data in sessionStorage
+                    userData.nama_lengkap = namaLengkap;
+                    userData.email = email;
+                    sessionStorage.setItem('userData', JSON.stringify(userData));
+
+                    // Show success notification
+                    alert('Profil berhasil diperbarui! Anda akan otomatis logout untuk menerapkan perubahan.');
+
+                    // Automatically log out after successful update
+                    logout();
+                } else {
+                    alert('Gagal memperbarui profil: ' + (result.message || 'Terjadi kesalahan'));
+                }
+            } catch (error) {
+                console.error('Error updating profile:', error);
+                alert('Terjadi kesalahan saat memperbarui profil: ' + error.message);
+            } finally {
+                // Reset button state
+                btnSave.innerHTML = 'Simpan Perubahan';
+                btnSave.disabled = false;
             }
         });
     }
+}
+
+// Function to handle logout
+function logout() {
+    // Clear all session storage
+    sessionStorage.clear();
+    
+    // Redirect to login page
+    window.location.href = '/login';
 }
 
 // Initialize when the DOM is loaded
