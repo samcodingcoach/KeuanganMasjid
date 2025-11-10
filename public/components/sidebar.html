@@ -147,9 +147,9 @@
 <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="profileModalLabel">Update Profil</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-header" style="background: linear-gradient(180deg, #075E54 0%, #128C7E 100%);">
+                <h5 class="modal-title text-white" id="profileModalLabel"><i class="bi bi-person-circle me-2"></i>Update Profil</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="profileForm">
@@ -164,17 +164,15 @@
                         <i class="bi bi-envelope position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
                     </div>
                     <div class="form-floating mb-3 position-relative">
-                        <input type="password" class="form-control" id="profilePassword" placeholder="Password">
+                        <input type="password" class="form-control" id="profilePassword" placeholder="Password" style="padding-right: 40px;">
                         <label for="profilePassword">Password Baru (opsional)</label>
-                        <i class="bi bi-lock position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
                         <span class="password-toggle" id="togglePassword">
                             <i class="bi bi-eye"></i>
                         </span>
                     </div>
                     <div class="form-floating mb-3 position-relative">
-                        <input type="password" class="form-control" id="profileConfirmPassword" placeholder="Konfirmasi Password">
+                        <input type="password" class="form-control" id="profileConfirmPassword" placeholder="Konfirmasi Password" style="padding-right: 40px;">
                         <label for="profileConfirmPassword">Konfirmasi Password Baru</label>
-                        <i class="bi bi-lock-fill position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
                         <span class="password-toggle" id="toggleConfirmPassword">
                             <i class="bi bi-eye"></i>
                         </span>
