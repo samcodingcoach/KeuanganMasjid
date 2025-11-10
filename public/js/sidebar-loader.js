@@ -127,6 +127,97 @@ function updateUserInfo() {
                 }
             }
         }
+        
+        // Set up profile settings button click event
+        setupProfileSettings(userData);
+    }
+}
+
+// Function to set up profile settings button functionality
+function setupProfileSettings(userData) {
+    const profileSettingsBtn = document.querySelector('.profile-settings-btn');
+    
+    if (profileSettingsBtn) {
+        profileSettingsBtn.addEventListener('click', function() {
+            // Populate the modal fields with current user data
+            document.getElementById('profileNamaLengkap').value = userData.nama_lengkap || '';
+            document.getElementById('profileEmail').value = userData.email || '';
+            
+            // Clear password fields
+            document.getElementById('profilePassword').value = '';
+            document.getElementById('profileConfirmPassword').value = '';
+            
+            // Show the modal
+            const profileModal = new bootstrap.Modal(document.getElementById('profileModal'));
+            profileModal.show();
+        });
+    }
+    
+    // Set up password visibility toggle functionality for profile modal
+    setupPasswordToggle();
+    
+    // Set up form validation for profile modal
+    setupProfileFormValidation();
+}
+
+// Function to set up password visibility toggle
+function setupPasswordToggle() {
+    // Toggle password visibility
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('profilePassword');
+    
+    if (togglePassword && passwordInput) {
+        togglePassword.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            const icon = this.querySelector('i');
+            icon.classList.toggle('bi-eye');
+            icon.classList.toggle('bi-eye-slash');
+        });
+    }
+    
+    // Toggle confirm password visibility
+    const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
+    const confirmPasswordInput = document.getElementById('profileConfirmPassword');
+    
+    if (toggleConfirmPassword && confirmPasswordInput) {
+        toggleConfirmPassword.addEventListener('click', function() {
+            const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            confirmPasswordInput.setAttribute('type', type);
+            const icon = this.querySelector('i');
+            icon.classList.toggle('bi-eye');
+            icon.classList.toggle('bi-eye-slash');
+        });
+    }
+}
+
+// Function to set up profile form validation
+function setupProfileFormValidation() {
+    const btnSave = document.getElementById('btnSimpanPerubahan');
+    const profileForm = document.getElementById('profileForm');
+    
+    if (btnSave && profileForm) {
+        btnSave.addEventListener('click', function() {
+            const password = document.getElementById('profilePassword').value;
+            const confirmPassword = document.getElementById('profileConfirmPassword').value;
+            
+            // Check if passwords match
+            if (password !== '' && password !== confirmPassword) {
+                alert('Password baru dan konfirmasi password tidak cocok!');
+                return;
+            }
+            
+            // Form is valid, proceed with update
+            // Note: Actual update functionality will be implemented later
+            alert('Profil akan diperbarui. Fitur update akan diimplementasikan nanti.');
+            
+            // Close modal
+            const modalElement = document.getElementById('profileModal');
+            const modal = bootstrap.Modal.getInstance(modalElement);
+            if (modal) {
+                modal.hide();
+            }
+        });
     }
 }
 

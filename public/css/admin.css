@@ -425,3 +425,14 @@ body {
     }
 }
 
+/* Password visibility toggle */
+.password-toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #6c757d;
+    z-index: 5;
+}
+

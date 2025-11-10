@@ -189,5 +189,52 @@
     <!-- Custom JS -->
     <script src="/js/admin.js"></script>
     <script src="/js/kategori_transaksi.js"></script>
+
+    <!-- Profile Update Modal -->
+    <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="profileModalLabel">Update Profil</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="profileForm">
+                        <div class="form-floating mb-3 position-relative">
+                            <input type="text" class="form-control" id="profileNamaLengkap" placeholder="Nama Lengkap" required>
+                            <label for="profileNamaLengkap">Nama Lengkap</label>
+                            <i class="bi bi-person position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                        </div>
+                        <div class="form-floating mb-3 position-relative">
+                            <input type="email" class="form-control" id="profileEmail" placeholder="Email" required>
+                            <label for="profileEmail">Email</label>
+                            <i class="bi bi-envelope position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                        </div>
+                        <div class="form-floating mb-3 position-relative">
+                            <input type="password" class="form-control" id="profilePassword" placeholder="Password">
+                            <label for="profilePassword">Password Baru (opsional)</label>
+                            <i class="bi bi-lock position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                            <span class="password-toggle" id="togglePassword">
+                                <i class="bi bi-eye"></i>
+                            </span>
+                        </div>
+                        <div class="form-floating mb-3 position-relative">
+                            <input type="password" class="form-control" id="profileConfirmPassword" placeholder="Konfirmasi Password">
+                            <label for="profileConfirmPassword">Konfirmasi Password Baru</label>
+                            <i class="bi bi-lock-fill position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                            <span class="password-toggle" id="toggleConfirmPassword">
+                                <i class="bi bi-eye"></i>
+                            </span>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-whatsapp" id="btnSimpanPerubahan">Simpan Perubahan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>
