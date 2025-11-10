@@ -243,13 +243,22 @@ function setupProfileFormValidation() {
                     userData.email = email;
                     sessionStorage.setItem('userData', JSON.stringify(userData));
 
-                    // Show success notification
-                    alert('Profil berhasil diperbarui! Anda akan otomatis logout untuk menerapkan perubahan.');
+                    // Close the modal first
+                    const profileModal = bootstrap.Modal.getInstance(document.getElementById('profileModal'));
+                    if (profileModal) {
+                        profileModal.hide();
+                    }
 
-                    // Automatically log out after successful update
-                    logout();
+                    // Show success toast notification
+                    showProfileToast('Profil berhasil diperbarui! Anda akan otomatis logout untuk menerapkan perubahan.', true);
+
+                    // Automatically log out after 5 seconds
+                    setTimeout(() => {
+                        logout();
+                    }, 5000);
                 } else {
-                    alert('Gagal memperbarui profil: ' + (result.message || 'Terjadi kesalahan'));
+                    // Show error toast notification
+                    showProfileToast('Gagal memperbarui profil: ' + (result.message || 'Terjadi kesalahan'), false);
                 }
             } catch (error) {
                 console.error('Error updating profile:', error);
@@ -261,6 +270,56 @@ function setupProfileFormValidation() {
             }
         });
     }
+}
+
+// Function to show profile toast notification
+function showProfileToast(message, isSuccess) {
+    // Create toast container if it doesn't exist
+    let toastContainer = document.getElementById('toast-container-profile');
+    if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.id = 'toast-container-profile';
+        toastContainer.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+        toastContainer.style.zIndex = '1100';
+        document.body.appendChild(toastContainer);
+    }
+
+    // Create toast element
+    const toastId = 'profile-toast-' + Date.now();
+    const toastEl = document.createElement('div');
+    toastEl.id = toastId;
+    toastEl.className = 'toast rounded-3';
+    toastEl.setAttribute('role', 'alert');
+    toastEl.setAttribute('aria-live', 'assertive');
+    toastEl.setAttribute('aria-atomic', 'true');
+
+    // Determine toast header color and icon based on success/error
+    const headerBg = isSuccess ? 'linear-gradient(180deg, #075E54 0%, #128C7E 100%)' : 'linear-gradient(180deg, #dc3545 0%, #c82333 100%)';
+    const icon = isSuccess ? 'bi-person-check' : 'bi-x-circle';
+    const title = isSuccess ? 'Notifikasi Profil' : 'Kesalahan Profil';
+
+    toastEl.innerHTML = `
+        <div class="toast-header d-flex align-items-center" style="background: ${headerBg}; border-radius: 10px 10px 0 0 !important;">
+            <i class="bi ${icon} me-2 text-white"></i>
+            <strong class="me-auto text-white">${title}</strong>
+            <small class="text-white">Sekarang</small>
+            <button type="button" class="btn-close btn-close-white ms-2" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            ${message}
+        </div>
+    `;
+
+    toastContainer.appendChild(toastEl);
+
+    // Initialize and show the toast
+    const toast = new bootstrap.Toast(toastEl);
+    toast.show();
+
+    // Remove toast element after it's hidden to keep DOM clean
+    toastEl.addEventListener('hidden.bs.toast', function() {
+        toastEl.remove();
+    });
 }
 
 // Function to handle logout
