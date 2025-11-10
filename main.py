@@ -16,6 +16,7 @@ from api.kategori.update import update_kategori
 from api.pegawai.new import create_pegawai
 from api.pegawai.pegawai import get_pegawai
 from api.pegawai.update import update_pegawai
+from api.pegawai.update_pribadi import update_pribadi
 from api.pegawai.cek_login import cek_login_pegawai
 from api.mustahik.mustahik import get_mustahik
 from api.mustahik.new import create_mustahik
@@ -89,6 +90,11 @@ def list_pegawai():
 @app.route('/api/pegawai.update', methods=['POST'])
 def update_pegawai_route():
     return update_pegawai(supabase, request)
+
+# POST: Mengupdate data pribadi pegawai
+@app.route('/api/pegawai.update_pribadi', methods=['POST'])
+def update_pribadi_route():
+    return update_pribadi(supabase, request)
 
 # POST: Cek login pegawai
 @app.route('/api/pegawai.login', methods=['POST'])
