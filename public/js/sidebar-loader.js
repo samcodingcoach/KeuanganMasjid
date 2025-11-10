@@ -30,7 +30,8 @@ async function loadSidebar() {
         if (sidebarContainer) {
             sidebarContainer.innerHTML = sidebarHtml;
 
-            // After inserting the sidebar, ensure all event listeners are set up
+            // After inserting the sidebar, update user profile info and set up event listeners
+            updateUserInfo();
             setupSidebarToggle();
         }
     } catch (error) {
@@ -91,6 +92,42 @@ function setActiveMenuItem() {
             link.classList.add('active');
         }
     });
+}
+
+// Function to update user profile information in the sidebar
+function updateUserInfo() {
+    // Get user data from sessionStorage
+    const userData = JSON.parse(sessionStorage.getItem('userData'));
+    
+    if (userData) {
+        // Update user name
+        const userNameElement = document.querySelector('.user-name');
+        if (userNameElement) {
+            userNameElement.textContent = userData.nama_lengkap || 'Admin User';
+        }
+        
+        // Update user role
+        const userRoleElement = document.querySelector('.user-role');
+        if (userRoleElement) {
+            userRoleElement.textContent = userData.role || 'Administrator';
+        }
+        
+        // Create initial avatar from name if user name exists
+        if (userData.nama_lengkap) {
+            const userAvatar = document.querySelector('.user-avatar');
+            if (userAvatar) {
+                const nameParts = userData.nama_lengkap.trim().split(' ');
+                if (nameParts.length >= 2) {
+                    // Take first letter of first and last name
+                    const initials = (nameParts[0][0] + nameParts[nameParts.length - 1][0]).toUpperCase();
+                    userAvatar.textContent = initials;
+                } else if (nameParts.length === 1) {
+                    // Take first letter of the single name
+                    userAvatar.textContent = nameParts[0][0].toUpperCase();
+                }
+            }
+        }
+    }
 }
 
 // Initialize when the DOM is loaded
