@@ -331,10 +331,36 @@ function logout() {
     window.location.href = '/login';
 }
 
+// Function to setup logout confirmation functionality
+function setupLogoutConfirmation() {
+    // Use event delegation to handle logout link clicks
+    document.addEventListener('click', function(event) {
+        // Check if the clicked element or its parent is the logout link
+        const logoutLink = event.target.closest('#logout-link');
+        if (logoutLink) {
+            event.preventDefault(); // Prevent default href behavior
+            const logoutModal = document.getElementById('logoutModal');
+            if (logoutModal) {
+                const modal = new bootstrap.Modal(logoutModal);
+                modal.show();
+            }
+        }
+    });
+
+    // Use event delegation for the confirm logout button
+    document.addEventListener('click', function(event) {
+        if (event.target.closest('#confirmLogout')) {
+            logout();
+        }
+    });
+}
+
 // Initialize when the DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     // Small delay to ensure the container element exists before loading
     setTimeout(() => {
         loadSidebar();
+        // Setup logout confirmation after sidebar is loaded
+        setupLogoutConfirmation();
     }, 10);
 });
