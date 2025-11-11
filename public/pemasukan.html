@@ -9,7 +9,7 @@
     <!-- Select2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <!-- Select2 Bootstrap 5 Theme -->
-    <link href="https://cdn.jsdelivr.net/npm/select2-theme-bootstrap-5@1.3.0/dist/select2-theme-bootstrap-5.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <!-- Custom CSS -->
@@ -39,6 +39,13 @@
             margin-right: 1rem;
             font-size: 1.25rem;
         }
+        .select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
+            padding-left: 0.5rem;
+        }
+        .select2-container--bootstrap-5 .select2-selection {
+            box-sizing: border-box;
+            height: calc(1.5em + 0.75rem + 2px) !important;
+        }
         #transaction-table td, #transaction-table th {
             font-size: 0.875rem;
             padding: 15px 20px;
@@ -60,6 +67,13 @@
             vertical-align: top;
             padding: 0.75rem 1rem;
         }
+        /* Ensure Select2 dropdown appears above modal */
+        .select2-container {
+            z-index: 9999 !important;
+        }
+        .select2-dropdown {
+            z-index: 10000 !important;
+        }
         /* Hide native date picker icons */
         input[type="date"]::-webkit-calendar-picker-indicator {
             display: none !important;
@@ -74,7 +88,7 @@
             -moz-appearance: textfield;
             appearance: none;
         }
-        
+
         /* Firefox-specific approach to hide date picker icon */
         @-moz-document url-prefix() {
             input[type="date"] {
@@ -289,10 +303,10 @@
                     </div>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                <div class="modal-body" style="max-height: 70vh; overflow-y: auto;" data-bs-focus="false">
                     <ul class="nav nav-tabs" id="addTransactionTab" role="tablist">
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="add-info-tab" data-bs-toggle="tab" data-bs-target="#add-info-pane" type="button" role="tab" aria-controls="add-info-pane" aria-selected="true">Informasi</button>
+                            <button class="nav-link active" id="add-info-tab" data-bs-toggle="tab" data-bs-target="#add-info-pane" type="button" role="tab" aria-controls="add-info-pane" aria-selected="true">Info</button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="add-detail-tab" data-bs-toggle="tab" data-bs-target="#add-detail-pane" type="button" role="tab" aria-controls="add-detail-pane" aria-selected="false">Detail</button>
@@ -314,11 +328,7 @@
                             <div class="tab-pane fade" id="add-detail-pane" role="tabpanel" aria-labelledby="add-detail-tab">
                                 <div class="mb-3">
                                     <select class="form-select searchable-select" id="nama_akun" data-placeholder="Pilih Nama Akun" required>
-                                        <option></option>
-                                        <option value="Zakat">Zakat</option>
-                                        <option value="Infaq">Infaq</option>
-                                        <option value="Sedekah">Sedekah</option>
-                                        <option value="Wakaf">Wakaf</option>
+                                        <option value="">Pilih Nama Akun</option>
                                     </select>
                                 </div>
                                 <div class="mb-3">
@@ -448,7 +458,7 @@
             // Filter transactions based on all criteria
             filteredTransactions = allIncomeTransactions.filter(transaction => {
                 // Check search criteria - search in kode_transaksi
-                const matchesSearch = !searchValue || 
+                const matchesSearch = !searchValue ||
                     (transaction.kode_transaksi && transaction.kode_transaksi.toLowerCase().includes(searchValue));
 
                 // Check date criteria
@@ -457,7 +467,7 @@
                     // Convert transaction date to YYYY-MM-DD format for comparison
                     const transactionDate = new Date(transaction.tanggal_transaksi);
                     const transactionDateStr = transactionDate.toISOString().split('T')[0]; // YYYY-MM-DD
-                    
+
                     if (startDate && transactionDateStr < startDate) {
                         matchesDate = false;
                     }
@@ -500,7 +510,7 @@
             if (transaction.details && Array.isArray(transaction.details) && transaction.details.length > 0) {
                 transaction.details.forEach((detail, index) => {
                     const row = document.createElement('tr');
-                    
+
                     // Format the row with the requested fields
                     row.innerHTML = `
                         <td>${index + 1}</td>
@@ -519,7 +529,7 @@
                             </button>
                         </td>
                     `;
-                    
+
                     detailTableBody.appendChild(row);
                 });
             } else {
@@ -544,23 +554,23 @@
         // Function to format date in 'Day Month Year, Time WITA' format
         function formatDate(dateString) {
             if (!dateString) return '-';
-            
+
             // Parse the date string
             const date = new Date(dateString);
-            
+
             // Array of month names in Indonesian
             const months = [
                 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
                 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
             ];
-            
+
             // Get date components
             const day = date.getDate();
             const month = months[date.getMonth()];
             const year = date.getFullYear();
             const hours = String(date.getHours()).padStart(2, '0');
             const minutes = String(date.getMinutes()).padStart(2, '0');
-            
+
             // Format as 'Day Month Year, Time WITA'
             return `${day} ${month} ${year}, ${hours}:${minutes} WITA`;
         }
@@ -604,7 +614,7 @@
 
         // Generate the next number (increment by 1)
         const nextNumber = (maxNumber + 1).toString().padStart(3, '0');
-        
+
         return `${prefix}${nextNumber}-${datePart}`;
     }
 
@@ -612,43 +622,156 @@
     function validateDateInput() {
         const today = new Date();
         today.setHours(0, 0, 0, 0); // Set time to start of day for comparison
-        
+
         const dateInput = document.getElementById('tanggal_transaksi');
         const selectedDate = new Date(dateInput.value);
         selectedDate.setHours(0, 0, 0, 0); // Set time to start of day for comparison
-        
+
         if (selectedDate > today) {
             alert('Tanggal transaksi tidak boleh di masa depan');
             dateInput.value = today.toISOString().split('T')[0]; // Set to today's date
         }
-        
+
         // Generate new kode_transaksi when date changes
         if (allIncomeTransactions) {
             const newKode = generateKodeTransaksi(allIncomeTransactions, dateInput.value);
             document.getElementById('kode_transaksi').value = newKode;
         }
     }
-
     // Event listener for modal opening to auto-generate kode_transaksi
     document.getElementById('addTransactionModal').addEventListener('shown.bs.modal', function() {
         // Set default date to today
         const today = new Date();
         const todayString = today.toISOString().split('T')[0];
         document.getElementById('tanggal_transaksi').value = todayString;
-        
+
         // Generate kode transaksi based on today's date
         const newKode = generateKodeTransaksi(allIncomeTransactions || []);
         document.getElementById('kode_transaksi').value = newKode;
+        
+        // Load accounts when modal opens to ensure data is fresh
+        loadAccounts();
     });
 
     // Event listener for date input change
     document.getElementById('tanggal_transaksi').addEventListener('change', validateDateInput);
-    
+
     // Set max date to today to prevent future date selection in the date picker
     document.addEventListener('DOMContentLoaded', function() {
         const today = new Date();
         const todayString = today.toISOString().split('T')[0]; // Format YYYY-MM-DD
         document.getElementById('tanggal_transaksi').setAttribute('max', todayString);
-    });    </script>
+    });
+
+    // Function to load accounts from API and populate dropdown
+    function loadAccounts() {
+        fetch('http://127.0.0.1:5002/api/akun.list')
+            .then(response => response.json())
+            .then(response => {
+                if (response.success && response.data) {
+                    const selectElement = document.getElementById('nama_akun');
+                    selectElement.innerHTML = '<option value="">Pilih Nama Akun</option>'; // Clear existing options
+
+                    response.data.forEach(account => {
+                        const option = document.createElement('option');
+                        option.value = account.id_akun;
+                        option.text = account.nama_akun;
+                        selectElement.appendChild(option);
+                    });
+
+                    // Check if the modal is currently open and detail tab is active
+                    // If so, re-initialize Select2 to reflect the new options
+                    if ($('#addTransactionModal').hasClass('show') && $('#add-detail-tab').hasClass('active')) {
+                        if ($('#nama_akun').data('select2')) {
+                            // If Select2 is already initialized, just refresh it
+                            $('#nama_akun').select2('destroy').select2({
+                                theme: 'bootstrap-5',
+                                placeholder: 'Pilih Nama Akun',
+                                allowClear: true,
+                                width: '100%',
+                                dropdownParent: $('#addTransactionModal')
+                            });
+                        }
+                    }
+                } else {
+                    console.error('API akun.list returned error:', response);
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching accounts:', error);
+            });
+    }
+
+    // Initialize Select2 for searchable dropdowns when DOM is ready
+    $(document).ready(function() {
+        // Initialize all searchable selects except nama_akun for now (because it's in an inactive tab)
+        $('.searchable-select:not(#nama_akun)').select2({
+            theme: 'bootstrap-5',
+            placeholder: function() {
+                return $(this).data('placeholder');
+            },
+            allowClear: true,
+            width: '100%'
+        });
+        
+        // For nama_akun, we'll handle initialization separately when the detail tab is shown
+        // Since it's in an inactive tab initially, we need special handling
+    });
+
+    // Load accounts when DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+        loadAccounts();
+    });
+
+    // Initialize Select2 specifically for nama_akun after modal is fully shown
+    document.getElementById('addTransactionModal').addEventListener('shown.bs.modal', function() {
+        // Load accounts first
+        loadAccounts();
+        
+        // Use a small delay to ensure DOM elements are ready
+        setTimeout(function() {
+            // Initialize Select2 for nama_akun regardless of which tab is active
+            // This is required because it's in an inactive tab initially
+            if ($('#nama_akun').length && jQuery().select2) {
+                // Destroy existing instance if any
+                if ($('#nama_akun').data('select2')) {
+                    $('#nama_akun').select2('destroy');
+                }
+                
+                // Initialize with proper settings
+                $('#nama_akun').select2({
+                    theme: 'bootstrap-5',
+                    placeholder: 'Pilih Nama Akun',
+                    allowClear: true,
+                    width: '100%',
+                    dropdownParent: $('#addTransactionModal') // Important: ensure dropdown appears in modal
+                });
+            }
+        }, 300); // Small delay to ensure modal is fully rendered
+    });
+
+    // Handle tab switching to ensure Select2 works properly when user switches to detail tab
+    document.addEventListener('shown.bs.tab', function (e) {
+        if (e.target.id === 'add-detail-tab') {
+            // When detail tab is shown, ensure Select2 for nama_akun is properly initialized
+            if ($('#nama_akun').length && jQuery().select2) {
+                // Force re-initialization if needed
+                if (!$('#nama_akun').data('select2')) {
+                    $('#nama_akun').select2({
+                        theme: 'bootstrap-5',
+                        placeholder: 'Pilih Nama Akun',
+                        allowClear: true,
+                        width: '100%',
+                        dropdownParent: $('#addTransactionModal')
+                    });
+                }
+                
+                // Refresh to ensure it renders properly
+                $('#nama_akun').select2('open');
+                $('#nama_akun').select2('close');
+            }
+        }
+    });
+</script>
 </body>
 </html>
