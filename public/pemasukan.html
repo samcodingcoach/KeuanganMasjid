@@ -37,8 +37,12 @@
                 const tbody = document.querySelector('#transactionTable tbody');
                 
                 if (response.success && response.data) {
-                    // The API returns data in response.data array
-                    response.data.forEach((transaction, index) => {
+                    // Filter transactions to only show income transactions (kode_transaksi starting with 'FI')
+                    const incomeTransactions = response.data.filter(transaction => 
+                        transaction.kode_transaksi && transaction.kode_transaksi.startsWith('FI')
+                    );
+                    
+                    incomeTransactions.forEach((transaction, index) => {
                         const row = document.createElement('tr');
                         
                         // Format the row with the required data
@@ -53,6 +57,11 @@
                         
                         tbody.appendChild(row);
                     });
+                    
+                    // If no income transactions found, show a message
+                    if (incomeTransactions.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="6">Tidak ada data pemasukan</td></tr>';
+                    }
                 } else {
                     console.error('API returned error:', response);
                     tbody.innerHTML = '<tr><td colspan="6">No data available</td></tr>';
