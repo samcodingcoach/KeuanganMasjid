@@ -324,6 +324,11 @@
                                     <input type="date" class="form-control" id="tanggal_transaksi" placeholder="Pilih tanggal" required>
                                     <label for="tanggal_transaksi">Tanggal Transaksi</label>
                                 </div>
+                                <div class="mb-3">
+                                    <select class="form-select searchable-select" id="nama_muzakki" data-placeholder="Pilih Nama Muzakki" required>
+                                        <option value="">Pilih Nama Muzakki</option>
+                                    </select>
+                                </div>
                             </div>
                             <div class="tab-pane fade" id="add-detail-pane" role="tabpanel" aria-labelledby="add-detail-tab">
                                 <div class="mb-3">
@@ -649,8 +654,9 @@
         const newKode = generateKodeTransaksi(allIncomeTransactions || []);
         document.getElementById('kode_transaksi').value = newKode;
         
-        // Load accounts when modal opens to ensure data is fresh
+        // Load accounts and muzakki when modal opens to ensure data is fresh
         loadAccounts();
+        loadMuzakki();
     });
 
     // Event listener for date input change
@@ -701,6 +707,45 @@
                 console.error('Error fetching accounts:', error);
             });
     }
+    
+    // Function to load muzakki from API and populate dropdown
+    function loadMuzakki() {
+        fetch('http://127.0.0.1:5002/api/muzakki.list')
+            .then(response => response.json())
+            .then(response => {
+                if (response.success && response.data) {
+                    const selectElement = document.getElementById('nama_muzakki');
+                    selectElement.innerHTML = '<option value="">Pilih Nama Muzakki</option>'; // Clear existing options
+
+                    response.data.forEach(muzakki => {
+                        const option = document.createElement('option');
+                        option.value = muzakki.id_muzakki;
+                        option.text = muzakki.nama_lengkap + ' [' + muzakki.kategori + ']';
+                        selectElement.appendChild(option);
+                    });
+
+                    // Check if the modal is currently open
+                    // If so, re-initialize Select2 to reflect the new options
+                    if ($('#addTransactionModal').hasClass('show')) {
+                        if ($('#nama_muzakki').data('select2')) {
+                            // If Select2 is already initialized, just refresh it
+                            $('#nama_muzakki').select2('destroy').select2({
+                                theme: 'bootstrap-5',
+                                placeholder: 'Pilih Nama Muzakki',
+                                allowClear: true,
+                                width: '100%',
+                                dropdownParent: $('#addTransactionModal')
+                            });
+                        }
+                    }
+                } else {
+                    console.error('API muzakki.list returned error:', response);
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching muzakki:', error);
+            });
+    }
 
     // Initialize Select2 for searchable dropdowns when DOM is ready
     $(document).ready(function() {
@@ -723,32 +768,7 @@
         loadAccounts();
     });
 
-    // Initialize Select2 specifically for nama_akun after modal is fully shown
-    document.getElementById('addTransactionModal').addEventListener('shown.bs.modal', function() {
-        // Load accounts first
-        loadAccounts();
-        
-        // Use a small delay to ensure DOM elements are ready
-        setTimeout(function() {
-            // Initialize Select2 for nama_akun regardless of which tab is active
-            // This is required because it's in an inactive tab initially
-            if ($('#nama_akun').length && jQuery().select2) {
-                // Destroy existing instance if any
-                if ($('#nama_akun').data('select2')) {
-                    $('#nama_akun').select2('destroy');
-                }
-                
-                // Initialize with proper settings
-                $('#nama_akun').select2({
-                    theme: 'bootstrap-5',
-                    placeholder: 'Pilih Nama Akun',
-                    allowClear: true,
-                    width: '100%',
-                    dropdownParent: $('#addTransactionModal') // Important: ensure dropdown appears in modal
-                });
-            }
-        }, 300); // Small delay to ensure modal is fully rendered
-    });
+
 
     // Handle tab switching to ensure Select2 works properly when user switches to detail tab
     document.addEventListener('shown.bs.tab', function (e) {
