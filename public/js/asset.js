@@ -281,12 +281,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (result.success && result.data) {
                 renderAssetTable(result.data);
+                // Update total harga in the table footer
+                updateTotalHarga(result.total_harga);
             } else {
                 assetTableBody.innerHTML = '<tr><td colspan="5" class="text-center">Tidak ada data asset</td></tr>';
+                // Reset total harga to 0 when no data
+                updateTotalHarga(0);
             }
         } catch (error) {
             console.error('Error loading asset data:', error);
             assetTableBody.innerHTML = `<tr><td colspan="5" class="text-center text-danger">Gagal memuat data: ${error.message}</td></tr>`;
+            // Reset total harga to 0 on error
+            updateTotalHarga(0);
         }
     }
 
@@ -324,7 +330,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <td>${index + 1}</td>
                 <td>${asset.nama_barang}</td>
                 <td>${asset.created_at}</td>
-                <td>${formattedHarga}</td>
+                <td class="text-end">${formattedHarga}</td>
                 <td>
                     <button class="btn btn-sm btn-outline-info p-1 detail-btn" style="border-radius: 8px; width: 36px; height: 36px; margin-right: 0.25rem;"
                             data-id="${asset.id_asset}"
@@ -444,6 +450,22 @@ document.addEventListener('DOMContentLoaded', function() {
         const paginationInfo = document.querySelector('.card-footer small');
         if (paginationInfo) {
             paginationInfo.innerHTML = `Menampilkan <strong>${displayed}</strong> dari <strong>${total}</strong> entri`;
+        }
+    }
+
+    // Function to update total harga display
+    function updateTotalHarga(totalHarga) {
+        const totalHargaElement = document.getElementById('total-harga-td');
+        if (totalHargaElement) {
+            // Format the total harga as currency
+            const formattedTotalHarga = new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(totalHarga);
+            
+            totalHargaElement.textContent = formattedTotalHarga;
         }
     }
 

@@ -13,7 +13,8 @@ def get_all_assets(supabase_client):
             return jsonify({
                 'success': True,
                 'message': 'Tidak ada data asset',
-                'data': []
+                'data': [],
+                'total_harga': 0  # Sum of all asset harga
             })
         
         # Get all pegawai data
@@ -26,6 +27,7 @@ def get_all_assets(supabase_client):
         
         # Join the data
         result_data = []
+        total_harga = 0
         for asset in asset_response.data:
             # Format created_at timestamp
             if asset.get('created_at'):
@@ -37,13 +39,17 @@ def get_all_assets(supabase_client):
             asset['nama_lengkap'] = pegawai_info.get('nama_lengkap', '')
             asset['role'] = pegawai_info.get('role', '')
             
+            # Add asset harga to total
+            total_harga += asset.get('harga', 0) or 0
+            
             result_data.append(asset)
         
         return jsonify({
             'success': True,
             'message': 'Semua data asset',
             'data': result_data,
-            'count': len(result_data)
+            'count': len(result_data),
+            'total_harga': total_harga
         })
 
     except Exception as e:
@@ -66,7 +72,8 @@ def get_asset_by_kode_barang(supabase_client, kode_barang):
             return jsonify({
                 'success': True,
                 'message': f'Tidak ada data asset dengan kode_barang: {kode_barang}',
-                'data': []
+                'data': [],
+                'total_harga': 0  # Sum of all asset harga
             })
         
         # Get all pegawai data
@@ -79,6 +86,7 @@ def get_asset_by_kode_barang(supabase_client, kode_barang):
         
         # Join the data
         result_data = []
+        total_harga = 0
         for asset in asset_response.data:
             # Format created_at timestamp
             if asset.get('created_at'):
@@ -90,13 +98,17 @@ def get_asset_by_kode_barang(supabase_client, kode_barang):
             asset['nama_lengkap'] = pegawai_info.get('nama_lengkap', '')
             asset['role'] = pegawai_info.get('role', '')
             
+            # Add asset harga to total
+            total_harga += asset.get('harga', 0) or 0
+            
             result_data.append(asset)
         
         return jsonify({
             'success': True,
             'message': f'Data asset dengan kode_barang: {kode_barang}',
             'data': result_data,
-            'count': len(result_data)
+            'count': len(result_data),
+            'total_harga': total_harga
         })
 
     except Exception as e:
