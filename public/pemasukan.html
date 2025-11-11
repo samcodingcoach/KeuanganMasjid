@@ -71,7 +71,11 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12">
-                    <h2 class="mb-4 text-whatsapp">Daftar Penerimaan</h2>
+                    <h2 class="mb-4 text-whatsapp">Penerimaan</h2>
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle me-2"></i>Peringatan: Transaksi penerimaan tidak bisa dihapus. Harap berhati-hati ketika simpan.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
                 </div>
             </div>
             <div class="row">
@@ -81,6 +85,17 @@
                             <div class="d-flex align-items-center">
                                 <i class="bi bi-cash-coin me-2 text-white"></i>
                                 <h5 class="card-title mb-0 text-white">Daftar Penerimaan</h5>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <input type="date" class="form-control form-control-sm me-2" id="start-date-filter" placeholder="Tanggal Awal" style="min-width: 110px; height: 30px;">
+                                <input type="date" class="form-control form-control-sm me-2" id="end-date-filter" placeholder="Tanggal Akhir" style="min-width: 110px; height: 30px;">
+                                <div class="input-group me-2">
+                                    <input type="text" class="form-control form-control-sm" id="search-input" placeholder="Cari kode transaksi..." style="min-width: 100px; height: 30px;">
+                                    <button class="btn btn-light btn-sm" type="button" id="search-button" style="height: 30px;"><i class="bi bi-search"></i></button>
+                                </div>
+                                <button type="button" class="btn btn-light btn-sm ms-2" data-bs-toggle="modal" data-bs-target="#addTransactionModal" style="min-width: 90px; height: 30px;">
+                                    <i class="bi bi-plus-lg"></i> Tambah
+                                </button>
                             </div>
                         </div>
                         <div class="card-body p-0">
@@ -242,6 +257,86 @@
         </div>
     </div>
 
+    <!-- Modal Tambah Transaksi -->
+    <div class="modal fade" id="addTransactionModal" tabindex="-1" aria-labelledby="addTransactionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content border-0 rounded-3">
+                <div class="modal-header" style="background: linear-gradient(180deg, #075E54 0%, #128C7E 100%);">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-plus-circle me-2 text-white"></i>
+                        <h5 class="modal-title text-white" id="addTransactionModalLabel">Tambah Transaksi Penerimaan Baru</h5>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                    <ul class="nav nav-tabs" id="addTransactionTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="add-biodata-tab" data-bs-toggle="tab" data-bs-target="#add-biodata-pane" type="button" role="tab" aria-controls="add-biodata-pane" aria-selected="true">Biodata</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="add-detail-tab" data-bs-toggle="tab" data-bs-target="#add-detail-pane" type="button" role="tab" aria-controls="add-detail-pane" aria-selected="false">Detail</button>
+                        </li>
+                    </ul>
+                    <form id="add-transaction-form">
+                        <div class="tab-content pt-3" id="addTransactionTabContent">
+                            <div class="tab-pane fade show active" id="add-biodata-pane" role="tabpanel" aria-labelledby="add-biodata-tab">
+                                <div class="form-floating mb-3 position-relative">
+                                    <input type="text" class="form-control" id="kode_transaksi" placeholder="Masukkan kode transaksi" required>
+                                    <label for="kode_transaksi">Kode Transaksi</label>
+                                    <i class="bi bi-hash position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                                </div>
+                                <div class="form-floating mb-3 position-relative">
+                                    <input type="date" class="form-control" id="tanggal_transaksi" placeholder="Pilih tanggal" required>
+                                    <label for="tanggal_transaksi">Tanggal Transaksi</label>
+                                    <i class="bi bi-calendar position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                                </div>
+                                <div class="form-floating mb-3 position-relative">
+                                    <input type="text" class="form-control" id="total_transaksi" placeholder="Masukkan total" required>
+                                    <label for="total_transaksi">Total</label>
+                                    <i class="bi bi-currency-dollar position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="add-detail-pane" role="tabpanel" aria-labelledby="add-detail-tab">
+                                <div class="mb-3">
+                                    <select class="form-select searchable-select" id="nama_akun" data-placeholder="Pilih Nama Akun" required>
+                                        <option></option>
+                                        <option value="Zakat">Zakat</option>
+                                        <option value="Infaq">Infaq</option>
+                                        <option value="Sedekah">Sedekah</option>
+                                        <option value="Wakaf">Wakaf</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <select class="form-select searchable-select" id="kategori_transaksi" data-placeholder="Pilih Kategori Transaksi" required>
+                                        <option></option>
+                                        <option value="Zakat Fitrah">Zakat Fitrah</option>
+                                        <option value="Zakat Mal">Zakat Mal</option>
+                                        <option value="Infaq Reguler">Infaq Reguler</option>
+                                        <option value="Infaq Khusus">Infaq Khusus</option>
+                                        <option value="Sedekah">Sedekah</option>
+                                    </select>
+                                </div>
+                                <div class="form-floating mb-3 position-relative">
+                                    <textarea class="form-control" id="keterangan" placeholder="Tambahkan keterangan" style="height: 100px;"></textarea>
+                                    <label for="keterangan">Keterangan</label>
+                                    <i class="bi bi-journal-text position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                                </div>
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="aktif" checked>
+                                    <label class="form-check-label" for="aktif">Aktif</label>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary me-2" data-bs-dismiss="modal"><i class="bi bi-x-lg me-1"></i>Batal</button>
+                    <button type="button" class="btn btn-whatsapp" id="save-transaction-btn"><i class="bi bi-save me-1"></i>Simpan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Bootstrap JS Bundle with Popper -->
@@ -253,68 +348,125 @@
     <!-- Custom JS -->
     <script src="/js/admin.js"></script>
     <script>
+        // Global variables to hold all transactions and filtered transactions
+        let allIncomeTransactions = [];
+        let filteredTransactions = [];
+
         // Fetch data from the API endpoint
         fetch('http://127.0.0.1:5002/api/transaksi.list')
             .then(response => response.json())
             .then(response => {
-                const tbody = document.querySelector('#transaction-table tbody');
-                let totalPenerimaan = 0;
-
                 if (response.success && response.data) {
                     // Filter transactions to only show income transactions (kode_transaksi starting with 'FI')
-                    const incomeTransactions = response.data.filter(transaction =>
+                    allIncomeTransactions = response.data.filter(transaction =>
                         transaction.kode_transaksi && transaction.kode_transaksi.startsWith('FI')
                     );
 
-                    incomeTransactions.forEach((transaction, index) => {
-                        const row = document.createElement('tr');
-
-                        // Format the total with Indonesian currency format (using dots as thousands separator)
-                        const formattedTotal = 'Rp ' + (transaction.total || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-
-                        // Add to total penerimaan
-                        totalPenerimaan += parseInt(transaction.total || 0);
-
-                        // Format the row with the required data
-                        row.innerHTML = `
-                            <td>${index + 1}</td>
-                            <td>${transaction.kode_transaksi || '-'}</td>
-                            <td>${formatDate(transaction.tanggal_transaksi)}</td>
-                            <td>${transaction.nama_akun || '-'}</td>
-                            <td class="text-end">${formattedTotal}</td>
-                            <td>
-                                <button class="btn btn-sm btn-outline-whatsapp p-1" onclick="showDetail(${JSON.stringify(transaction).replace(/"/g, '&quot;')})" style="border-radius: 8px; width: 36px; height: 36px;">
-                                    <i class="bi bi-eye"></i>
-                                </button>
-                            </td>
-                        `;
-
-                        tbody.appendChild(row);
-                    });
-
-                    // Format total penerimaan and display it
-                    document.getElementById('total-penerimaan-td').textContent = 'Rp ' + totalPenerimaan.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-
-                    // Update pagination info
-                    const totalEntries = incomeTransactions.length;
-                    document.querySelector('.text-muted strong:first-child').textContent = totalEntries > 0 ? '1' : '0';
-                    document.querySelector('.text-muted strong:nth-child(2)').textContent = totalEntries;
-                    document.querySelector('.text-muted strong:last-child').textContent = totalEntries;
-
-                    // If no income transactions found, show a message
-                    if (incomeTransactions.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-3">Tidak ada data penerimaan</td></tr>';
-                        document.getElementById('total-penerimaan-td').textContent = 'Rp 0';
-                    }
+                    // Initialize the table with all transactions
+                    filteredTransactions = allIncomeTransactions;
+                    renderTable();
                 } else {
                     console.error('API returned error:', response);
-                    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-3">No data available</td></tr>';
+                    document.querySelector('#transaction-table tbody').innerHTML = '<tr><td colspan="6" class="text-center py-3">No data available</td></tr>';
                 }
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
                 document.querySelector('#transaction-table tbody').innerHTML = '<tr><td colspan="6" class="text-center py-3">Error loading data</td></tr>';
             });
+
+        // Function to render the table with filtered transactions
+        function renderTable() {
+            const tbody = document.querySelector('#transaction-table tbody');
+            let totalPenerimaan = 0;
+
+            tbody.innerHTML = ''; // Clear the table
+
+            if (filteredTransactions.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-3">Tidak ada data penerimaan</td></tr>';
+                document.getElementById('total-penerimaan-td').textContent = 'Rp 0';
+            } else {
+                filteredTransactions.forEach((transaction, index) => {
+                    const row = document.createElement('tr');
+
+                    // Format the total with Indonesian currency format (using dots as thousands separator)
+                    const formattedTotal = 'Rp ' + (transaction.total || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+                    // Add to total penerimaan
+                    totalPenerimaan += parseInt(transaction.total || 0);
+
+                    // Format the row with the required data
+                    row.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td>${transaction.kode_transaksi || '-'}</td>
+                        <td>${formatDate(transaction.tanggal_transaksi)}</td>
+                        <td>${transaction.nama_akun || '-'}</td>
+                        <td class="text-end">${formattedTotal}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-whatsapp p-1" onclick="showDetail(${JSON.stringify(transaction).replace(/"/g, '&quot;')})" style="border-radius: 8px; width: 36px; height: 36px;">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </td>
+                    `;
+
+                    tbody.appendChild(row);
+                });
+
+                // Format total penerimaan and display it
+                document.getElementById('total-penerimaan-td').textContent = 'Rp ' + totalPenerimaan.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+            }
+
+            // Update pagination info
+            const totalEntries = filteredTransactions.length;
+            document.querySelector('.text-muted strong:first-child').textContent = totalEntries > 0 ? '1' : '0';
+            document.querySelector('.text-muted strong:nth-child(2)').textContent = totalEntries;
+            document.querySelector('.text-muted strong:last-child').textContent = totalEntries;
+        }
+
+        // Function to filter transactions based on search and date filters
+        function filterTransactions() {
+            // Get filter values
+            const searchValue = document.getElementById('search-input').value.toLowerCase();
+            const startDate = document.getElementById('start-date-filter').value;
+            const endDate = document.getElementById('end-date-filter').value;
+
+            // Filter transactions based on all criteria
+            filteredTransactions = allIncomeTransactions.filter(transaction => {
+                // Check search criteria - search in kode_transaksi
+                const matchesSearch = !searchValue || 
+                    (transaction.kode_transaksi && transaction.kode_transaksi.toLowerCase().includes(searchValue));
+
+                // Check date criteria
+                let matchesDate = true;
+                if (startDate || endDate) {
+                    // Convert transaction date to YYYY-MM-DD format for comparison
+                    const transactionDate = new Date(transaction.tanggal_transaksi);
+                    const transactionDateStr = transactionDate.toISOString().split('T')[0]; // YYYY-MM-DD
+                    
+                    if (startDate && transactionDateStr < startDate) {
+                        matchesDate = false;
+                    }
+                    if (endDate && transactionDateStr > endDate) {
+                        matchesDate = false;
+                    }
+                }
+
+                return matchesSearch && matchesDate;
+            });
+
+            // Render the filtered table
+            renderTable();
+        }
+
+        // Add event listeners for the search and date filters
+        document.getElementById('search-button').addEventListener('click', filterTransactions);
+        document.getElementById('search-input').addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                filterTransactions();
+            }
+        });
+        document.getElementById('start-date-filter').addEventListener('change', filterTransactions);
+        document.getElementById('end-date-filter').addEventListener('change', filterTransactions);
 
         function showDetail(transaction) {
             // Fill the info tab with transaction data
