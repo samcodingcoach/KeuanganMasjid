@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Pemasukan</title>
+</head>
+<body>
+    <h1>Data Pemasukan</h1>
+    <table border="1" id="transactionTable">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Kode Transaksi</th>
+                <th>Tanggal</th>
+                <th>Nama Akun</th>
+                <th>Total</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Data will be populated here by JavaScript -->
+        </tbody>
+    </table>
+
+    <div id="detailModal" style="display:none;">
+        <h2>Detail Transaksi</h2>
+        <pre id="detailContent"></pre>
+        <button onclick="closeModal()">Close</button>
+    </div>
+
+    <script>
+        // Fetch data from the API endpoint
+        fetch('http://127.0.0.1:5002/api/transaksi.list')
+            .then(response => response.json())
+            .then(response => {
+                const tbody = document.querySelector('#transactionTable tbody');
+                
+                if (response.success && response.data) {
+                    // The API returns data in response.data array
+                    response.data.forEach((transaction, index) => {
+                        const row = document.createElement('tr');
+                        
+                        // Format the row with the required data
+                        row.innerHTML = `
+                            <td>${index + 1}</td>
+                            <td>${transaction.kode_transaksi || '-'}</td>
+                            <td>${transaction.tanggal_transaksi || '-'}</td>
+                            <td>${transaction.nama_akun || '-'}</td>
+                            <td>${transaction.total || '-'}</td>
+                            <td><button onclick="showDetail(${JSON.stringify(transaction).replace(/"/g, '&quot;')})">Detail</button></td>
+                        `;
+                        
+                        tbody.appendChild(row);
+                    });
+                } else {
+                    console.error('API returned error:', response);
+                    tbody.innerHTML = '<tr><td colspan="6">No data available</td></tr>';
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                document.querySelector('#transactionTable tbody').innerHTML = '<tr><td colspan="6">Error loading data</td></tr>';
+            });
+
+        function showDetail(transaction) {
+            document.getElementById('detailContent').textContent = JSON.stringify(transaction, null, 2);
+            document.getElementById('detailModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('detailModal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

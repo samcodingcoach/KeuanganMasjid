@@ -223,6 +223,10 @@ def masjid_page():
 def admin_page():
     return send_from_directory('public', 'admin.html')
 
+@app.route('/pemasukan')
+def pemasukan_page():
+    return send_from_directory('public', 'pemasukan.html')
+
 @app.route('/test')
 def test_page():
     return send_from_directory('public', 'test_sidebar.html')
