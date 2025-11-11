@@ -281,7 +281,7 @@
                         <div class="tab-content pt-3" id="addTransactionTabContent">
                             <div class="tab-pane fade show active" id="add-biodata-pane" role="tabpanel" aria-labelledby="add-biodata-tab">
                                 <div class="form-floating mb-3 position-relative">
-                                    <input type="text" class="form-control" id="kode_transaksi" placeholder="Masukkan kode transaksi" required>
+                                    <input type="text" class="form-control" id="kode_transaksi" placeholder="Otomatis" required readonly>
                                     <label for="kode_transaksi">Kode Transaksi</label>
                                     <i class="bi bi-hash position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
                                 </div>
@@ -549,6 +549,91 @@
             // Format as 'Day Month Year, Time WITA'
             return `${day} ${month} ${year}, ${hours}:${minutes} WITA`;
         }
-    </script>
+    // Function to generate kode transaksi in format FIXXX-YYMMDD
+    function generateKodeTransaksi(transactions, selectedDate = null) {
+        if (!selectedDate) {
+            selectedDate = new Date().toISOString().split('T')[0]; // Format YYYY-MM-DD
+        }
+
+        // Extract date components for YYMMDD part
+        const today = new Date(selectedDate);
+        const year = String(today.getFullYear()).slice(2); // Get last 2 digits of year
+        const month = String(today.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed
+        const day = String(today.getDate()).padStart(2, '0');
+
+        const datePart = `${year}${month}${day}`;
+        const prefix = 'FI'; // Fixed prefix for income transactions
+
+        // Filter transactions for the same date
+        const todayTransactions = transactions.filter(transaction => {
+            if (!transaction.tanggal_transaksi) return false;
+            const transactionDate = new Date(transaction.tanggal_transaksi);
+            const transYear = String(transactionDate.getFullYear()).slice(2);
+            const transMonth = String(transactionDate.getMonth() + 1).toString().padStart(2, '0');
+            const transDay = String(transactionDate.getDate()).toString().padStart(2, '0');
+            const transactionDatePart = `${transYear}${transMonth}${transDay}`;
+            return transactionDatePart === datePart && transaction.kode_transaksi.startsWith(prefix);
+        });
+
+        // Find the highest number used today
+        let maxNumber = 0;
+        todayTransactions.forEach(transaction => {
+            const match = transaction.kode_transaksi.match(/^FI(\d{3})-\d{6}$/);
+            if (match) {
+                const number = parseInt(match[1]);
+                if (number > maxNumber) {
+                    maxNumber = number;
+                }
+            }
+        });
+
+        // Generate the next number (increment by 1)
+        const nextNumber = (maxNumber + 1).toString().padStart(3, '0');
+        
+        return `${prefix}${nextNumber}-${datePart}`;
+    }
+
+    // Function to validate date (prevent selecting future dates)
+    function validateDateInput() {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Set time to start of day for comparison
+        
+        const dateInput = document.getElementById('tanggal_transaksi');
+        const selectedDate = new Date(dateInput.value);
+        selectedDate.setHours(0, 0, 0, 0); // Set time to start of day for comparison
+        
+        if (selectedDate > today) {
+            alert('Tanggal transaksi tidak boleh di masa depan');
+            dateInput.value = today.toISOString().split('T')[0]; // Set to today's date
+        }
+        
+        // Generate new kode_transaksi when date changes
+        if (allIncomeTransactions) {
+            const newKode = generateKodeTransaksi(allIncomeTransactions, dateInput.value);
+            document.getElementById('kode_transaksi').value = newKode;
+        }
+    }
+
+    // Event listener for modal opening to auto-generate kode_transaksi
+    document.getElementById('addTransactionModal').addEventListener('shown.bs.modal', function() {
+        // Set default date to today
+        const today = new Date();
+        const todayString = today.toISOString().split('T')[0];
+        document.getElementById('tanggal_transaksi').value = todayString;
+        
+        // Generate kode transaksi based on today's date
+        const newKode = generateKodeTransaksi(allIncomeTransactions || []);
+        document.getElementById('kode_transaksi').value = newKode;
+    });
+
+    // Event listener for date input change
+    document.getElementById('tanggal_transaksi').addEventListener('change', validateDateInput);
+    
+    // Set max date to today to prevent future date selection in the date picker
+    document.addEventListener('DOMContentLoaded', function() {
+        const today = new Date();
+        const todayString = today.toISOString().split('T')[0]; // Format YYYY-MM-DD
+        document.getElementById('tanggal_transaksi').setAttribute('max', todayString);
+    });    </script>
 </body>
 </html>
