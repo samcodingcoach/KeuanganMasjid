@@ -60,6 +60,27 @@
             vertical-align: top;
             padding: 0.75rem 1rem;
         }
+        /* Hide native date picker icons */
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            display: none !important;
+        }
+        input[type="date"]::-webkit-inner-spin-button,
+        input[type="date"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="date"] {
+            -webkit-appearance: none;
+            -moz-appearance: textfield;
+            appearance: none;
+        }
+        
+        /* Firefox-specific approach to hide date picker icon */
+        @-moz-document url-prefix() {
+            input[type="date"] {
+                -moz-appearance: textfield;
+            }
+        }
     </style>
 </head>
 <body class="bg-light">
@@ -271,7 +292,7 @@
                 <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
                     <ul class="nav nav-tabs" id="addTransactionTab" role="tablist">
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="add-biodata-tab" data-bs-toggle="tab" data-bs-target="#add-biodata-pane" type="button" role="tab" aria-controls="add-biodata-pane" aria-selected="true">Biodata</button>
+                            <button class="nav-link active" id="add-info-tab" data-bs-toggle="tab" data-bs-target="#add-info-pane" type="button" role="tab" aria-controls="add-info-pane" aria-selected="true">Informasi</button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="add-detail-tab" data-bs-toggle="tab" data-bs-target="#add-detail-pane" type="button" role="tab" aria-controls="add-detail-pane" aria-selected="false">Detail</button>
@@ -279,21 +300,15 @@
                     </ul>
                     <form id="add-transaction-form">
                         <div class="tab-content pt-3" id="addTransactionTabContent">
-                            <div class="tab-pane fade show active" id="add-biodata-pane" role="tabpanel" aria-labelledby="add-biodata-tab">
+                            <div class="tab-pane fade show active" id="add-info-pane" role="tabpanel" aria-labelledby="add-info-tab">
                                 <div class="form-floating mb-3 position-relative">
                                     <input type="text" class="form-control" id="kode_transaksi" placeholder="Otomatis" required readonly>
                                     <label for="kode_transaksi">Kode Transaksi</label>
                                     <i class="bi bi-hash position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
                                 </div>
-                                <div class="form-floating mb-3 position-relative">
+                                <div class="form-floating mb-3">
                                     <input type="date" class="form-control" id="tanggal_transaksi" placeholder="Pilih tanggal" required>
                                     <label for="tanggal_transaksi">Tanggal Transaksi</label>
-                                    <i class="bi bi-calendar position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
-                                </div>
-                                <div class="form-floating mb-3 position-relative">
-                                    <input type="text" class="form-control" id="total_transaksi" placeholder="Masukkan total" required>
-                                    <label for="total_transaksi">Total</label>
-                                    <i class="bi bi-currency-dollar position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
                                 </div>
                             </div>
                             <div class="tab-pane fade" id="add-detail-pane" role="tabpanel" aria-labelledby="add-detail-tab">
