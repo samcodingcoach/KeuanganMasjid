@@ -751,12 +751,55 @@
         loadMuzakki();
     });
 
+    // Function to show toast notification for transactions
+    function showTransactionToast(message, type = 'success') {
+        let toastContainer = document.getElementById('toast-container-transaction');
+        if (!toastContainer) {
+            toastContainer = document.createElement('div');
+            toastContainer.id = 'toast-container-transaction';
+            toastContainer.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+            toastContainer.style.zIndex = '1100';
+            document.body.appendChild(toastContainer);
+        }
+
+        const toastId = 'transaction-toast-' + Date.now();
+        const toastEl = document.createElement('div');
+        toastEl.id = toastId;
+        toastEl.className = 'toast rounded-3';
+        toastEl.setAttribute('role', 'alert');
+        toastEl.setAttribute('aria-live', 'assertive');
+        toastEl.setAttribute('aria-atomic', 'true');
+
+        let headerBg = type === 'error' ? 'linear-gradient(180deg, #dc3545 0%, #c82333 100%)' : 'linear-gradient(180deg, #075E54 0%, #128C7E 100%)';
+
+        toastEl.innerHTML = `
+            <div class="toast-header d-flex align-items-center" style="background: ${headerBg}; border-radius: 10px 10px 0 0 !important;">
+                <i class="bi ${type === 'error' ? 'bi-x-circle' : 'bi-check-circle'} me-2 text-white"></i>
+                <strong class="me-auto text-white">${type === 'error' ? 'Error' : 'Sukses'}</strong>
+                <small class="text-white">Sekarang</small>
+                <button type="button" class="btn-close btn-close-white ms-2" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                ${message}
+            </div>
+        `;
+
+        toastContainer.appendChild(toastEl);
+
+        const toast = new bootstrap.Toast(toastEl);
+        toast.show();
+
+        toastEl.addEventListener('hidden.bs.toast', function() {
+            toastEl.remove();
+        });
+    }
+
     // Function to save new transaction
     document.getElementById('save-transaction-btn').addEventListener('click', function() {
         // Get user data from sessionStorage
         const userData = JSON.parse(sessionStorage.getItem('userData'));
         if (!userData || !userData.id_pegawai) {
-            alert('Silakan login terlebih dahulu');
+            showTransactionToast('Silakan login terlebih dahulu', 'error');
             window.location.href = '/login';
             return;
         }
@@ -769,7 +812,7 @@
 
         // Validate required fields
         if (!tanggal_transaksi || !id_akun || !id_muzakki || !kode_transaksi) {
-            alert('Harap lengkapi semua data yang diperlukan');
+            showTransactionToast('Harap lengkapi semua data yang diperlukan', 'error');
             return;
         }
 
@@ -795,7 +838,7 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert('Transaksi berhasil disimpan');
+                showTransactionToast('Transaksi berhasil disimpan');
                 
                 // Close the modal
                 const modal = bootstrap.Modal.getInstance(document.getElementById('addTransactionModal'));
@@ -824,12 +867,12 @@
                         console.error('Error refreshing data:', error);
                     });
             } else {
-                alert('Gagal menyimpan transaksi: ' + (data.message || data.error));
+                showTransactionToast('Gagal menyimpan transaksi: ' + (data.message || data.error), 'error');
             }
         })
         .catch(error => {
             console.error('Error saving transaction:', error);
-            alert('Terjadi kesalahan saat menyimpan transaksi');
+            showTransactionToast('Terjadi kesalahan saat menyimpan transaksi', 'error');
         });
     });
 </script>
