@@ -304,58 +304,25 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" style="max-height: 70vh; overflow-y: auto;" data-bs-focus="false">
-                    <ul class="nav nav-tabs" id="addTransactionTab" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="add-info-tab" data-bs-toggle="tab" data-bs-target="#add-info-pane" type="button" role="tab" aria-controls="add-info-pane" aria-selected="true">Info</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="add-detail-tab" data-bs-toggle="tab" data-bs-target="#add-detail-pane" type="button" role="tab" aria-controls="add-detail-pane" aria-selected="false">Detail</button>
-                        </li>
-                    </ul>
                     <form id="add-transaction-form">
-                        <div class="tab-content pt-3" id="addTransactionTabContent">
-                            <div class="tab-pane fade show active" id="add-info-pane" role="tabpanel" aria-labelledby="add-info-tab">
-                                <div class="form-floating mb-3 position-relative">
-                                    <input type="text" class="form-control" id="kode_transaksi" placeholder="Otomatis" required readonly>
-                                    <label for="kode_transaksi">Kode Transaksi</label>
-                                    <i class="bi bi-hash position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
-                                </div>
-                                <div class="form-floating mb-3">
-                                    <input type="date" class="form-control" id="tanggal_transaksi" placeholder="Pilih tanggal" required>
-                                    <label for="tanggal_transaksi">Tanggal Transaksi</label>
-                                </div>
-                                <div class="mb-3">
-                                    <select class="form-select searchable-select" id="nama_muzakki" data-placeholder="Pilih Nama Muzakki" required>
-                                        <option value="">Pilih Nama Muzakki</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="tab-pane fade" id="add-detail-pane" role="tabpanel" aria-labelledby="add-detail-tab">
-                                <div class="mb-3">
-                                    <select class="form-select searchable-select" id="nama_akun" data-placeholder="Pilih Nama Akun" required>
-                                        <option value="">Pilih Nama Akun</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <select class="form-select searchable-select" id="kategori_transaksi" data-placeholder="Pilih Kategori Transaksi" required>
-                                        <option></option>
-                                        <option value="Zakat Fitrah">Zakat Fitrah</option>
-                                        <option value="Zakat Mal">Zakat Mal</option>
-                                        <option value="Infaq Reguler">Infaq Reguler</option>
-                                        <option value="Infaq Khusus">Infaq Khusus</option>
-                                        <option value="Sedekah">Sedekah</option>
-                                    </select>
-                                </div>
-                                <div class="form-floating mb-3 position-relative">
-                                    <textarea class="form-control" id="keterangan" placeholder="Tambahkan keterangan" style="height: 100px;"></textarea>
-                                    <label for="keterangan">Keterangan</label>
-                                    <i class="bi bi-journal-text position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
-                                </div>
-                                <div class="form-check form-switch mb-3">
-                                    <input class="form-check-input" type="checkbox" id="aktif" checked>
-                                    <label class="form-check-label" for="aktif">Aktif</label>
-                                </div>
-                            </div>
+                        <div class="form-floating mb-3 position-relative">
+                            <input type="text" class="form-control" id="kode_transaksi" placeholder="Otomatis" required readonly>
+                            <label for="kode_transaksi">Kode Transaksi</label>
+                            <i class="bi bi-hash position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="date" class="form-control" id="tanggal_transaksi" placeholder="Pilih tanggal" required>
+                            <label for="tanggal_transaksi">Tanggal Transaksi</label>
+                        </div>
+                        <div class="mb-3">
+                            <select class="form-select searchable-select" id="nama_akun" data-placeholder="Pilih Nama Akun" required>
+                                <option value="">Pilih Nama Akun</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <select class="form-select searchable-select" id="nama_muzakki" data-placeholder="Pilih Nama Muzakki" required>
+                                <option value="">Pilih Nama Muzakki</option>
+                            </select>
                         </div>
                     </form>
                 </div>
