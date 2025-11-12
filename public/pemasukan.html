@@ -624,6 +624,22 @@
         // Load accounts and muzakki when modal opens to ensure data is fresh
         loadAccounts();
         loadMuzakki();
+
+        // Initialize Select2 for searchable dropdowns when modal is shown
+        // Use a slight delay to ensure data is loaded before initializing Select2
+        setTimeout(function() {
+            $('.searchable-select').each(function() {
+                if (!$(this).data('select2')) {
+                    $(this).select2({
+                        theme: 'bootstrap-5',
+                        placeholder: $(this).data('placeholder'),
+                        allowClear: true,
+                        width: '100%',
+                        dropdownParent: $('#addTransactionModal')
+                    });
+                }
+            });
+        }, 100); // Small delay to ensure data is loaded before initializing
     });
 
     // Event listener for date input change
@@ -652,12 +668,20 @@
                         selectElement.appendChild(option);
                     });
 
-                    // Check if the modal is currently open and detail tab is active
-                    // If so, re-initialize Select2 to reflect the new options
-                    if ($('#addTransactionModal').hasClass('show') && $('#add-detail-tab').hasClass('active')) {
+                    // Refresh Select2 to reflect the new options
+                    // Only initialize or refresh if modal is currently shown
+                    if ($('#addTransactionModal').hasClass('show')) {
                         if ($('#nama_akun').data('select2')) {
-                            // If Select2 is already initialized, just refresh it
                             $('#nama_akun').select2('destroy').select2({
+                                theme: 'bootstrap-5',
+                                placeholder: 'Pilih Nama Akun',
+                                allowClear: true,
+                                width: '100%',
+                                dropdownParent: $('#addTransactionModal')
+                            });
+                        } else {
+                            // Initialize Select2 if not already done
+                            $('#nama_akun').select2({
                                 theme: 'bootstrap-5',
                                 placeholder: 'Pilih Nama Akun',
                                 allowClear: true,
@@ -691,12 +715,20 @@
                         selectElement.appendChild(option);
                     });
 
-                    // Check if the modal is currently open
-                    // If so, re-initialize Select2 to reflect the new options
+                    // Refresh Select2 to reflect the new options
+                    // Only initialize or refresh if modal is currently shown
                     if ($('#addTransactionModal').hasClass('show')) {
                         if ($('#nama_muzakki').data('select2')) {
-                            // If Select2 is already initialized, just refresh it
                             $('#nama_muzakki').select2('destroy').select2({
+                                theme: 'bootstrap-5',
+                                placeholder: 'Pilih Nama Muzakki',
+                                allowClear: true,
+                                width: '100%',
+                                dropdownParent: $('#addTransactionModal')
+                            });
+                        } else {
+                            // Initialize Select2 if not already done
+                            $('#nama_muzakki').select2({
                                 theme: 'bootstrap-5',
                                 placeholder: 'Pilih Nama Muzakki',
                                 allowClear: true,
@@ -714,50 +746,9 @@
             });
     }
 
-    // Initialize Select2 for searchable dropdowns when DOM is ready
-    $(document).ready(function() {
-        // Initialize all searchable selects except nama_akun for now (because it's in an inactive tab)
-        $('.searchable-select:not(#nama_akun)').select2({
-            theme: 'bootstrap-5',
-            placeholder: function() {
-                return $(this).data('placeholder');
-            },
-            allowClear: true,
-            width: '100%'
-        });
-        
-        // For nama_akun, we'll handle initialization separately when the detail tab is shown
-        // Since it's in an inactive tab initially, we need special handling
-    });
-
-    // Load accounts when DOM is ready
+    // Load muzakki when DOM is ready (accounts are loaded when modal is opened)
     document.addEventListener('DOMContentLoaded', function() {
-        loadAccounts();
-    });
-
-
-
-    // Handle tab switching to ensure Select2 works properly when user switches to detail tab
-    document.addEventListener('shown.bs.tab', function (e) {
-        if (e.target.id === 'add-detail-tab') {
-            // When detail tab is shown, ensure Select2 for nama_akun is properly initialized
-            if ($('#nama_akun').length && jQuery().select2) {
-                // Force re-initialization if needed
-                if (!$('#nama_akun').data('select2')) {
-                    $('#nama_akun').select2({
-                        theme: 'bootstrap-5',
-                        placeholder: 'Pilih Nama Akun',
-                        allowClear: true,
-                        width: '100%',
-                        dropdownParent: $('#addTransactionModal')
-                    });
-                }
-                
-                // Refresh to ensure it renders properly
-                $('#nama_akun').select2('open');
-                $('#nama_akun').select2('close');
-            }
-        }
+        loadMuzakki();
     });
 </script>
 </body>
