@@ -612,7 +612,7 @@ function handleNumericInput(inputId) {
 }
 
 // Function to save new income detail
-document.getElementById('save-income-detail-btn').addEventListener('click', function() {
+document.getElementById('save-income-detail-btn').addEventListener('click', async function() {
     // Get form values and unformat numeric fields
     const id_transaksi = document.getElementById('selected_transaction_id').value;
     const keterangan = document.getElementById('keterangan').value;
@@ -629,6 +629,39 @@ document.getElementById('save-income-detail-btn').addEventListener('click', func
         return;
     }
 
+    let url_bukti = null;
+
+    if (bukti) {
+        const formData = new FormData();
+        const transaction = allIncomeTransactions.find(t => t.id_transaksi == id_transaksi);
+        if (!transaction) {
+            showTransactionToast('Transaksi tidak ditemukan', 'error');
+            return;
+        }
+        const newFileName = `${Date.now()}_${transaction.kode_transaksi}.${bukti.name.split('.').pop()}`;
+        formData.append('file', bukti, newFileName);
+        formData.append('filename', newFileName); // Send the generated filename to the backend
+
+        try {
+            const uploadResponse = await fetch('/api/transaksi.upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            const uploadResult = await uploadResponse.json();
+
+            if (uploadResult.success) {
+                url_bukti = uploadResult.url;
+            } else {
+                showTransactionToast(`Gagal mengunggah bukti: ${uploadResult.message}`, 'error');
+                return;
+            }
+        } catch (error) {
+            showTransactionToast(`Terjadi kesalahan saat mengunggah file: ${error.message}`, 'error');
+            return;
+        }
+    }
+
     // Prepare data for API request
     const requestData = {
         id_transaksi: parseInt(id_transaksi),
@@ -637,7 +670,8 @@ document.getElementById('save-income-detail-btn').addEventListener('click', func
         jumlah: parseFloat(jumlah),
         nominal: parseFloat(nominal),
         isAsset: is_asset,  // Boolean value
-        subtotal: parseFloat(subtotal)
+        subtotal: parseFloat(subtotal),
+        url_bukti: url_bukti
     };
 
     // Call the API to save the income detail

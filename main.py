@@ -36,6 +36,7 @@ from api.transaksi.list_tx import get_transaksi_list
 from api.transaksi.list_tx_detail import get_transaksi_detail_list
 from api.transaksi.new_tx import create_transaksi
 from api.transaksi.new_tx_detail import create_transaksi_detail
+from api.transaksi.upload import upload_bukti
 from api.masjid.masjid import get_masjid
 from api.masjid.update import update_masjid
 
@@ -198,6 +199,10 @@ def new_transaksi():
 @app.route('/api/transaksi.createdetail', methods=['POST'])
 def new_transaksi_detail():
     return create_transaksi_detail(supabase, request)
+
+@app.route('/api/transaksi.upload', methods=['POST'])
+def upload_bukti_route():
+    return upload_bukti(supabase)
 
 @app.route('/akun')
 def akun_page():
