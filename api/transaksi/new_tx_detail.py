@@ -92,8 +92,10 @@ def create_transaksi_detail(supabase_client, req):
             'id_transaksi': id_transaksi
         }
 
-        # Only include optional fields if they are provided
-        if url_bukti is not None:
+        # Only include optional fields if they are provided, or set to empty string if None
+        if url_bukti is None:
+            new_detail['url_bukti'] = ""
+        else:
             new_detail['url_bukti'] = url_bukti
 
         # Insert into the database
