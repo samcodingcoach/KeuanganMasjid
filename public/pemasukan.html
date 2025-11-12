@@ -1071,24 +1071,24 @@
             return;
         }
 
-        // Prepare form data for API request (using FormData to handle file upload)
-        const formData = new FormData();
-        formData.append('id_transaksi', id_transaksi);
-        formData.append('deskripsi', keterangan);
-        formData.append('id_kategori', id_kategori);
-        formData.append('jumlah', jumlah);
-        formData.append('nominal', nominal);
-        formData.append('is_asset', is_asset ? 1 : 0);  // Convert boolean to integer
-        formData.append('subtotal', subtotal);
-        
-        if (bukti) {
-            formData.append('url_bukti', bukti);
-        }
+        // Prepare data for API request
+        const requestData = {
+            id_transaksi: parseInt(id_transaksi),
+            deskripsi: keterangan,
+            id_kategori: parseInt(id_kategori),
+            jumlah: parseFloat(jumlah),
+            nominal: parseFloat(nominal),
+            isAsset: is_asset,  // Boolean value
+            subtotal: parseFloat(subtotal)
+        };
 
         // Call the API to save the income detail
-        fetch('http://127.0.0.1:5002/api/transaksi_detail.create', {
+        fetch('http://127.0.0.1:5002/api/transaksi.createdetail', {
             method: 'POST',
-            body: formData  // Using FormData to handle file uploads
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestData)
         })
         .then(response => response.json())
         .then(data => {
