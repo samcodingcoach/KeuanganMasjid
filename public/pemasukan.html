@@ -750,6 +750,88 @@
     document.addEventListener('DOMContentLoaded', function() {
         loadMuzakki();
     });
+
+    // Function to save new transaction
+    document.getElementById('save-transaction-btn').addEventListener('click', function() {
+        // Get user data from sessionStorage
+        const userData = JSON.parse(sessionStorage.getItem('userData'));
+        if (!userData || !userData.id_pegawai) {
+            alert('Silakan login terlebih dahulu');
+            window.location.href = '/login';
+            return;
+        }
+
+        // Get form values
+        const tanggal_transaksi = document.getElementById('tanggal_transaksi').value;
+        const id_akun = document.getElementById('nama_akun').value;
+        const id_muzakki = document.getElementById('nama_muzakki').value;
+        const kode_transaksi = document.getElementById('kode_transaksi').value;
+
+        // Validate required fields
+        if (!tanggal_transaksi || !id_akun || !id_muzakki || !kode_transaksi) {
+            alert('Harap lengkapi semua data yang diperlukan');
+            return;
+        }
+
+        // Prepare data for API request
+        const requestData = {
+            tanggal_transaksi: tanggal_transaksi,
+            id_akun: id_akun,
+            id_pegawai: userData.id_pegawai,  // Get from session
+            kode_transaksi: kode_transaksi,
+            id_muzakki: id_muzakki,
+            total: 0,  // Set to 0 as specified
+            id_mustahik: null  // Set to NULL as specified
+        };
+
+        // Call the API to save the transaction
+        fetch('http://127.0.0.1:5002/api/transaksi.create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Transaksi berhasil disimpan');
+                
+                // Close the modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('addTransactionModal'));
+                modal.hide();
+                
+                // Refresh the transaction list
+                fetch('http://127.0.0.1:5002/api/transaksi.list')
+                    .then(response => response.json())
+                    .then(response => {
+                        if (response.success && response.data) {
+                            // Filter transactions to only show income transactions (kode_transaksi starting with 'FI')
+                            allIncomeTransactions = response.data.filter(transaction =>
+                                transaction.kode_transaksi && transaction.kode_transaksi.startsWith('FI')
+                            );
+        
+                            // Update the filtered transactions and re-render the table
+                            filteredTransactions = allIncomeTransactions;
+                            renderTable();
+                            
+                            // Generate new kode transaksi for next transaction
+                            const newKode = generateKodeTransaksi(allIncomeTransactions);
+                            document.getElementById('kode_transaksi').value = newKode;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error refreshing data:', error);
+                    });
+            } else {
+                alert('Gagal menyimpan transaksi: ' + (data.message || data.error));
+            }
+        })
+        .catch(error => {
+            console.error('Error saving transaction:', error);
+            alert('Terjadi kesalahan saat menyimpan transaksi');
+        });
+    });
 </script>
 </body>
 </html>
