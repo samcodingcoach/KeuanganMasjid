@@ -334,6 +334,103 @@
         </div>
     </div>
 
+    <!-- Modal Tambah Detail Penerimaan -->
+    <div class="modal fade" id="addIncomeDetailModal" tabindex="-1" aria-labelledby="addIncomeDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content border-0 rounded-3">
+                <div class="modal-header" style="background: linear-gradient(180deg, #075E54 0%, #128C7E 100%);">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-plus-circle me-2 text-white"></i>
+                        <h5 class="modal-title text-white" id="addIncomeDetailModalLabel">Tambah Detail Penerimaan</h5>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="max-height: 70vh; overflow-y: auto;" data-bs-focus="false">
+                    <form id="add-income-detail-form">
+                        <input type="hidden" id="selected_transaction_id">
+                        <!-- Tabs Navigation -->
+                        <ul class="nav nav-tabs mb-3" id="incomeDetailTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info-pane" type="button" role="tab" aria-controls="info-pane" aria-selected="true">Info</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="details-tab" data-bs-toggle="tab" data-bs-target="#details-pane" type="button" role="tab" aria-controls="details-pane" aria-selected="false">Details</button>
+                            </li>
+                        </ul>
+                        
+                        <!-- Tabs Content -->
+                        <div class="tab-content" id="incomeDetailTabContent">
+                            <!-- Info Tab -->
+                            <div class="tab-pane fade show active" id="info-pane" role="tabpanel" aria-labelledby="info-tab">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-floating mb-3 position-relative">
+                                            <textarea class="form-control" id="keterangan" placeholder="Keterangan" style="height: 100px;" required></textarea>
+                                            <label for="keterangan">Keterangan</label>
+                                            <i class="bi bi-pencil position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <select class="form-select searchable-select" id="kategori_penerimaan" data-placeholder="Pilih Kategori Penerimaan" required>
+                                        <option value="">Pilih Kategori Penerimaan</option>
+                                    </select>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-floating mb-3 position-relative">
+                                            <input type="text" class="form-control numeric-input" id="jumlah" placeholder="Jumlah" value="1" required>
+                                            <label for="jumlah">Jumlah</label>
+                                            <i class="bi bi-123 position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-floating mb-3 position-relative">
+                                            <input type="text" class="form-control numeric-input" id="nominal" placeholder="Nominal" required>
+                                            <label for="nominal">Nominal</label>
+                                            <i class="bi bi-currency-dollar position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-floating mb-3 position-relative">
+                                            <input type="text" class="form-control numeric-input" id="subtotal" placeholder="Subtotal" readonly>
+                                            <label for="subtotal">Subtotal</label>
+                                            <i class="bi bi-calculator position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Details Tab -->
+                            <div class="tab-pane fade" id="details-pane" role="tabpanel" aria-labelledby="details-tab">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-check form-switch mb-3">
+                                            <input class="form-check-input" type="checkbox" id="is_asset">
+                                            <label class="form-check-label" for="is_asset">Merupakan Asset</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="border rounded p-3 position-relative">
+                                            <label class="form-label mb-3">Unggah Dokumen</label>
+                                            <i class="bi bi-file-earmark-arrow-up position-absolute top-0 end-0 mt-3 me-3"></i>
+                                            <input class="form-control" type="file" id="bukti" accept="image/*,application/pdf">
+                                            <div class="form-text mt-2">Format: PDF, JPG, PNG (Maks. 5MB)</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary me-2" data-bs-dismiss="modal"><i class="bi bi-x-lg me-1"></i>Batal</button>
+                    <button type="button" class="btn btn-whatsapp" id="save-income-detail-btn"><i class="bi bi-save me-1"></i>Simpan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Bootstrap JS Bundle with Popper -->
@@ -400,6 +497,9 @@
                         <td>${transaction.nama_akun || '-'}</td>
                         <td class="text-end">${formattedTotal}</td>
                         <td>
+                            <button class="btn btn-sm btn-outline-whatsapp p-1 me-1" onclick="addIncomeDetail(${JSON.stringify(transaction).replace(/"/g, '&quot;')})" style="border-radius: 8px; width: 36px; height: 36px;">
+                                <i class="bi bi-plus"></i>
+                            </button>
                             <button class="btn btn-sm btn-outline-whatsapp p-1" onclick="showDetail(${JSON.stringify(transaction).replace(/"/g, '&quot;')})" style="border-radius: 8px; width: 36px; height: 36px;">
                                 <i class="bi bi-eye"></i>
                             </button>
@@ -793,6 +893,239 @@
             toastEl.remove();
         });
     }
+
+    // Function to open the add income detail modal
+    function addIncomeDetail(transaction) {
+        // Set the transaction ID in the hidden input
+        document.getElementById('selected_transaction_id').value = transaction.id_transaksi;
+
+        // Load categories when modal opens
+        loadCategories();
+
+        // Show the modal
+        const modal = new bootstrap.Modal(document.getElementById('addIncomeDetailModal'));
+        modal.show();
+    }
+
+    // Function to load categories from API and populate dropdown
+    function loadCategories() {
+        fetch('http://127.0.0.1:5002/api/kategori.list')
+            .then(response => response.json())
+            .then(response => {
+                if (response.success && response.data) {
+                    const selectElement = document.getElementById('kategori_penerimaan');
+                    selectElement.innerHTML = '<option value="">Pilih Kategori Penerimaan</option>'; // Clear existing options
+
+                    response.data.forEach(category => {
+                        if (category.jenis_kategori === 'Penerimaan') { // Only show income categories
+                            const option = document.createElement('option');
+                            option.value = category.id_kategori;
+                            option.text = category.nama_kategori;
+                            selectElement.appendChild(option);
+                        }
+                    });
+                } else {
+                    console.error('API kategori.list returned error:', response);
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching categories:', error);
+            });
+    }
+
+    // Function to calculate subtotal (jumlah * nominal)
+    function calculateSubtotal() {
+        const jumlah = parseFloat(unformatNumber(document.getElementById('jumlah').value)) || 0;
+        const nominal = parseFloat(unformatNumber(document.getElementById('nominal').value)) || 0;
+        const subtotal = jumlah * nominal;
+        document.getElementById('subtotal').value = formatNumber(subtotal);
+    }
+
+    // Event listener for modal opening to initialize fields
+    document.getElementById('addIncomeDetailModal').addEventListener('shown.bs.modal', function() {
+        // Clear form fields when modal opens
+        document.getElementById('keterangan').value = '';
+        document.getElementById('jumlah').value = '1';
+        document.getElementById('nominal').value = '';
+        document.getElementById('subtotal').value = '';
+        document.getElementById('is_asset').checked = false;
+        document.getElementById('bukti').value = '';
+        
+        // Format the jumlah field with thousand separator
+        document.getElementById('jumlah').value = formatNumber('1');
+        
+        // Remove any existing event listeners
+        document.getElementById('jumlah').removeEventListener('input', calculateSubtotal);
+        document.getElementById('nominal').removeEventListener('input', calculateSubtotal);
+
+        // Add event listeners for calculating subtotal
+        document.getElementById('jumlah').addEventListener('input', calculateSubtotal);
+        document.getElementById('nominal').addEventListener('input', calculateSubtotal);
+        
+        // Initialize numeric formatting for all numeric inputs
+        handleNumericInput('jumlah');
+        handleNumericInput('nominal');
+        
+        // Add event listener for nominal to update subtotal when value changes
+        document.getElementById('nominal').addEventListener('input', function(e) {
+            // Format the input as the user types
+            let value = e.target.value;
+            value = value.replace(/[^\d]/g, '');
+            e.target.value = formatNumber(value);
+            
+            // Then calculate the subtotal
+            calculateSubtotal();
+        });
+        
+        // Add event listener for jumlah to update subtotal when value changes
+        document.getElementById('jumlah').addEventListener('input', function(e) {
+            // Format the input as the user types
+            let value = e.target.value;
+            value = value.replace(/[^\d]/g, '');
+            e.target.value = formatNumber(value);
+            
+            // Then calculate the subtotal
+            calculateSubtotal();
+        });
+        
+        // Initialize Select2 for searchable dropdowns when modal is shown
+        setTimeout(function() {
+            $('#kategori_penerimaan').select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Pilih Kategori Penerimaan',
+                allowClear: true,
+                width: '100%',
+                dropdownParent: $('#addIncomeDetailModal')
+            });
+        }, 100);
+    });
+
+    // Function to format number with thousand separator
+    function formatNumber(num) {
+        // Remove any existing formatting
+        const number = parseFloat(num.toString().replace(/[^\d]/g, ''));
+        if (isNaN(number)) return '';
+        return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    // Function to unformat number (remove thousand separators)
+    function unformatNumber(str) {
+        return str.toString().replace(/[^\d]/g, '');
+    }
+
+    // Function to handle numeric input formatting
+    function handleNumericInput(inputId) {
+        const input = document.getElementById(inputId);
+        if (!input) return;
+
+        // Remove thousand separators when user types
+        input.addEventListener('input', function(e) {
+            let value = e.target.value;
+            // Keep only numbers and remove formatting temporarily
+            value = value.replace(/[^\d]/g, '');
+            e.target.value = value;
+        });
+
+        // Add thousand separators when focus is lost
+        input.addEventListener('blur', function(e) {
+            let value = e.target.value;
+            if (value !== '') {
+                const unformatted = unformatNumber(value);
+                e.target.value = formatNumber(unformatted);
+            }
+        });
+
+        // Ensure only numbers can be entered
+        input.addEventListener('keypress', function(e) {
+            // Allow: backspace, delete, tab, escape, enter, and decimal point
+            if ([46, 8, 9, 27, 13].indexOf(e.keyCode) !== -1 ||
+                // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+                (e.keyCode === 65 && e.ctrlKey === true) ||
+                (e.keyCode === 67 && e.ctrlKey === true) ||
+                (e.keyCode === 86 && e.ctrlKey === true) ||
+                (e.keyCode === 88 && e.ctrlKey === true)) {
+                return;
+            }
+            // Ensure that it is a number and stop the keypress
+            if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+                e.preventDefault();
+            }
+        });
+    }
+
+    // Function to save new income detail
+    document.getElementById('save-income-detail-btn').addEventListener('click', function() {
+        // Get form values and unformat numeric fields
+        const id_transaksi = document.getElementById('selected_transaction_id').value;
+        const keterangan = document.getElementById('keterangan').value;
+        const id_kategori = document.getElementById('kategori_penerimaan').value;
+        const jumlah = unformatNumber(document.getElementById('jumlah').value);
+        const nominal = unformatNumber(document.getElementById('nominal').value);
+        const is_asset = document.getElementById('is_asset').checked;
+        const subtotal = unformatNumber(document.getElementById('subtotal').value);
+        const bukti = document.getElementById('bukti').files[0];  // File object
+
+        // Validate required fields
+        if (!id_transaksi || !keterangan || !id_kategori || !jumlah || !nominal) {
+            showTransactionToast('Harap lengkapi semua data yang diperlukan', 'error');
+            return;
+        }
+
+        // Prepare form data for API request (using FormData to handle file upload)
+        const formData = new FormData();
+        formData.append('id_transaksi', id_transaksi);
+        formData.append('deskripsi', keterangan);
+        formData.append('id_kategori', id_kategori);
+        formData.append('jumlah', jumlah);
+        formData.append('nominal', nominal);
+        formData.append('is_asset', is_asset ? 1 : 0);  // Convert boolean to integer
+        formData.append('subtotal', subtotal);
+        
+        if (bukti) {
+            formData.append('url_bukti', bukti);
+        }
+
+        // Call the API to save the income detail
+        fetch('http://127.0.0.1:5002/api/transaksi_detail.create', {
+            method: 'POST',
+            body: formData  // Using FormData to handle file uploads
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showTransactionToast('Detail penerimaan berhasil disimpan');
+
+                // Close the modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('addIncomeDetailModal'));
+                modal.hide();
+
+                // Refresh the transaction list to show updated totals
+                fetch('http://127.0.0.1:5002/api/transaksi.list')
+                    .then(response => response.json())
+                    .then(response => {
+                        if (response.success && response.data) {
+                            // Filter transactions to only show income transactions (kode_transaksi starting with 'FI')
+                            allIncomeTransactions = response.data.filter(transaction =>
+                                transaction.kode_transaksi && transaction.kode_transaksi.startsWith('FI')
+                            );
+
+                            // Update the filtered transactions and re-render the table
+                            filteredTransactions = allIncomeTransactions;
+                            renderTable();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error refreshing data:', error);
+                    });
+            } else {
+                showTransactionToast('Gagal menyimpan detail penerimaan: ' + (data.message || data.error), 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error saving income detail:', error);
+            showTransactionToast('Terjadi kesalahan saat menyimpan detail penerimaan', 'error');
+        });
+    });
 
     // Function to save new transaction
     document.getElementById('save-transaction-btn').addEventListener('click', function() {
