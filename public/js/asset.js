@@ -438,6 +438,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Store original assets data globally for filtering
+    let allAssetsData = [];
+
     // Function to load asset data
     async function loadAssetData() {
         try {
@@ -445,6 +448,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const result = await response.json();
 
             if (result.success && result.data) {
+                allAssetsData = result.data; // Store original data for filtering
                 renderAssetTable(result.data);
                 // Update total harga in the table footer
                 updateTotalHarga(result.total_harga);
@@ -638,10 +642,71 @@ document.addEventListener('DOMContentLoaded', function() {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0
             }).format(totalHarga);
-            
+
             totalHargaElement.textContent = formattedTotalHarga;
         }
     }
+
+    // Function to filter assets by name
+    function filterAssetsByName(searchTerm, assets) {
+        if (!searchTerm) return assets;
+
+        const lowerSearchTerm = searchTerm.toLowerCase();
+        return assets.filter(asset =>
+            asset.nama_barang.toLowerCase().includes(lowerSearchTerm)
+        );
+    }
+
+    // Add search functionality
+    function initializeSearch() {
+        const searchInput = document.getElementById('search-input');
+        const searchButton = document.getElementById('search-button');
+
+        if (!searchInput || !searchButton) {
+            console.error('Search input or button not found');
+            return;
+        }
+
+        // Event listener for search button
+        searchButton.addEventListener('click', function() {
+            const searchTerm = searchInput.value.trim();
+
+            if (searchTerm) {
+                // Filter assets based on search term from the stored data
+                const filteredAssets = filterAssetsByName(searchTerm, allAssetsData);
+
+                // Render the filtered assets
+                renderAssetTable(filteredAssets);
+
+                // Update total harga based on filtered data
+                const totalHarga = filteredAssets.reduce((sum, asset) => sum + asset.harga, 0);
+                updateTotalHarga(totalHarga);
+            } else {
+                // If search term is empty, load all assets
+                renderAssetTable(allAssetsData);
+                updateTotalHarga(allAssetsData.reduce((sum, asset) => sum + asset.harga, 0));
+            }
+        });
+
+        // Event listener for Enter key in search input
+        searchInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                searchButton.click();
+            }
+        });
+
+        // Clear search when input is cleared
+        searchInput.addEventListener('input', function() {
+            if (this.value.trim() === '') {
+                // Load all assets when search is cleared
+                renderAssetTable(allAssetsData);
+                updateTotalHarga(allAssetsData.reduce((sum, asset) => sum + asset.harga, 0));
+            }
+        });
+    }
+
+    // Initialize search functionality
+    initializeSearch();
 
     // Helper function to update the display of searchable dropdown
     function updateSearchableDropdownDisplay(selectId, value) {
