@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lupa Password</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            width: 450px;
+            max-width: 90%;
+            text-align: center;
+        }
+        h2 {
+            margin-bottom: 25px;
+            color: #2c3e50;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #34495e;
+        }
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        input[type="email"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+        .captcha-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .captcha-text {
+            font-size: 20px;
+            font-weight: bold;
+            letter-spacing: 3px;
+            background-color: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            cursor: pointer;
+            user-select: none;
+        }
+        #captcha-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        #captcha-input:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+        .captcha-text:hover {
+            background-color: #e9ecef;
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        .error {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 5px;
+            text-align: left;
+        }
+        .success {
+            color: #27ae60;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        .notification {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: 500;
+        }
+        .notification.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .hidden {
+            display: none;
+        }
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .back-link a {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .verification-inputs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .verification-input {
+            width: 45px;
+            height: 50px;
+            text-align: center;
+            font-size: 24px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            outline: none;
+        }
+        .verification-input:focus {
+            border-color: #007bff;
+        }
+        .resend-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+        .resend-btn {
+            padding: 14px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        .resend-btn:hover {
+            background-color: #5a6268;
+        }
+        .resend-btn:disabled {
+            background-color: #adb5bd;
+            cursor: not-allowed;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .timer {
+            font-weight: 600;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Reset Password</h2>
+        
+        <!-- Step 1: Email input with validation -->
+        <div id="step1">
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" placeholder="Masukkan email Anda" required>
+                <div id="email-error" class="error"></div>
+            </div>
+            
+            <!-- Simple captcha -->
+            <div class="form-group">
+                <label>Captcha:</label>
+                <div class="captcha-container">
+                    <div id="captcha-text" class="captcha-text"></div>
+                    <input type="text" id="captcha-input" placeholder="Masukkan captcha" maxlength="6">
+                </div>
+                <div id="captcha-error" class="error"></div>
+            </div>
+            
+            <button id="request-reset-btn">Kirim Kode Verifikasi</button>
+            <div id="step1-message"></div>
+        </div>
+        
+        <!-- Step 2: Verification code input -->
+        <div id="step2" class="hidden">
+            <div class="form-group">
+                <label for="verification-code">Masukkan Kode Verifikasi</label>
+                <div class="verification-inputs">
+                    <input type="text" class="verification-input" maxlength="1" data-index="0" pattern="[0-9]">
+                    <input type="text" class="verification-input" maxlength="1" data-index="1" pattern="[0-9]">
+                    <input type="text" class="verification-input" maxlength="1" data-index="2" pattern="[0-9]">
+                    <input type="text" class="verification-input" maxlength="1" data-index="3" pattern="[0-9]">
+                    <input type="text" class="verification-input" maxlength="1" data-index="4" pattern="[0-9]">
+                    <input type="text" class="verification-input" maxlength="1" data-index="5" pattern="[0-9]">
+                </div>
+                <div id="verification-error" class="error"></div>
+            </div>
+            
+            <div class="resend-container">
+                <button id="verify-code-btn">Verifikasi</button>
+                <button id="resend-btn" class="resend-btn" disabled>Kirim Ulang Kode</button>
+            </div>
+            <div id="timer" class="timer hidden">03:00</div>
+            <div id="step2-message"></div>
+        </div>
+        
+        <!-- Step 3: New password input -->
+        <div id="step3" class="hidden">
+            <div class="form-group">
+                <label for="new-password">Password Baru:</label>
+                <input type="password" id="new-password" placeholder="Masukkan password baru" required>
+                <div id="password-error" class="error"></div>
+            </div>
+            <div class="form-group">
+                <label for="confirm-password">Konfirmasi Password:</label>
+                <input type="password" id="confirm-password" placeholder="Konfirmasi password baru" required>
+                <div id="confirm-error" class="error"></div>
+            </div>
+            <button id="reset-password-btn">Reset Password</button>
+            <div id="step3-message"></div>
+        </div>
+        
+        <div class="back-link">
+            <a href="javascript:history.back()">&larr; Kembali</a>
+        </div>
+    </div>
+
+    <script>
+        // Global error handler to catch any errors that prevent execution
+        window.addEventListener('error', function(e) {
+            console.error('Global error:', e.error);
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+        console.log("Script is running..."); // Debug message
+        
+        // Generate simple captcha
+        function generateCaptcha() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+            let result = '';
+            for (let i = 0; i < 6; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+        
+        // Display captcha
+        function displayCaptcha() {
+            const captchaText = generateCaptcha();
+            document.getElementById('captcha-text').textContent = captchaText;
+            return captchaText;
+        }
+        
+        // Initialize captcha
+        let currentCaptcha = displayCaptcha();
+        
+        // Refresh captcha
+        document.getElementById('captcha-text').addEventListener('click', function() {
+            currentCaptcha = displayCaptcha();
+        });
+        
+        // Validate email format
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+        
+        // Check email and captcha
+        document.getElementById('request-reset-btn').addEventListener('click', async function() {
+            const email = document.getElementById('email').value;
+            const captchaInput = document.getElementById('captcha-input').value;
+            
+            // Reset errors
+            document.getElementById('email-error').textContent = '';
+            document.getElementById('captcha-error').textContent = '';
+            
+            let isValid = true;
+            
+            // Validate email
+            if (!validateEmail(email)) {
+                document.getElementById('email-error').textContent = 'Format email tidak valid';
+                isValid = false;
+            }
+            
+            // Validate captcha
+            if (captchaInput !== currentCaptcha) {
+                document.getElementById('captcha-error').textContent = 'Captcha tidak benar';
+                isValid = false;
+            }
+            
+            if (!isValid) {
+                return;
+            }
+            
+            // Show loading state
+            const btn = document.getElementById('request-reset-btn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="loading"></span> Memproses...';
+            btn.disabled = true;
+            
+            // Send verification code to server which will send it via email
+            try {
+                const response = await fetch('/api/request-reset', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email: email })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Store email temporarily (in a real app, we'd use session with expiration)
+                    sessionStorage.setItem('currentEmail', email);
+                    
+                    // Show success message
+                    document.getElementById('step1').classList.add('hidden');
+                    document.getElementById('step2').classList.remove('hidden');
+                    
+                    // Show success notification - but preserve existing content and event listeners
+                    const step2Element = document.querySelector('#step2');
+                    step2Element.insertAdjacentHTML('afterbegin', 
+                        '<div class="notification success">Sukses! Kode verifikasi telah dikirim ke email Anda.</div>');
+                    
+                    // Reset captcha
+                    currentCaptcha = displayCaptcha();
+                    document.getElementById('captcha-input').value = '';
+                    
+                    // Start resend timer
+                    startResendTimer();
+                } else {
+                    document.getElementById('step1-message').innerHTML = '<div class="error">' + result.message + '</div>';
+                }
+            } catch (error) {
+                console.error('Error requesting reset:', error);
+                document.getElementById('step1-message').innerHTML = '<div class="error">Terjadi kesalahan saat mengirim kode verifikasi</div>';
+            } finally {
+                // Restore button state
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        });
+        
+        // Handle verification code input boxes
+        document.querySelectorAll('.verification-input').forEach((input, index) => {
+            input.addEventListener('input', function() {
+                // Only allow numeric input
+                this.value = this.value.replace(/[^0-9]/g, '');
+                
+                if (this.value.length === 1 && index < 5) {
+                    document.querySelector(`.verification-input[data-index="${index + 1}"]`).focus();
+                }
+            });
+            
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Backspace' && this.value === '' && index > 0) {
+                    document.querySelector(`.verification-input[data-index="${index - 1}"]`).focus();
+                }
+            });
+            
+            // Limit input to 1 character
+            input.addEventListener('keypress', function(e) {
+                if (this.value.length >= 1) {
+                    e.preventDefault();
+                }
+            });
+        });
+        
+        // Get the full code from input boxes
+        function getVerificationCode() {
+            let code = '';
+            document.querySelectorAll('.verification-input').forEach(input => {
+                code += input.value || '';
+            });
+            console.log('Full verification code constructed:', code); // Debug log
+            return code;
+        }
+        
+        // Verify code
+        // Verify code - check if element exists and attach event
+        const verifyButton = document.getElementById('verify-code-btn');
+        console.log("Verify button element:", verifyButton); // Debug info
+        if (verifyButton) {
+            console.log("Verify button found, attaching event listener");
+            verifyButton.addEventListener('click', async function() {
+                console.log("Verify button clicked!"); // Add explicit logging
+                const email = sessionStorage.getItem('currentEmail');
+
+                console.log('Email from sessionStorage:', email);
+
+                if (!email) {
+                    document.getElementById('verification-error').textContent = 'Sesi tidak valid, silakan ulangi dari awal';
+                    return;
+                }
+
+                const verificationCode = getVerificationCode();
+                console.log('Verification code being sent:', verificationCode);
+
+                // Show immediate feedback that the button was clicked
+                if (!verificationCode || verificationCode.length !== 6) {
+                    const errorMsg = verificationCode.length === 0 
+                        ? 'Silakan masukkan kode verifikasi' 
+                        : `Kode verifikasi harus 6 digit, Anda memasukkan ${verificationCode.length} digit`;
+                    document.getElementById('verification-error').textContent = errorMsg;
+                    console.log(errorMsg);
+                    return;
+                }
+
+                // Show loading state
+                const btn = document.getElementById('verify-code-btn');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<span class="loading"></span> Memproses...';
+                btn.disabled = true;
+
+                // Clear any previous messages
+                document.getElementById('verification-error').textContent = '';
+                document.getElementById('step2-message').innerHTML = '';
+
+                try {
+                    const response = await fetch('/api/cek-kodeverifikasi', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            email: email,
+                            kode_verifikasi: verificationCode
+                        })
+                    });
+
+                    console.log('Response status:', response.status);
+
+                    const result = await response.json();
+                    console.log('Response result:', result);
+
+                    if (result.success && result.valid) {
+                        // Show success message
+                        document.getElementById('step2-message').innerHTML = '<div class="success">Kode verifikasi benar! Silakan buat password baru.</div>';
+
+                        // Move to step 3 after a short delay to show the message
+                        setTimeout(function() {
+                            document.getElementById('step2').classList.add('hidden');
+                            document.getElementById('step3').classList.remove('hidden');
+                            document.getElementById('step2-message').innerHTML = '';
+                        }, 1500);
+                    } else {
+                        // Show error message for invalid code
+                        document.getElementById('verification-error').textContent = result.message || 'Kode verifikasi salah atau telah kedaluwarsa';
+                    }
+                } catch (error) {
+                    console.error('Error verifying code:', error);
+                    document.getElementById('verification-error').textContent = 'Terjadi kesalahan saat memverifikasi kode: ' + error.message;
+                } finally {
+                    // Restore button state
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+            });
+        } else {
+            document.getElementById('verification-error').textContent = 'Verify button not found';
+        }
+        
+        // Resend code functionality
+        document.getElementById('resend-btn').addEventListener('click', async function() {
+            const email = sessionStorage.getItem('currentEmail');
+            
+            if (!email) {
+                alert('Sesi tidak valid, silakan ulangi dari awal');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/request-reset', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email: email })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Show success message
+                    document.querySelector('#step2').insertAdjacentHTML('afterbegin', 
+                        '<div class="notification success">Kode verifikasi baru telah dikirim ke email Anda.</div>');
+                    
+                    // Start resend timer again
+                    startResendTimer();
+                } else {
+                    alert(result.message);
+                }
+            } catch (error) {
+                console.error('Error resending code:', error);
+                alert('Terjadi kesalahan saat mengirim ulang kode verifikasi');
+            }
+        });
+        
+        // Timer functionality
+        function startResendTimer() {
+            let timeLeft = 180; // 3 minutes = 180 seconds
+            const timerElement = document.getElementById('timer');
+            timerElement.classList.remove('hidden');
+            timerElement.textContent = '03:00';
+            
+            const resendBtn = document.getElementById('resend-btn');
+            resendBtn.disabled = true;
+            
+            const timer = setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+                const seconds = (timeLeft % 60).toString().padStart(2, '0');
+                
+                timerElement.textContent = `${minutes}:${seconds}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    timerElement.classList.add('hidden');
+                    resendBtn.disabled = false;
+                }
+            }, 1000);
+        }
+        
+        // Reset password
+        document.getElementById('reset-password-btn').addEventListener('click', async function() {
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            const email = sessionStorage.getItem('currentEmail');
+            
+            // Reset errors
+            document.getElementById('password-error').textContent = '';
+            document.getElementById('confirm-error').textContent = '';
+            
+            let isValid = true;
+            
+            if (newPassword.length < 6) {
+                document.getElementById('password-error').textContent = 'Password minimal 6 karakter';
+                isValid = false;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                document.getElementById('confirm-error').textContent = 'Password tidak cocok';
+                isValid = false;
+            }
+            
+            if (!email) {
+                document.getElementById('step3-message').innerHTML = '<div class="error">Sesi tidak valid, silakan ulangi dari awal</div>';
+                isValid = false;
+            }
+            
+            if (!isValid) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/reset-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        email: email,
+                        new_password: newPassword
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    document.getElementById('step3-message').innerHTML = '<div class="success">' + result.message + '</div>';
+                    
+                    // Clear session data
+                    sessionStorage.removeItem('currentEmail');
+                    
+                    // Redirect to login page after a delay
+                    setTimeout(function() {
+                        window.location.href = '/login';
+                    }, 2000);
+                } else {
+                    document.getElementById('step3-message').innerHTML = '<div class="error">' + result.message + '</div>';
+                }
+            } catch (error) {
+                console.error('Error resetting password:', error);
+                document.getElementById('step3-message').innerHTML = '<div class="error">Terjadi kesalahan saat mereset password</div>';
+            }
+        });
+        
+        // Add enter key support
+        document.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                if (!document.getElementById('step1').classList.contains('hidden')) {
+                    document.getElementById('request-reset-btn').click();
+                } else if (!document.getElementById('step2').classList.contains('hidden')) {
+                    document.getElementById('verify-code-btn').click();
+                } else if (!document.getElementById('step3').classList.contains('hidden')) {
+                    document.getElementById('reset-password-btn').click();
+                }
+            }
+        });
+        });
+    </script>
+</body>
+</html>

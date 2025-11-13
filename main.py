@@ -3,6 +3,7 @@ from flask_cors import CORS
 from supabase import create_client, Client
 from dotenv import load_dotenv
 import os
+from datetime import datetime, timedelta
 
 # Load environment variables
 load_dotenv()
@@ -20,6 +21,8 @@ from api.pegawai.pegawai import get_pegawai
 from api.pegawai.update import update_pegawai
 from api.pegawai.update_pribadi import update_pribadi
 from api.pegawai.cek_login import cek_login_pegawai
+from api.pegawai.reset import request_reset, verify_code, reset_password
+from api.pegawai.cek_kodeverifikasi import cek_kodeverifikasi
 from api.mustahik.mustahik import get_mustahik
 from api.mustahik.new import create_mustahik
 from api.mustahik.update import update_mustahik
@@ -247,6 +250,30 @@ def test_page():
 @app.route('/login')
 def login():
     return send_from_directory('public', 'login.html')
+
+@app.route('/lupa')
+def forget():
+    return send_from_directory('public', 'forget.html')
+
+# Route to send verification code via email
+@app.route('/api/request-reset', methods=['POST'])
+def request_reset_route():
+    return request_reset(supabase, request)
+
+# Route to verify the verification code
+@app.route('/api/verify-code', methods=['POST'])
+def verify_code_route():
+    return verify_code(supabase, request)
+
+# Route to check verification code
+@app.route('/api/cek-kodeverifikasi', methods=['POST'])
+def cek_kodeverifikasi_route():
+    return cek_kodeverifikasi(supabase, request)
+
+# Route to reset password
+@app.route('/api/reset-password', methods=['POST'])
+def reset_password_route():
+    return reset_password(supabase, request)
 
 @app.route('/css/<path:path>')
 def send_css(path):
