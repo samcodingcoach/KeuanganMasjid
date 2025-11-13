@@ -16,6 +16,135 @@ document.addEventListener('DOMContentLoaded', function() {
     // Load asset data on page load
     loadAssetData();
 
+    // Function to compress image
+    async function compressImage(file, maxSizeKB = 500) {
+        return new Promise((resolve) => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+
+            img.onload = function() {
+                // Calculate new dimensions while maintaining aspect ratio
+                let { width, height } = img;
+                
+                // Calculate the scale factor to ensure the image doesn't exceed the max file size
+                const maxDimension = Math.max(width, height);
+                
+                if (maxDimension > 1200) { // Limit max dimension to 1200px for large images
+                    const ratio = 1200 / maxDimension;
+                    width *= ratio;
+                    height *= ratio;
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                
+                // Draw image on canvas
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                // Start with high quality
+                let quality = 0.9;
+                let compressedDataUrl;
+                
+                // Keep reducing quality until the file size is below the max size
+                do {
+                    compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+                    const compressedSizeKB = compressedDataUrl.length * 0.75 / 1024; // Rough estimation
+                    
+                    if (compressedSizeKB <= maxSizeKB) {
+                        break;
+                    }
+                    
+                    quality -= 0.1; // Reduce quality
+                    
+                    // If quality becomes too low, break to prevent extremely poor quality
+                    if (quality < 0.1) {
+                        break;
+                    }
+                } while (true);
+                
+                // Convert data URL back to Blob
+                const byteString = atob(compressedDataUrl.split(',')[1]);
+                const mimeString = compressedDataUrl.split(',')[0].split(':')[1].split(';')[0];
+                const ab = new ArrayBuffer(byteString.length);
+                const ia = new Uint8Array(ab);
+                
+                for (let i = 0; i < byteString.length; i++) {
+                    ia[i] = byteString.charCodeAt(i);
+                }
+                
+                const blob = new Blob([ab], { type: mimeString });
+                
+                // Create a new File object with the compressed image
+                const compressedFile = new File([blob], file.name, { type: 'image/jpeg' });
+                
+                resolve(compressedFile);
+            };
+            
+            img.onerror = function() {
+                // If image couldn't be loaded, return the original file
+                resolve(file);
+            };
+            
+            img.src = URL.createObjectURL(file);
+        });
+    }
+
+    // Function to upload image file and return URL
+    async function uploadImageFile(fileInput) {
+        const file = fileInput.files[0];
+        if (!file) return null;
+
+        console.log('Starting image upload for file:', file.name, 'Size:', file.size, 'Type:', file.type);
+        
+        // Validate file type (jpg/jpeg only)
+        const fileExtension = file.name.split('.').pop().toLowerCase();
+        if (!file.type.match('image/jpeg') && fileExtension !== 'jpg' && fileExtension !== 'jpeg') {
+            showAssetToast('Hanya file JPG/JPEG yang diperbolehkan', 'error');
+            return null;
+        }
+
+        // Check file size before compression
+        const maxSizeKB = 500;
+        let processedFile = file;
+        
+        if (file.size > maxSizeKB * 1024) {
+            // Compress image if it exceeds 500KB
+            showAssetToast('Mengompresi gambar...', 'info');
+            processedFile = await compressImage(file, maxSizeKB);
+        } else {
+            // If file is under the limit, use it as is
+            processedFile = file;
+        }
+
+        // Create FormData for upload
+        const formData = new FormData();
+        const fileName = `${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
+        formData.append('file', processedFile, fileName);
+        formData.append('filename', fileName);
+
+        try {
+            const uploadResponse = await fetch('/api/asset.upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            const uploadResult = await uploadResponse.json();
+            console.log('Upload response:', uploadResult);
+
+            if (uploadResult.success) {
+                console.log('Upload successful, URL:', uploadResult.url);
+                return uploadResult.url;
+            } else {
+                showAssetToast(`Gagal mengunggah gambar: ${uploadResult.message}`, 'error');
+                return null;
+            }
+        } catch (error) {
+            showAssetToast(`Terjadi kesalahan saat mengunggah gambar: ${error.message}`, 'error');
+            return null;
+        }
+    }
+
     // Handle form submission for adding new asset
     document.getElementById('add-asset-form').addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -90,6 +219,23 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
+        // Handle image upload if a file is selected
+        let url_gambar = document.getElementById('gambar_url').value;
+        const gambarUpload = document.getElementById('gambar_upload');
+        
+        if (gambarUpload && gambarUpload.files[0]) {
+            const uploadedUrl = await uploadImageFile(gambarUpload);
+            if (uploadedUrl) {
+                url_gambar = uploadedUrl; // Use the uploaded image URL, not the one from the text field
+            } else {
+                // If upload failed but there's a URL in the text field, use that
+                // Otherwise, the form will submit with whatever value was in the text field
+            }
+        } else if (!url_gambar) {
+            // If no file selected and no URL provided, set to null
+            url_gambar = null;
+        }
+
         const hargaStr = document.getElementById('harga').value;
         const harga = parseFloat(hargaStr.replace(/\./g, '')); // Remove dots and parse as float
 
@@ -102,7 +248,7 @@ document.addEventListener('DOMContentLoaded', function() {
             isHibah: document.getElementById('isHibah').checked,
             aktif: document.getElementById('aktif').checked,
             isBroken: document.getElementById('isBroken').checked,
-            url_gambar: document.getElementById('gambar_url').value // Add the image URL
+            url_gambar: url_gambar // Use the processed image URL
         };
 
         try {
@@ -119,6 +265,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if (result.success) {
                 showAssetToast('Asset berhasil ditambahkan!');
                 document.getElementById('add-asset-form').reset();
+                // Reset file input
+                if (gambarUpload) gambarUpload.value = '';
                 // Reset Select2 elements after form reset
                 $('#jenis_asset').val(null).trigger('change');
                 addAssetModal.hide();
@@ -220,6 +368,23 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
+        // Handle image upload if a file is selected
+        let url_gambar = document.getElementById('edit_gambar_url').value;
+        const gambarUpload = document.getElementById('edit_gambar_upload');
+        
+        if (gambarUpload && gambarUpload.files[0]) {
+            const uploadedUrl = await uploadImageFile(gambarUpload);
+            if (uploadedUrl) {
+                url_gambar = uploadedUrl; // Use the uploaded image URL, not the one from the text field
+            } else {
+                // If upload failed but there's a URL in the text field, use that
+                // Otherwise, the form will submit with whatever value was in the text field
+            }
+        } else if (!url_gambar) {
+            // If no file selected and no URL provided, set to null
+            url_gambar = null;
+        }
+
         const hargaStr = document.getElementById('edit_harga').value;
         const harga = parseFloat(hargaStr.replace(/\./g, '')); // Remove dots and parse as float
 
@@ -232,7 +397,7 @@ document.addEventListener('DOMContentLoaded', function() {
             isHibah: document.getElementById('edit_isHibah').checked,
             aktif: document.getElementById('edit_aktif').checked,
             isBroken: document.getElementById('edit_isBroken').checked,
-            url_gambar: document.getElementById('edit_gambar_url').value // Add the image URL
+            url_gambar: url_gambar // Use the processed image URL
         };
 
         try {
@@ -388,6 +553,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 document.getElementById('edit_harga').value = formatNumber(harga);
                 document.getElementById('edit_gambar_url').value = gambarUrl;
+                // Reset the file input
+                document.getElementById('edit_gambar_upload').value = '';
                 document.getElementById('edit_isHibah').checked = isHibah;
                 document.getElementById('edit_aktif').checked = aktif;
                 document.getElementById('edit_isBroken').checked = isBroken;
@@ -434,7 +601,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('detail_aktif').textContent = aktifStatus;
                 document.getElementById('detail_isHibah').textContent = hibahStatus;
                 document.getElementById('detail_isBroken').textContent = brokenStatus;
-                document.getElementById('detail_url_gambar').textContent = urlGambar || 'Tidak ada';
+                
+                // Display image in detail modal if available
+                const urlGambarElement = document.getElementById('detail_url_gambar');
+                if (urlGambar) {
+                    urlGambarElement.innerHTML = `<img src="${urlGambar}" alt="Gambar Asset" style="max-width: 200px; max-height: 200px; border-radius: 8px;">`;
+                } else {
+                    urlGambarElement.textContent = 'Tidak ada gambar';
+                }
 
                 // Show the detail modal
                 const detailModal = new bootstrap.Modal(document.getElementById('detailAssetModal'));

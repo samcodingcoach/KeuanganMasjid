@@ -33,6 +33,7 @@ from api.akun.update import update_akun_kas_bank
 from api.asset.asset import get_all_assets, get_asset_by_kode_barang
 from api.asset.new import create_asset
 from api.asset.update import update_asset
+from api.asset.upload import upload_asset_image
 from api.muzakki.muzakki import get_muzakki_list
 from api.muzakki.new import create_muzakki
 from api.muzakki.update import update_muzakki
@@ -207,6 +208,10 @@ def new_transaksi_detail():
 @app.route('/api/transaksi.upload', methods=['POST'])
 def upload_bukti_route():
     return upload_bukti(supabase)
+
+@app.route('/api/asset.upload', methods=['POST'])
+def upload_asset_image_route():
+    return upload_asset_image(supabase)
 
 @app.route('/akun')
 def akun_page():

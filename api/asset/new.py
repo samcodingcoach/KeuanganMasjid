@@ -42,8 +42,8 @@ def create_asset(supabase_client, request):
             'id_pegawai': data['id_pegawai']
         }
         
-        # Add optional url_gambar if provided
-        if 'url_gambar' in data and data['url_gambar']:
+        # Add optional url_gambar field (handles both null and string values)
+        if 'url_gambar' in data:
             asset_data['url_gambar'] = data['url_gambar']
         
         # Insert the new asset
