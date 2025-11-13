@@ -23,6 +23,7 @@ from api.pegawai.update_pribadi import update_pribadi
 from api.pegawai.cek_login import cek_login_pegawai
 from api.pegawai.reset import request_reset, verify_code, reset_password
 from api.pegawai.cek_kodeverifikasi import cek_kodeverifikasi
+from api.pegawai.update_resetpw import update_newpassword
 from api.mustahik.mustahik import get_mustahik
 from api.mustahik.new import create_mustahik
 from api.mustahik.update import update_mustahik
@@ -270,10 +271,10 @@ def verify_code_route():
 def cek_kodeverifikasi_route():
     return cek_kodeverifikasi(supabase, request)
 
-# Route to reset password
-@app.route('/api/reset-password', methods=['POST'])
-def reset_password_route():
-    return reset_password(supabase, request)
+# Route to reset password using email
+@app.route('/api/update_newpassword', methods=['POST'])
+def update_newpassword_route():
+    return update_newpassword(supabase, request)
 
 @app.route('/css/<path:path>')
 def send_css(path):
