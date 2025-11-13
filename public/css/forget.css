@@ -1,0 +1,219 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+.container {
+    background-color: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    width: 450px;
+    max-width: 90%;
+    text-align: center;
+}
+h2 {
+    margin-bottom: 25px;
+    color: #2c3e50;
+    font-size: 24px;
+    font-weight: 600;
+}
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #34495e;
+}
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+input[type="email"]:focus,
+input[type="password"]:focus {
+    outline: none;
+    border-color: #007bff;
+}
+.captcha-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+.captcha-text {
+    font-size: 20px;
+    font-weight: bold;
+    letter-spacing: 3px;
+    background-color: #f8f9fa;
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    cursor: pointer;
+    user-select: none;
+}
+#captcha-input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+#captcha-input:focus {
+    outline: none;
+    border-color: #007bff;
+}
+.captcha-text:hover {
+    background-color: #e9ecef;
+}
+button {
+    width: 100%;
+    padding: 14px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+}
+button:hover {
+    background-color: #0056b3;
+}
+button:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+}
+.error {
+    color: #e74c3c;
+    font-size: 14px;
+    margin-top: 5px;
+    text-align: left;
+}
+.success {
+    color: #27ae60;
+    font-size: 14px;
+    margin-top: 5px;
+}
+.notification {
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    text-align: center;
+    font-weight: 500;
+}
+.notification.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+.hidden {
+    display: none;
+}
+.back-link {
+    text-align: center;
+    margin-top: 20px;
+}
+.back-link a {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 14px;
+}
+.verification-inputs {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 15px 0;
+}
+.verification-input {
+    width: 45px;
+    height: 50px;
+    text-align: center;
+    font-size: 24px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    outline: none;
+}
+.verification-input:focus {
+    border-color: #007bff;
+}
+.resend-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+    gap: 15px;
+}
+
+.timer {
+    font-weight: 600;
+    color: #007bff;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+}
+
+.timer::before {
+    content: "⏱️ ";
+    margin-right: 5px;
+}
+.resend-btn {
+    padding: 14px;
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: background-color 0.3s;
+}
+.resend-btn:hover {
+    background-color: #5a6268;
+}
+.resend-btn:disabled {
+    background-color: #adb5bd;
+    cursor: not-allowed;
+}
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+}
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+.timer {
+    font-weight: 600;
+    color: #007bff;
+}
+
+.toggle-password {
+    font-size: 18px;
+}
+
+.toggle-password:hover {
+    opacity: 0.7;
+}
