@@ -248,9 +248,19 @@
                             <label for="kode_transaksi">Kode Transaksi</label>
                             <i class="bi bi-hash position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
                         </div>
-                        <div class="form-floating mb-3">
-                            <input type="date" class="form-control" id="tanggal_transaksi" placeholder="Pilih tanggal" required>
-                            <label for="tanggal_transaksi">Tanggal Transaksi</label>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="date" class="form-control" id="tanggal_transaksi" placeholder="Pilih tanggal" required>
+                                    <label for="tanggal_transaksi">Tanggal Transaksi</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="time" class="form-control" id="waktu_transaksi" placeholder="Pilih waktu" required>
+                                    <label for="waktu_transaksi">Waktu Transaksi</label>
+                                </div>
+                            </div>
                         </div>
                         <div class="mb-3">
                             <select class="form-select searchable-select" id="nama_akun" data-placeholder="Pilih Nama Akun" required>

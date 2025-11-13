@@ -183,8 +183,17 @@ function formatCurrency(amount) {
 function formatDate(dateString) {
     if (!dateString) return '-';
 
-    // Parse the date string
-    const date = new Date(dateString);
+    // Parse the date string - handle both 'T' format and space format
+    let date;
+    if (typeof dateString === 'string') {
+        // Replace space with 'T' to handle 'YYYY-MM-DD HH:mm:ss' format properly
+        if (dateString.includes(' ')) {
+            dateString = dateString.replace(' ', 'T');
+        }
+        date = new Date(dateString);
+    } else {
+        date = dateString;
+    }
 
     // Array of month names in Indonesian
     const months = [
@@ -210,10 +219,21 @@ function generateKodeTransaksi(transactions, selectedDate = null) {
     }
 
     // Extract date components for YYMMDD part
-    const today = new Date(selectedDate);
-    const year = String(today.getFullYear()).slice(2); // Get last 2 digits of year
-    const month = String(today.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed
-    const day = String(today.getDate()).padStart(2, '0');
+    var dateObj;
+    if (selectedDate instanceof Date) {
+        dateObj = selectedDate;
+    } else if (typeof selectedDate === 'string' && selectedDate.includes('T')) {
+        // Handle datetime string (YYYY-MM-DDTHH:mm format)
+        const datePart = selectedDate.split('T')[0];
+        dateObj = new Date(datePart);
+    } else {
+        // Handle date string (YYYY-MM-DD format)
+        dateObj = new Date(selectedDate);
+    }
+    
+    const year = String(dateObj.getFullYear()).slice(2); // Get last 2 digits of year
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed
+    const day = String(dateObj.getDate()).padStart(2, '0');
 
     const datePart = `${year}${month}${day}`;
     const prefix = 'FI'; // Fixed prefix for income transactions
@@ -221,7 +241,18 @@ function generateKodeTransaksi(transactions, selectedDate = null) {
     // Filter transactions for the same date
     const todayTransactions = transactions.filter(transaction => {
         if (!transaction.tanggal_transaksi) return false;
-        const transactionDate = new Date(transaction.tanggal_transaksi);
+        
+        // Handle datetime string from transaction data (may be in 'YYYY-MM-DDTHH:mm' or 'YYYY-MM-DD HH:mm:ss' format)
+        let transactionDateString = transaction.tanggal_transaksi;
+        if (transactionDateString && transactionDateString.includes('T')) {
+            // Datetime format with 'T' (e.g., '2025-11-12T14:30')
+            transactionDateString = transactionDateString.split('T')[0];
+        } else if (transactionDateString && transactionDateString.includes(' ')) {
+            // Datetime format with space (e.g., '2025-11-12 14:30:00')
+            transactionDateString = transactionDateString.split(' ')[0];
+        }
+        
+        const transactionDate = new Date(transactionDateString);
         const transYear = String(transactionDate.getFullYear()).slice(2);
         const transMonth = String(transactionDate.getMonth() + 1).toString().padStart(2, '0');
         const transDay = String(transactionDate.getDate()).toString().padStart(2, '0');
@@ -253,30 +284,36 @@ function validateDateInput() {
     today.setHours(0, 0, 0, 0); // Set time to start of day for comparison
 
     const dateInput = document.getElementById('tanggal_transaksi');
-    const selectedDate = new Date(dateInput.value);
+    const selectedDateStr = dateInput.value;
+    const selectedDate = new Date(selectedDateStr);
     selectedDate.setHours(0, 0, 0, 0); // Set time to start of day for comparison
 
     if (selectedDate > today) {
         alert('Tanggal transaksi tidak boleh di masa depan');
-        dateInput.value = today.toISOString().split('T')[0]; // Set to today's date
+        // Set to today's date
+        const todayFormatted = today.toISOString().split('T')[0];
+        dateInput.value = todayFormatted;
     }
 
     // Generate new kode_transaksi when date changes
     if (allIncomeTransactions) {
-        const newKode = generateKodeTransaksi(allIncomeTransactions, dateInput.value);
+        const newKode = generateKodeTransaksi(allIncomeTransactions, selectedDateStr);
         document.getElementById('kode_transaksi').value = newKode;
     }
 }
 
 // Event listener for modal opening to auto-generate kode_transaksi
 document.getElementById('addTransactionModal').addEventListener('shown.bs.modal', function() {
-    // Set default date to today
-    const today = new Date();
-    const todayString = today.toISOString().split('T')[0];
-    document.getElementById('tanggal_transaksi').value = todayString;
+    // Set default date and time to now
+    const now = new Date();
+    const dateStr = now.toISOString().split('T')[0]; // YYYY-MM-DD
+    const timeStr = now.toTimeString().substring(0, 5); // HH:MM
+
+    document.getElementById('tanggal_transaksi').value = dateStr;
+    document.getElementById('waktu_transaksi').value = timeStr;
 
     // Generate kode transaksi based on today's date
-    const newKode = generateKodeTransaksi(allIncomeTransactions || []);
+    const newKode = generateKodeTransaksi(allIncomeTransactions || [], dateStr);
     document.getElementById('kode_transaksi').value = newKode;
 
     // Load accounts and muzakki when modal opens to ensure data is fresh
@@ -306,7 +343,7 @@ document.getElementById('tanggal_transaksi').addEventListener('change', validate
 // Set max date to today to prevent future date selection in the date picker
 document.addEventListener('DOMContentLoaded', function() {
     const today = new Date();
-    const todayString = today.toISOString().split('T')[0]; // Format YYYY-MM-DD
+    const todayString = today.toISOString().split('T')[0]; // Format YYYY-MM-DD for date input
     document.getElementById('tanggal_transaksi').setAttribute('max', todayString);
 });
 
@@ -730,7 +767,10 @@ document.getElementById('save-transaction-btn').addEventListener('click', functi
     }
 
     // Get form values
-    const tanggal_transaksi = document.getElementById('tanggal_transaksi').value;
+    const tanggal_transaksi_input = document.getElementById('tanggal_transaksi').value; // YYYY-MM-DD
+    const waktu_transaksi = document.getElementById('waktu_transaksi').value; // HH:MM
+    // Combine date and time in YYYY-MM-DD HH:MM:SS format for the API
+    const tanggal_transaksi = tanggal_transaksi_input + ' ' + waktu_transaksi + ':00';
     const id_akun = document.getElementById('nama_akun').value;
     const id_muzakki = document.getElementById('nama_muzakki').value;
     const kode_transaksi = document.getElementById('kode_transaksi').value;
