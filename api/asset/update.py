@@ -54,6 +54,11 @@ def update_asset(supabase_client, request):
         
         if 'url_gambar' in data:
             update_data['url_gambar'] = data['url_gambar']
+            print(f"Adding url_gambar to update_data: {data['url_gambar']}")
+        else:
+            print("url_gambar not in update data")
+        
+        print(f"Final update_data: {update_data}")
         
         # Check if no fields to update
         if not update_data:

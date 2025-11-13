@@ -31,6 +31,8 @@ def create_asset(supabase_client, request):
         if harga_value.is_integer():
             harga_value = int(harga_value)
         
+        print(f"Received data for asset creation: {data}")
+        
         asset_data = {
             'kode_barang': data['kode_barang'],
             'nama_barang': data['nama_barang'],
@@ -45,13 +47,21 @@ def create_asset(supabase_client, request):
         # Add optional url_gambar field (handles both null and string values)
         if 'url_gambar' in data:
             asset_data['url_gambar'] = data['url_gambar']
+            print(f"Adding url_gambar to asset_data: {data['url_gambar']}")
+        else:
+            print("url_gambar not in data")
+        
+        print(f"Final asset_data before insert: {asset_data}")
         
         # Insert the new asset
+        print(f"Attempting to insert asset with data: {asset_data}")
         response = supabase_client.table('asset').insert(asset_data).execute()
+        print(f"Supabase insert response: {response}")
         
         if response.data:
             # Get the inserted asset with pegawai information
             new_asset = response.data[0]
+            print(f"New asset created with ID: {new_asset.get('id_asset')}, url_gambar: {new_asset.get('url_gambar')}")
             
             # Get pegawai information
             pegawai_response = supabase_client.table('pegawai').select(
@@ -77,6 +87,7 @@ def create_asset(supabase_client, request):
                 'data': new_asset
             })
         else:
+            print("Failed to create asset - no data returned from insert")
             return jsonify({
                 'success': False,
                 'error': 'Failed to create asset'
