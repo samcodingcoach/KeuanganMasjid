@@ -1002,9 +1002,11 @@ document.getElementById('save-edit-detail-btn').addEventListener('click', async 
         if (data.success) {
             showTransactionToast('Detail penerimaan berhasil diperbarui');
 
-            // Close the modal
-            const modal = bootstrap.Modal.getInstance(document.getElementById('editDetailModal'));
-            modal.hide();
+            // First, close the edit modal
+            const editModal = bootstrap.Modal.getInstance(document.getElementById('editDetailModal'));
+            if (editModal) {
+                editModal.hide();
+            }
 
             // Update the main transaction list to reflect the changes
             fetch('http://127.0.0.1:5002/api/transaksi.list')
@@ -1020,23 +1022,58 @@ document.getElementById('save-edit-detail-btn').addEventListener('click', async 
                         filteredTransactions = allIncomeTransactions;
                         renderTable();
 
-                        // Find the updated transaction and refresh the detail modal to show changes
+                        // Find the updated transaction in the current detail modal and update it directly
+                        const updatedDetailId = parseInt(document.getElementById('edit_detail_id').value);
                         const currentTransactionId = document.getElementById('edit_transaction_id').value;
-                        const updatedTransaction = allIncomeTransactions.find(t => t.id_transaksi == currentTransactionId);
 
-                        if (updatedTransaction) {
-                            // Re-show the detail modal to reflect the changes
-                            showDetail(updatedTransaction);
+                        // Find the current transaction in allIncomeTransactions to get updated details
+                        const currentTransaction = allIncomeTransactions.find(t => t.id_transaksi == currentTransactionId);
 
-                            // Switch to the detail tab after showing the modal
-                            setTimeout(() => {
-                                const detailTabElement = document.querySelector('#detail-detail-tab');
-                                if (detailTabElement) {
-                                    // Create a bootstrap tab instance and show it
-                                    const detailTab = new bootstrap.Tab(detailTabElement);
-                                    detailTab.show();
-                                }
-                            }, 100); // Small delay to ensure modal is fully loaded
+                        if (currentTransaction && currentTransaction.details) {
+                            // Find the updated detail
+                            const updatedDetail = currentTransaction.details.find(d => d.id_detail == updatedDetailId);
+
+                            if (updatedDetail) {
+                                // Update the detail table in the currently open detail modal
+                                const detailTableRows = document.querySelectorAll('#detail-table tbody tr');
+                                detailTableRows.forEach(row => {
+                                    // Look for the edit button in this row to identify the correct detail
+                                    const editButton = row.querySelector('button[onclick*="editDetail"]');
+                                    if (editButton) {
+                                        // Extract the detail id from the onclick attribute
+                                        const onclickAttr = editButton.getAttribute('onclick');
+                                        const detailMatch = onclickAttr.match(/editDetail\((\{.*?\})/);
+                                        if (detailMatch) {
+                                            try {
+                                                const detailObj = JSON.parse(detailMatch[1].replace(/&quot;/g, '"'));
+                                                if (detailObj.id_detail == updatedDetailId) {
+                                                    // Update this row with new values
+                                                    const jumlahCell = row.cells[2]; // Jumlah column
+                                                    const nominalCell = row.cells[3]; // Nominal column
+                                                    const subtotalCell = row.cells[4]; // Subtotal column
+                                                    const descriptionCell = row.cells[1]; // Description column
+
+                                                    jumlahCell.textContent = updatedDetail.jumlah || 0;
+                                                    nominalCell.textContent = 'Rp ' + (updatedDetail.nominal || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                                                    subtotalCell.textContent = 'Rp ' + (updatedDetail.subtotal || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+                                                    // Update description cell with new details
+                                                    const newDescContent = `<div>${formatDate(updatedDetail.created_at)}</div>
+                                                        <div class="text-muted small">Deskripsi: ${updatedDetail.deskripsi || '-'}</div>
+                                                        <div class="text-muted small">${updatedDetail.jenis_kategori || '-'}</div>
+                                                        <div class="text-muted small">${updatedDetail.nama_kategori || '-'}</div>`;
+                                                    descriptionCell.innerHTML = newDescContent;
+                                                }
+                                            } catch (e) {
+                                                console.error("Error updating table row:", e);
+                                            }
+                                        }
+                                    }
+                                });
+
+                                // Update the total in the Info tab of the detail modal
+                                document.getElementById('detail_total').textContent = 'Rp ' + (currentTransaction.total || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                            }
                         }
                     }
                 })
