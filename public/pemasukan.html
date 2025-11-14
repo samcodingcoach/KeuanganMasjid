@@ -399,6 +399,74 @@
         </div>
     </div>
 
+    <!-- Modal Edit Detail Transaksi -->
+    <div class="modal fade" id="editDetailModal" tabindex="-1" aria-labelledby="editDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content border-0 rounded-3">
+                <div class="modal-header" style="background: linear-gradient(180deg, #075E54 0%, #128C7E 100%);">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-pencil me-2 text-white"></i>
+                        <h5 class="modal-title text-white" id="editDetailModalLabel">Edit Detail Transaksi</h5>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="max-height: 70vh; overflow-y: auto;" data-bs-focus="false">
+                    <form id="edit-detail-form">
+                        <input type="hidden" id="edit_detail_id">
+                        <input type="hidden" id="edit_transaction_id">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-floating mb-3 position-relative">
+                                    <textarea class="form-control" id="edit_keterangan" placeholder="Keterangan" style="height: 100px;" required></textarea>
+                                    <label for="edit_keterangan">Keterangan</label>
+                                    <i class="bi bi-pencil position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <select class="form-select searchable-select" id="edit_kategori_penerimaan" data-placeholder="Pilih Kategori Penerimaan" required>
+                                <option value="">Pilih Kategori Penerimaan</option>
+                            </select>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-floating mb-3 position-relative">
+                                    <input type="text" class="form-control numeric-input" id="edit_jumlah" placeholder="Jumlah" required>
+                                    <label for="edit_jumlah">Jumlah</label>
+                                    <i class="bi bi-123 position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-floating mb-3 position-relative">
+                                    <input type="text" class="form-control numeric-input" id="edit_nominal" placeholder="Nominal" required>
+                                    <label for="edit_nominal">Nominal</label>
+                                    <i class="bi bi-currency-dollar position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-floating mb-3 position-relative">
+                                    <input type="text" class="form-control numeric-input" id="edit_subtotal" placeholder="Subtotal" readonly>
+                                    <label for="edit_subtotal">Subtotal</label>
+                                    <i class="bi bi-calculator position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <select class="form-select" id="edit_is_asset">
+                                <option value="0">Bukan Asset</option>
+                                <option value="1">Merupakan Asset</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary me-2" data-bs-dismiss="modal"><i class="bi bi-x-lg me-1"></i>Batal</button>
+                    <button type="button" class="btn btn-whatsapp" id="save-edit-detail-btn"><i class="bi bi-save me-1"></i>Simpan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Bootstrap JS Bundle with Popper -->

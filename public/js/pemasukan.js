@@ -153,7 +153,7 @@ function showDetail(transaction) {
             const isClosed = transaction.isClose === 1 || transaction.isClose === true;
             const editButtonHtml = isClosed ? '' : `
                 <td>
-                    <button class="btn btn-sm btn-outline-whatsapp p-1" style="border-radius: 8px; width: 36px; height: 36px;">
+                    <button class="btn btn-sm btn-outline-whatsapp p-1" onclick="editDetail(${JSON.stringify(detail).replace(/"/g, '&quot;')}, ${JSON.stringify(transaction).replace(/"/g, '&quot;')})" style="border-radius: 8px; width: 36px; height: 36px;">
                         <i class="bi bi-pencil"></i>
                     </button>
                 </td>
@@ -190,6 +190,68 @@ function showDetail(transaction) {
     // Show the modal
     const modal = new bootstrap.Modal(document.getElementById('detailModal'));
     modal.show();
+}
+
+// Function to edit transaction detail
+function editDetail(detail, transaction) {
+    // Fill the edit modal with current detail data
+    document.getElementById('edit_detail_id').value = detail.id_detail;
+    document.getElementById('edit_transaction_id').value = detail.id_transaksi;
+    document.getElementById('edit_keterangan').value = detail.deskripsi || '';
+    document.getElementById('edit_jumlah').value = formatNumber(detail.jumlah || '');
+    document.getElementById('edit_nominal').value = formatNumber(detail.nominal || '');
+    document.getElementById('edit_subtotal').value = formatNumber(detail.subtotal || '');
+    document.getElementById('edit_is_asset').value = detail.isAsset ? '1' : '0';
+
+    // Load categories for the dropdown
+    loadEditCategories(detail.id_kategori);
+
+    // Show the edit modal
+    const modal = new bootstrap.Modal(document.getElementById('editDetailModal'));
+    modal.show();
+}
+
+// Function to load categories for edit modal and select the current category
+function loadEditCategories(currentCategoryId) {
+    fetch('http://127.0.0.1:5002/api/kategori.list')
+        .then(response => response.json())
+        .then(response => {
+            if (response.success && response.data) {
+                const selectElement = document.getElementById('edit_kategori_penerimaan');
+                selectElement.innerHTML = '<option value="">Pilih Kategori Penerimaan</option>'; // Clear existing options
+
+                response.data.forEach(category => {
+                    if (category.jenis_kategori === 'Penerimaan') { // Only show income categories
+                        const option = document.createElement('option');
+                        option.value = category.id_kategori;
+                        option.text = category.nama_kategori;
+                        if (category.id_kategori == currentCategoryId) {
+                            option.selected = true;
+                        }
+                        selectElement.appendChild(option);
+                    }
+                });
+
+                // Initialize Select2 for editable category dropdown
+                setTimeout(function() {
+                    if ($('#edit_kategori_penerimaan').data('select2')) {
+                        $('#edit_kategori_penerimaan').select2('destroy');
+                    }
+                    $('#edit_kategori_penerimaan').select2({
+                        theme: 'bootstrap-5',
+                        placeholder: 'Pilih Kategori Penerimaan',
+                        allowClear: true,
+                        width: '100%',
+                        dropdownParent: $('#editDetailModal')
+                    });
+                }, 100);
+            } else {
+                console.error('API kategori.list returned error:', response);
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching categories:', error);
+        });
 }
 
 // Function to format currency in Indonesian style
@@ -619,6 +681,14 @@ function calculateSubtotal() {
     document.getElementById('subtotal').value = formatNumber(subtotal);
 }
 
+// Function to calculate edit subtotal (jumlah * nominal)
+function calculateEditSubtotal() {
+    const jumlah = parseFloat(unformatNumber(document.getElementById('edit_jumlah').value)) || 0;
+    const nominal = parseFloat(unformatNumber(document.getElementById('edit_nominal').value)) || 0;
+    const subtotal = jumlah * nominal;
+    document.getElementById('edit_subtotal').value = formatNumber(subtotal);
+}
+
 // Event listener for modal opening to initialize fields
 document.getElementById('addIncomeDetailModal').addEventListener('shown.bs.modal', function() {
     // Clear form fields when modal opens
@@ -674,6 +744,57 @@ document.getElementById('addIncomeDetailModal').addEventListener('shown.bs.modal
             allowClear: true,
             width: '100%',
             dropdownParent: $('#addIncomeDetailModal')
+        });
+    }, 100);
+});
+
+// Event listener for edit modal opening to initialize fields
+document.getElementById('editDetailModal').addEventListener('shown.bs.modal', function() {
+    // Remove any existing event listeners from previous modal instances
+    document.getElementById('edit_jumlah').removeEventListener('input', calculateEditSubtotal);
+    document.getElementById('edit_nominal').removeEventListener('input', calculateEditSubtotal);
+
+    // Add event listeners for calculating subtotal for edit modal
+    document.getElementById('edit_jumlah').addEventListener('input', calculateEditSubtotal);
+    document.getElementById('edit_nominal').addEventListener('input', calculateEditSubtotal);
+
+    // Initialize numeric formatting for all numeric inputs in edit modal
+    handleNumericInput('edit_jumlah');
+    handleNumericInput('edit_nominal');
+
+    // Add event listener for edit nominal to update subtotal when value changes
+    document.getElementById('edit_nominal').addEventListener('input', function(e) {
+        // Format the input as the user types
+        let value = e.target.value;
+        value = value.replace(/[^\d]/g, '');
+        e.target.value = formatNumber(value);
+
+        // Then calculate the subtotal
+        calculateEditSubtotal();
+    });
+
+    // Add event listener for edit jumlah to update subtotal when value changes
+    document.getElementById('edit_jumlah').addEventListener('input', function(e) {
+        // Format the input as the user types
+        let value = e.target.value;
+        value = value.replace(/[^\d]/g, '');
+        e.target.value = formatNumber(value);
+
+        // Then calculate the subtotal
+        calculateEditSubtotal();
+    });
+
+    // Initialize Select2 for searchable dropdowns when modal is shown
+    setTimeout(function() {
+        if ($('#edit_kategori_penerimaan').data('select2')) {
+            $('#edit_kategori_penerimaan').select2('destroy');
+        }
+        $('#edit_kategori_penerimaan').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Pilih Kategori Penerimaan',
+            allowClear: true,
+            width: '100%',
+            dropdownParent: $('#editDetailModal')
         });
     }, 100);
 });
@@ -836,6 +957,80 @@ document.getElementById('save-income-detail-btn').addEventListener('click', asyn
     .catch(error => {
         console.error('Error saving income detail:', error);
         showTransactionToast('Terjadi kesalahan saat menyimpan detail penerimaan', 'error');
+    });
+});
+
+// Event listener for the save edit button
+document.getElementById('save-edit-detail-btn').addEventListener('click', async function() {
+    // Get form values and unformat numeric fields
+    const id_detail = document.getElementById('edit_detail_id').value;
+    const id_transaksi = document.getElementById('edit_transaction_id').value;
+    const keterangan = document.getElementById('edit_keterangan').value;
+    const id_kategori = document.getElementById('edit_kategori_penerimaan').value;
+    const jumlah = unformatNumber(document.getElementById('edit_jumlah').value);
+    const nominal = unformatNumber(document.getElementById('edit_nominal').value);
+    const is_asset = document.getElementById('edit_is_asset').value === '1' ? true : false;
+    const subtotal = unformatNumber(document.getElementById('edit_subtotal').value);
+
+    // Validate required fields
+    if (!id_detail || !id_transaksi || !keterangan || !id_kategori || !jumlah || !nominal) {
+        showTransactionToast('Harap lengkapi semua data yang diperlukan', 'error');
+        return;
+    }
+
+    // Prepare data for API request
+    const requestData = {
+        id_detail: parseInt(id_detail),
+        deskripsi: keterangan,
+        id_kategori: parseInt(id_kategori),
+        jumlah: parseFloat(jumlah),
+        nominal: parseFloat(nominal),
+        isAsset: is_asset,  // Boolean value
+        subtotal: parseFloat(subtotal)
+    };
+
+    // Call the API to update the income detail
+    fetch('http://127.0.0.1:5002/api/transaksi.updatedetail', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showTransactionToast('Detail penerimaan berhasil diperbarui');
+
+            // Close the modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('editDetailModal'));
+            modal.hide();
+
+            // Refresh the transaction list to show updated totals
+            fetch('http://127.0.0.1:5002/api/transaksi.list')
+                .then(response => response.json())
+                .then(response => {
+                    if (response.success && response.data) {
+                        // Filter transactions to only show income transactions (kode_transaksi starting with 'FI')
+                        allIncomeTransactions = response.data.filter(transaction =>
+                            transaction.kode_transaksi && transaction.kode_transaksi.startsWith('FI')
+                        );
+
+                        // Update the filtered transactions and re-render the table
+                        filteredTransactions = allIncomeTransactions;
+                        renderTable();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error refreshing data:', error);
+                });
+        } else {
+            showTransactionToast('Gagal memperbarui detail penerimaan: ' + (data.message || data.error), 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error updating income detail:', error);
+        showTransactionToast('Terjadi kesalahan saat memperbarui detail penerimaan', 'error');
     });
 });
 
