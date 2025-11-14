@@ -1006,7 +1006,7 @@ document.getElementById('save-edit-detail-btn').addEventListener('click', async 
             const modal = bootstrap.Modal.getInstance(document.getElementById('editDetailModal'));
             modal.hide();
 
-            // Refresh the transaction list to show updated totals
+            // Update the main transaction list to reflect the changes
             fetch('http://127.0.0.1:5002/api/transaksi.list')
                 .then(response => response.json())
                 .then(response => {
@@ -1019,6 +1019,25 @@ document.getElementById('save-edit-detail-btn').addEventListener('click', async 
                         // Update the filtered transactions and re-render the table
                         filteredTransactions = allIncomeTransactions;
                         renderTable();
+
+                        // Find the updated transaction and refresh the detail modal to show changes
+                        const currentTransactionId = document.getElementById('edit_transaction_id').value;
+                        const updatedTransaction = allIncomeTransactions.find(t => t.id_transaksi == currentTransactionId);
+
+                        if (updatedTransaction) {
+                            // Re-show the detail modal to reflect the changes
+                            showDetail(updatedTransaction);
+
+                            // Switch to the detail tab after showing the modal
+                            setTimeout(() => {
+                                const detailTabElement = document.querySelector('#detail-detail-tab');
+                                if (detailTabElement) {
+                                    // Create a bootstrap tab instance and show it
+                                    const detailTab = new bootstrap.Tab(detailTabElement);
+                                    detailTab.show();
+                                }
+                            }, 100); // Small delay to ensure modal is fully loaded
+                        }
                     }
                 })
                 .catch(error => {
