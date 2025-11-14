@@ -46,6 +46,17 @@ function renderTable() {
             totalPenerimaan += parseInt(transaction.total || 0);
 
             // Format the row with the required data
+            const isClosed = transaction.isClose === 1 || transaction.isClose === true;
+            const addButtonHtml = isClosed ? '' : `
+                <button class="btn btn-sm btn-outline-whatsapp p-1 me-1" onclick="addIncomeDetail(${JSON.stringify(transaction).replace(/"/g, '&quot;')})" style="border-radius: 8px; width: 36px; height: 36px;" title="Tambah Detail">
+                    <i class="bi bi-plus"></i>
+                </button>
+            `;
+            const finishButtonHtml = isClosed ? '' : `
+                <button class="btn btn-sm btn-outline-success p-1" onclick="finishTransaction(${JSON.stringify(transaction).replace(/"/g, '&quot;')})" style="border-radius: 8px; width: 36px; height: 36px;" title="Finish">
+                    <i class="bi bi-check-lg"></i>
+                </button>
+            `;
             row.innerHTML = `
                 <td>${index + 1}</td>
                 <td>${transaction.kode_transaksi || '-'}</td>
@@ -53,15 +64,11 @@ function renderTable() {
                 <td>${transaction.nama_akun || '-'}</td>
                 <td class="text-end">${formattedTotal}</td>
                 <td>
-                    <button class="btn btn-sm btn-outline-whatsapp p-1 me-1" onclick="addIncomeDetail(${JSON.stringify(transaction).replace(/"/g, '&quot;')})" style="border-radius: 8px; width: 36px; height: 36px;" title="Tambah Detail">
-                        <i class="bi bi-plus"></i>
-                    </button>
+                    ${addButtonHtml}
                     <button class="btn btn-sm btn-outline-whatsapp p-1 me-1" onclick="showDetail(${JSON.stringify(transaction).replace(/"/g, '&quot;')})" style="border-radius: 8px; width: 36px; height: 36px;" title="Detail Transaksi">
                         <i class="bi bi-eye"></i>
                     </button>
-                    <button class="btn btn-sm btn-outline-success p-1" onclick="finishTransaction(${JSON.stringify(transaction).replace(/"/g, '&quot;')})" style="border-radius: 8px; width: 36px; height: 36px;" title="Finish">
-                        <i class="bi bi-check-lg"></i>
-                    </button>
+                    ${finishButtonHtml}
                 </td>
             `;
 
@@ -142,6 +149,16 @@ function showDetail(transaction) {
         transaction.details.forEach((detail, index) => {
             const row = document.createElement('tr');
 
+            // Conditionally show edit button based on isClose status
+            const isClosed = transaction.isClose === 1 || transaction.isClose === true;
+            const editButtonHtml = isClosed ? '' : `
+                <td>
+                    <button class="btn btn-sm btn-outline-whatsapp p-1" style="border-radius: 8px; width: 36px; height: 36px;">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                </td>
+            `;
+
             // Format the row with the requested fields
             row.innerHTML = `
                 <td>${index + 1}</td>
@@ -154,11 +171,7 @@ function showDetail(transaction) {
                 <td>${detail.jumlah || '-'}</td>
                 <td>${detail.nominal ? 'Rp ' + detail.nominal.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") : '-'}</td>
                 <td>${detail.subtotal ? 'Rp ' + detail.subtotal.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") : '-'}</td>
-                <td>
-                    <button class="btn btn-sm btn-outline-whatsapp p-1" style="border-radius: 8px; width: 36px; height: 36px;">
-                        <i class="bi bi-pencil"></i>
-                    </button>
-                </td>
+                ${isClosed ? '<td></td>' : editButtonHtml}
             `;
 
             detailTableBody.appendChild(row);
@@ -166,6 +179,8 @@ function showDetail(transaction) {
     } else {
         // If no details found, show a single row with "No data" message
         const row = document.createElement('tr');
+        // Show empty cell for edit button column
+        const isClosed = transaction.isClose === 1 || transaction.isClose === true;
         row.innerHTML = `
             <td colspan="6" class="text-center">Tidak ada detail transaksi</td>
         `;
@@ -467,47 +482,44 @@ document.getElementById('confirm-finish-btn').addEventListener('click', function
     const transaction = window.currentFinishTransaction;
 
     if (transaction) {
-        // In a real implementation, you would call the API to finish the transaction
-        // fetch('http://127.0.0.1:5002/api/transaksi.finish', {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //     },
-        //     body: JSON.stringify({
-        //         id_transaksi: transaction.id_transaksi,
-        //         kode_transaksi: transaction.kode_transaksi
-        //     })
-        // })
-        // .then(response => response.json())
-        // .then(data => {
-        //     if (data.success) {
-        //         showTransactionToast('Transaksi berhasil diselesaikan');
-        //         // Refresh the transaction list
-        //         fetch('http://127.0.0.1:5002/api/transaksi.list')
-        //             .then(response => response.json())
-        //             .then(response => {
-        //                 if (response.success && response.data) {
-        //                     allIncomeTransactions = response.data.filter(transaction =>
-        //                         transaction.kode_transaksi && transaction.kode_transaksi.startsWith('FI')
-        //                     );
-        //                     filteredTransactions = allIncomeTransactions;
-        //                     renderTable();
-        //                 }
-        //             })
-        //             .catch(error => {
-        //                 console.error('Error refreshing data:', error);
-        //             });
-        //     } else {
-        //         showTransactionToast('Gagal menyelesaikan transaksi: ' + (data.message || data.error), 'error');
-        //     }
-        // })
-        // .catch(error => {
-        //     console.error('Error finishing transaction:', error);
-        //     showTransactionToast('Terjadi kesalahan saat menyelesaikan transaksi', 'error');
-        // });
-
-        // For now, just show a toast notification
-        showTransactionToast(`Transaksi ${transaction.kode_transaksi} ditandai sebagai selesai`);
+        // Call the API to finish the transaction
+        fetch('http://127.0.0.1:5002/api/transaksi.close', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                id_transaksi: transaction.id_transaksi
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showTransactionToast('Transaksi berhasil diselesaikan');
+                // Refresh the transaction list
+                fetch('http://127.0.0.1:5002/api/transaksi.list')
+                    .then(response => response.json())
+                    .then(response => {
+                        if (response.success && response.data) {
+                            // Filter transactions to only show income transactions (kode_transaksi starting with 'FI')
+                            allIncomeTransactions = response.data.filter(transaction =>
+                                transaction.kode_transaksi && transaction.kode_transaksi.startsWith('FI')
+                            );
+                            filteredTransactions = allIncomeTransactions;
+                            renderTable();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error refreshing data:', error);
+                    });
+            } else {
+                showTransactionToast('Gagal menyelesaikan transaksi: ' + (data.message || data.error), 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error finishing transaction:', error);
+            showTransactionToast('Terjadi kesalahan saat menyelesaikan transaksi', 'error');
+        });
 
         // Close the modal
         const modal = bootstrap.Modal.getInstance(document.getElementById('confirmFinishModal'));

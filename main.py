@@ -41,6 +41,7 @@ from api.transaksi.list_tx import get_transaksi_list
 from api.transaksi.list_tx_detail import get_transaksi_detail_list
 from api.transaksi.new_tx import create_transaksi
 from api.transaksi.new_tx_detail import create_transaksi_detail
+from api.transaksi.close_tx import close_transaction
 from api.transaksi.upload import upload_bukti
 from api.masjid.masjid import get_masjid
 from api.masjid.update import update_masjid
@@ -208,6 +209,11 @@ def new_transaksi_detail():
 @app.route('/api/transaksi.upload', methods=['POST'])
 def upload_bukti_route():
     return upload_bukti(supabase)
+
+# POST: Close transaction by setting isClose = 1
+@app.route('/api/transaksi.close', methods=['POST'])
+def close_transaksi():
+    return close_transaction(supabase, request)
 
 @app.route('/api/asset.upload', methods=['POST'])
 def upload_asset_image_route():

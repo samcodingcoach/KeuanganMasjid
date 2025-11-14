@@ -124,7 +124,7 @@ def get_transaksi_list(supabase_client):
                         'subtotal': detail.get('subtotal'),
                         'id_transaksi': detail.get('id_transaksi')
                     }
-                    
+
                     # Format created_at if it exists
                     if detail_item['created_at']:
                         try:
@@ -132,9 +132,9 @@ def get_transaksi_list(supabase_client):
                             detail_item['created_at'] = created_at.strftime('%Y-%m-%d %H:%M:%S')
                         except ValueError:
                             pass  # Keep original if parsing fails
-                    
+
                     details_list.append(detail_item)
-            
+
             # Create the main transaction item with nested details
             item = {
                 'id_transaksi': transaksi.get('id_transaksi'),
@@ -152,9 +152,10 @@ def get_transaksi_list(supabase_client):
                 'id_mustahik': transaksi.get('id_mustahik'),
                 'nama_mustahik': mustahik_data.get(transaksi.get('id_mustahik'), {}).get('nama_lengkap'),
                 'total': transaksi.get('total'),
+                'isClose': transaksi.get('isClose', 0),  # Include isClose field
                 'details': details_list  # Add the nested details
             }
-            
+
             # Format tanggal_transaksi if it exists
             if item['tanggal_transaksi']:
                 try:
@@ -162,7 +163,7 @@ def get_transaksi_list(supabase_client):
                     item['tanggal_transaksi'] = tanggal.strftime('%Y-%m-%d %H:%M:%S')
                 except ValueError:
                     pass  # Keep original if parsing fails
-            
+
             result.append(item)
         
         return jsonify({
