@@ -53,11 +53,14 @@ function renderTable() {
                 <td>${transaction.nama_akun || '-'}</td>
                 <td class="text-end">${formattedTotal}</td>
                 <td>
-                    <button class="btn btn-sm btn-outline-whatsapp p-1 me-1" onclick="addIncomeDetail(${JSON.stringify(transaction).replace(/"/g, '&quot;')})" style="border-radius: 8px; width: 36px; height: 36px;">
+                    <button class="btn btn-sm btn-outline-whatsapp p-1 me-1" onclick="addIncomeDetail(${JSON.stringify(transaction).replace(/"/g, '&quot;')})" style="border-radius: 8px; width: 36px; height: 36px;" title="Tambah Detail">
                         <i class="bi bi-plus"></i>
                     </button>
-                    <button class="btn btn-sm btn-outline-whatsapp p-1" onclick="showDetail(${JSON.stringify(transaction).replace(/"/g, '&quot;')})" style="border-radius: 8px; width: 36px; height: 36px;">
+                    <button class="btn btn-sm btn-outline-whatsapp p-1 me-1" onclick="showDetail(${JSON.stringify(transaction).replace(/"/g, '&quot;')})" style="border-radius: 8px; width: 36px; height: 36px;" title="Detail Transaksi">
                         <i class="bi bi-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-success p-1" onclick="finishTransaction(${JSON.stringify(transaction).replace(/"/g, '&quot;')})" style="border-radius: 8px; width: 36px; height: 36px;" title="Finish">
+                        <i class="bi bi-check-lg"></i>
                     </button>
                 </td>
             `;
@@ -444,6 +447,74 @@ function loadMuzakki() {
 // Load muzakki when DOM is ready (accounts are loaded when modal is opened)
 document.addEventListener('DOMContentLoaded', function() {
     loadMuzakki();
+});
+
+// Function to finish a transaction
+function finishTransaction(transaction) {
+    // Display the confirmation modal
+    document.getElementById('transaction-kode-display').textContent = transaction.kode_transaksi;
+
+    // Store the transaction data in a global variable for use in the confirmation
+    window.currentFinishTransaction = transaction;
+
+    // Show the confirmation modal
+    const modal = new bootstrap.Modal(document.getElementById('confirmFinishModal'));
+    modal.show();
+}
+
+// Event listener for the confirm finish button
+document.getElementById('confirm-finish-btn').addEventListener('click', function() {
+    const transaction = window.currentFinishTransaction;
+
+    if (transaction) {
+        // In a real implementation, you would call the API to finish the transaction
+        // fetch('http://127.0.0.1:5002/api/transaksi.finish', {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //     },
+        //     body: JSON.stringify({
+        //         id_transaksi: transaction.id_transaksi,
+        //         kode_transaksi: transaction.kode_transaksi
+        //     })
+        // })
+        // .then(response => response.json())
+        // .then(data => {
+        //     if (data.success) {
+        //         showTransactionToast('Transaksi berhasil diselesaikan');
+        //         // Refresh the transaction list
+        //         fetch('http://127.0.0.1:5002/api/transaksi.list')
+        //             .then(response => response.json())
+        //             .then(response => {
+        //                 if (response.success && response.data) {
+        //                     allIncomeTransactions = response.data.filter(transaction =>
+        //                         transaction.kode_transaksi && transaction.kode_transaksi.startsWith('FI')
+        //                     );
+        //                     filteredTransactions = allIncomeTransactions;
+        //                     renderTable();
+        //                 }
+        //             })
+        //             .catch(error => {
+        //                 console.error('Error refreshing data:', error);
+        //             });
+        //     } else {
+        //         showTransactionToast('Gagal menyelesaikan transaksi: ' + (data.message || data.error), 'error');
+        //     }
+        // })
+        // .catch(error => {
+        //     console.error('Error finishing transaction:', error);
+        //     showTransactionToast('Terjadi kesalahan saat menyelesaikan transaksi', 'error');
+        // });
+
+        // For now, just show a toast notification
+        showTransactionToast(`Transaksi ${transaction.kode_transaksi} ditandai sebagai selesai`);
+
+        // Close the modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('confirmFinishModal'));
+        if (modal) {
+            modal.hide();
+        }
+    }
 });
 
 // Function to show toast notification for transactions

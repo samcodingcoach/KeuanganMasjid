@@ -379,6 +379,26 @@
         </div>
     </div>
 
+    <!-- Modal Konfirmasi Finish Transaction -->
+    <div class="modal fade" id="confirmFinishModal" tabindex="-1" aria-labelledby="confirmFinishModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-3">
+                <div class="modal-header" style="background: linear-gradient(180deg, #075E54 0%, #128C7E 100%);">
+                    <h5 class="modal-title text-white" id="confirmFinishModalLabel">Konfirmasi Penyelesaian</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Apakah Anda yakin ingin menyelesaikan transaksi <strong id="transaction-kode-display"></strong>?</p>
+                    <p class="text-muted">Tindakan ini tidak dapat dibatalkan.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-success" id="confirm-finish-btn">Ya, Selesaikan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Bootstrap JS Bundle with Popper -->
