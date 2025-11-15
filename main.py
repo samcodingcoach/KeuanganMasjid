@@ -261,6 +261,10 @@ def admin_page():
 def pemasukan_page():
     return send_from_directory('public', 'pemasukan.html')
 
+@app.route('/pengeluaran')
+def pengeluaran_page():
+    return send_from_directory('public', 'pengeluaran.html')
+
 @app.route('/test')
 def test_page():
     return send_from_directory('public', 'test_sidebar.html')
