@@ -16,6 +16,22 @@
 }
 
 /* Select2 customization for pengeluaran page */
+.select2-results__options {
+    max-height: 200px;
+    overflow-y: auto;
+}
+.select2-container--bootstrap-5 .select2-selection--single .select2-selection__clear {
+    margin-right: 1rem;
+    font-size: 1.25rem;
+}
+.select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
+    padding-left: 0.5rem;
+}
+.select2-container--bootstrap-5 .select2-selection {
+    box-sizing: border-box;
+    height: calc(1.5em + 0.75rem + 2px) !important;
+}
+
 .select2-container--bootstrap-5 .select2-selection--single {
     padding: 0.375rem 2.25rem 0.375rem 0.75rem;
     height: calc(2.25rem + 2px);
@@ -28,11 +44,35 @@
 
 #transaction-table td, #transaction-table th {
     vertical-align: middle;
+    font-size: 0.875rem;
+    padding: 15px 20px;
 }
 
 /* Numeric input styling */
 .numeric-input {
     text-align: right;
+}
+
+/* Detail card */
+.detail-card {
+    background-color: #f8f9fa;
+    border-radius: 10px;
+}
+
+/* Detail modal */
+#detailModal .row {
+    font-size: 0.8rem;
+}
+
+/* Detail table */
+#detail-table th {
+    background-color: #f1f8f1;
+    border-top: none;
+    border-bottom-width: 2px;
+}
+#detail-table td, #detail-table th {
+    vertical-align: top;
+    padding: 0.75rem 1rem;
 }
 
 /* Modal styling */
@@ -85,10 +125,36 @@
     border-color: #075E54;
 }
 
+/* Tab styling */
+.nav-tabs .nav-link {
+    color: #495057;
+    border-top-left-radius: 0.375rem;
+    border-top-right-radius: 0.375rem;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+.nav-tabs .nav-link:not(.active) {
+    color: #6c757d; /* Bootstrap's secondary text color */
+    background-color: #e9ecef; /* A light grey background for inactive tabs */
+}
+.nav-tabs .nav-link.active {
+    color: #075E54; /* Active tab text color */
+    background-color: #fff; /* Active tab background color */
+    border-color: #dee2e6 #dee2e6 #fff;
+}
+
 /* Search input styling */
 .form-control:focus {
     border-color: #075E54;
     box-shadow: 0 0 0 0.2rem rgba(7, 94, 84, 0.25);
+}
+
+/* Ensure Select2 dropdown appears above modal */
+.select2-container {
+    z-index: 9999 !important;
+}
+.select2-dropdown {
+    z-index: 10000 !important;
 }
 
 /* Table hover effect */
@@ -99,4 +165,26 @@
 /* Toast styling */
 .toast {
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+/* Hide native date picker icons */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    display: none !important;
+}
+input[type="date"]::-webkit-inner-spin-button,
+input[type="date"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type="date"] {
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+    appearance: none;
+}
+
+/* Firefox-specific approach to hide date picker icon */
+@-moz-document url-prefix() {
+    input[type="date"] {
+        -moz-appearance: textfield;
+    }
 }
