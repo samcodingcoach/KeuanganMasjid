@@ -1,4 +1,10 @@
 document.addEventListener('DOMContentLoaded', function () {
+    // Check if user is already logged in - redirect to index if so
+    if (sessionStorage.getItem('userData')) {
+        window.location.href = '/index';
+        return;
+    }
+
     // DOM Elements
     const captchaText = document.getElementById('captcha-text');
     const captchaInput = document.getElementById('captcha-input');
