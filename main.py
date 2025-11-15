@@ -46,6 +46,7 @@ from api.transaksi.close_tx import close_transaction
 from api.transaksi.upload import upload_bukti
 from api.masjid.masjid import get_masjid
 from api.masjid.update import update_masjid
+from api.jenis_fitrah.list import get_jenis_fitrah_list
 
 # Initialize Supabase client
 supabase_url = os.getenv("SUPABASE_URL")
@@ -191,6 +192,10 @@ def list_transaksi_detail():
 @app.route('/api/masjid.list', methods=['GET'])
 def list_masjid():
     return get_masjid(supabase)
+
+@app.route('/api/jenisfitrah.list', methods=['GET'])
+def list_jenis_fitrah():
+    return get_jenis_fitrah_list(supabase)
 
 # POST: Mengupdate data masjid
 @app.route('/api/masjid.update', methods=['POST'])
