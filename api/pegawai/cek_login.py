@@ -1,5 +1,7 @@
 from flask import jsonify
 import bcrypt
+import time
+from datetime import datetime, timedelta
 
 def cek_login_pegawai(supabase_client, request):
     """Check employee login credentials"""
@@ -15,6 +17,10 @@ def cek_login_pegawai(supabase_client, request):
         if not email or not password:
             return jsonify({'success': False, 'message': 'Email dan password harus diisi.'}), 400
 
+        # Check if there's a block for this IP or email
+        # First, let's use in-memory approach, but for production we'd need Redis or database
+        # For now, using browser storage based on the client-side implementation
+
         # Ambil data pegawai berdasarkan email
         user_response = supabase_client.table('pegawai').select('id_pegawai, email, password, role, nama_lengkap').eq('email', email).execute()
 
@@ -23,7 +29,7 @@ def cek_login_pegawai(supabase_client, request):
 
         user_data = user_response.data[0]
         hashed_password_from_db = user_data.get('password').encode('utf-8')
-        
+
         # Cek password
         if bcrypt.checkpw(password.encode('utf-8'), hashed_password_from_db):
             # Jangan kembalikan password di response

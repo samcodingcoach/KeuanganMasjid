@@ -1,27 +1,150 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const captchaQuestion = document.getElementById('captcha-question');
+    // DOM Elements
+    const captchaText = document.getElementById('captcha-text');
     const captchaInput = document.getElementById('captcha-input');
     const loginForm = document.getElementById('login-form');
     const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
     const togglePassword = document.getElementById('togglePassword');
+    const messageContainer = document.getElementById('message-container');
 
+    // Check for blocked login status on page load
+    checkLoginBlockedStatus();
+
+    // Generate simple alphanumeric captcha
     function generateCaptcha() {
-        const num1 = Math.floor(Math.random() * 10) + 1;
-        const num2 = Math.floor(Math.random() * 10) + 1;
-        captchaQuestion.textContent = `Berapa ${num1} + ${num2}?`;
-        return num1 + num2;
+        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+        let result = '';
+        for (let i = 0; i < 6; i++) {
+            result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return result;
     }
 
-    let correctAnswer = generateCaptcha();
+    // Display captcha
+    function displayCaptcha() {
+        const captcha = generateCaptcha();
+        captchaText.textContent = captcha;
+        return captcha;
+    }
 
+    // Initialize captcha
+    let currentCaptcha = displayCaptcha();
+
+    // Refresh captcha on click
+    captchaText.addEventListener('click', function() {
+        currentCaptcha = displayCaptcha();
+    });
+
+    // Toggle password visibility
+    togglePassword.addEventListener('click', function () {
+        // Toggle the type attribute
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+
+        // Toggle the eye icon
+        this.querySelector('i').classList.toggle('bi-eye');
+        this.querySelector('i').classList.toggle('bi-eye-slash');
+    });
+
+    // Function to show message using Bootstrap callout
+    function showMessage(message, type = 'warning') {
+        // Clear previous messages
+        messageContainer.innerHTML = '';
+
+        // Create message element with Bootstrap callout styling
+        const messageElement = document.createElement('div');
+        messageElement.className = `bd-callout bd-callout-${type} mb-3`;
+        messageElement.textContent = message;
+
+        messageContainer.appendChild(messageElement);
+
+        // Scroll to the message
+        messageElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // Function to clear messages
+    function clearMessage() {
+        messageContainer.innerHTML = '';
+    }
+
+    // Check if login is currently blocked
+    function isLoginBlocked() {
+        const blockedUntil = localStorage.getItem('loginBlockedUntil');
+        if (blockedUntil) {
+            const now = new Date().getTime();
+            const blockTime = parseInt(blockedUntil);
+            if (now < blockTime) {
+                return true;
+            } else {
+                // Remove the block if it's expired
+                localStorage.removeItem('loginBlockedUntil');
+                localStorage.removeItem('loginAttempts');
+                return false;
+            }
+        }
+        return false;
+    }
+
+    // Check login blocked status and update UI
+    function checkLoginBlockedStatus() {
+        if (isLoginBlocked()) {
+            const blockedUntil = localStorage.getItem('loginBlockedUntil');
+            const remainingTime = Math.ceil((parseInt(blockedUntil) - new Date().getTime()) / 1000 / 60);
+            showMessage(`Login terblokir karena terlalu banyak percobaan gagal. Silakan coba lagi dalam ${remainingTime} menit.`, 'warning');
+
+            // Disable form
+            loginForm.querySelectorAll('input, button').forEach(element => {
+                element.disabled = true;
+            });
+
+            // Start countdown
+            startCountdown();
+        }
+    }
+
+    // Start countdown timer for login attempts
+    function startCountdown() {
+        const timerInterval = setInterval(() => {
+            if (!isLoginBlocked()) {
+                clearInterval(timerInterval);
+                // Re-enable form
+                loginForm.querySelectorAll('input, button').forEach(element => {
+                    element.disabled = false;
+                });
+
+                // Reset button text
+                document.getElementById('login-form').querySelector('button[type="submit"]').textContent = 'Masuk';
+
+                showMessage('Anda dapat mencoba login kembali sekarang.', 'success');
+                return;
+            }
+
+            const blockedUntil = localStorage.getItem('loginBlockedUntil');
+            const remainingTime = Math.ceil((parseInt(blockedUntil) - new Date().getTime()) / 1000 / 60);
+            const secondsRemaining = Math.floor((parseInt(blockedUntil) - new Date().getTime()) / 1000) % 60;
+            document.getElementById('login-form').querySelector('button[type="submit"]').textContent =
+                `Login (${remainingTime}m ${secondsRemaining}s)`;
+        }, 1000);
+    }
+
+    // Handle form submission
     loginForm.addEventListener('submit', function (event) {
         event.preventDefault();
-        const userAnswer = parseInt(captchaInput.value, 10);
 
-        if (userAnswer !== correctAnswer) {
-            alert('Jawaban captcha salah. Silakan coba lagi.');
-            correctAnswer = generateCaptcha();
+        // Clear any existing messages
+        clearMessage();
+
+        // Check if login is blocked
+        if (isLoginBlocked()) {
+            showMessage('Login terblokir karena terlalu banyak percobaan gagal. Silakan coba lagi nanti.', 'warning');
+            return;
+        }
+
+        // Validate captcha first
+        if (captchaInput.value !== currentCaptcha) {
+            showMessage('Captcha salah. Silakan coba lagi.', 'warning');
+            currentCaptcha = displayCaptcha();
             captchaInput.value = '';
             return;
         }
@@ -39,29 +162,47 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
+                // Clear any stored blocked status on successful login
+                localStorage.removeItem('loginBlockedUntil');
+                localStorage.removeItem('loginAttempts');
+
                 sessionStorage.setItem('userData', JSON.stringify(data.data));
                 window.location.href = '/index'; // Redirect to index page
             } else {
-                alert(`Login gagal: ${data.message}`);
-                correctAnswer = generateCaptcha();
+                // Handle failed login - increment attempt counter
+                let attempts = parseInt(localStorage.getItem('loginAttempts')) || 0;
+                attempts++;
+
+                if (attempts >= 3) {
+                    // Block for 3 minutes (180,000 milliseconds)
+                    const blockedUntil = new Date().getTime() + (3 * 60 * 1000);
+                    localStorage.setItem('loginBlockedUntil', blockedUntil.toString());
+                    localStorage.setItem('loginAttempts', '0');
+
+                    showMessage(`Login gagal: ${data.message}. Login Anda telah diblokir selama 3 menit karena terlalu banyak percobaan gagal.`, 'danger');
+
+                    // Disable form
+                    loginForm.querySelectorAll('input, button').forEach(element => {
+                        element.disabled = true;
+                    });
+
+                    // Start countdown
+                    startCountdown();
+                } else {
+                    localStorage.setItem('loginAttempts', attempts.toString());
+                    showMessage(`Login gagal: ${data.message}. Percobaan ${attempts}/3`, 'warning');
+                }
+
+                // Refresh captcha
+                currentCaptcha = displayCaptcha();
                 captchaInput.value = '';
             }
         })
         .catch((error) => {
             console.error('Error:', error);
-            alert('Terjadi kesalahan saat mencoba login.');
-            correctAnswer = generateCaptcha();
+            showMessage('Terjadi kesalahan saat mencoba login.', 'danger');
+            currentCaptcha = displayCaptcha();
             captchaInput.value = '';
         });
-    });
-
-    togglePassword.addEventListener('click', function () {
-        // Toggle the type attribute
-        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-        passwordInput.setAttribute('type', type);
-        
-        // Toggle the eye icon
-        this.querySelector('i').classList.toggle('bi-eye');
-        this.querySelector('i').classList.toggle('bi-eye-slash');
     });
 });

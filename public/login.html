@@ -25,9 +25,13 @@
                             <h1 class="h3 mt-3 mb-3 fw-normal">Silakan Masuk</h1>
                         </div>
                         <form id="login-form">
-                            <div class="form-floating mb-3">
-                                <input type="email" class="form-control" id="email" placeholder="nama@contoh.com" required>
+                            <div id="message-container"></div>
+                            <div class="form-floating mb-3 position-relative">
+                                <input type="email" class="form-control pe-5" id="email" placeholder="nama@contoh.com" required>
                                 <label for="email">Alamat Email</label>
+                                <span class="position-absolute top-50 end-0 translate-middle-y pe-3" id="email-icon">
+                                    <i class="bi bi-envelope"></i>
+                                </span>
                             </div>
                             <div class="form-floating mb-3 position-relative">
                                 <input type="password" class="form-control pe-5" id="password" placeholder="Kata Sandi" required>
@@ -37,12 +41,12 @@
                                 </span>
                             </div>
 
-                            <div class="row g-3 align-items-center mb-3">
-                                <div class="col-auto">
-                                    <label for="captcha-question" class="col-form-label" id="captcha-question"></label>
-                                </div>
-                                <div class="col">
-                                    <input type="number" id="captcha-input" class="form-control" placeholder="Jawaban" required>
+                            <!-- Simple captcha -->
+                            <div class="form-group mb-3">
+                                <label>Captcha:</label>
+                                <div class="captcha-container d-flex align-items-center">
+                                    <div id="captcha-text" class="captcha-text bg-light p-2 me-2 rounded border" style="font-family: monospace; letter-spacing: 3px; font-weight: bold; width: 120px; text-align: center; cursor: pointer;"></div>
+                                    <input type="text" id="captcha-input" class="form-control" placeholder="Masukkan captcha" maxlength="6" required>
                                 </div>
                             </div>
 

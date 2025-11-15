@@ -22,3 +22,29 @@ body {
 .footer {
     flex-shrink: 0;
 }
+
+/* Message display styles */
+.bd-callout {
+    padding: 1.25rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid #eee;
+    border-left-width: .25rem;
+    border-radius: .25rem;
+}
+
+.bd-callout-warning {
+    border-left-color: #f0ad4e;
+}
+
+.bd-callout-danger {
+    border-left-color: #d9534f;
+}
+
+.bd-callout-success {
+    border-left-color: #5cb85c;
+}
+
+.bd-callout-info {
+    border-left-color: #5bc0de;
+}
