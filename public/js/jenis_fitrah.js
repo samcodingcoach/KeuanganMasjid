@@ -38,8 +38,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     currentPage = 1; // Reset to first page
                     renderTable(); // Display the first page
 
-                    // Calculate and display total count
-                    document.getElementById('total-count').textContent = allFitrahData.length;
                 } else {
                     alert('Gagal memuat data jenis fitrah: ' + data.message);
                 }
@@ -66,10 +64,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const row = document.createElement('tr');
             row.style = "border-top: 1px solid #eee;";
             row.innerHTML = `
-                <td scope="row" style="padding:10px 15px; color: #666; vertical-align: middle; font-size: 0.9em;" class="text-center">${rowIndex + 1}</td>
-                <td style="padding: 10px 15px; vertical-align: middle; color: #666; font-size: 0.9em;">${fitrah.nama_jenis}</td>
-                <td style="padding: 10px 15px; color: #666; vertical-align: middle; font-size: 0.9em;">${fitrah.aktif ? 'Aktif' : 'Tidak Aktif'}</td>
-                <td style="padding: 10px 15px; vertical-align: middle; font-size: 0.9em;" class="text-center">
+                <td scope="row" class="text-center align-middle py-2">${rowIndex + 1}</td>
+                <td class="align-middle py-2">${fitrah.nama_jenis}</td>
+                <td class="align-middle py-2">${fitrah.aktif ? 'Aktif' : 'Tidak Aktif'}</td>
+                <td class="text-center align-middle py-2" style="width: 10%;">
                     <button class="btn btn-sm btn-outline-whatsapp p-1 edit-btn" style="border-radius: 8px; width: 36px; height: 36px;">
                         <i class="bi bi-pencil"></i>
                     </button>
