@@ -63,11 +63,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const row = document.createElement('tr');
             row.style = "border-top: 1px solid #eee;";
             row.innerHTML = `
-                <td scope="row" class="text-center align-middle py-2">${rowIndex + 1}</td>
-                <td class="align-middle py-2">${proyek.tahun_hijriah}</td>
-                <td class="align-middle py-2">${proyek.penanggung_jawab || '-'}</td>
-                <td class="align-middle py-2">${proyek.aktif ? 'Aktif' : 'Tidak Aktif'}</td>
-                <td class="text-center align-middle py-2">
+                <td scope="row" class="text-center align-middle py-2 small">${rowIndex + 1}</td>
+                <td class="align-middle py-2 small">${proyek.tahun_hijriah}</td>
+                <td class="align-middle py-2 small">${proyek.penanggung_jawab || '-'}</td>
+                <td class="align-middle py-2 small">${proyek.aktif ? 'Aktif' : 'Tidak Aktif'}</td>
+                <td class="text-center align-middle py-2 small">
                     <button class="btn btn-sm btn-outline-whatsapp p-1 edit-btn" style="border-radius: 8px; width: 36px; height: 36px;">
                         <i class="bi bi-pencil"></i>
                     </button>

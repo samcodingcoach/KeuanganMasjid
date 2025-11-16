@@ -64,10 +64,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const row = document.createElement('tr');
             row.style = "border-top: 1px solid #eee;";
             row.innerHTML = `
-                <td scope="row" class="text-center align-middle py-2">${rowIndex + 1}</td>
-                <td class="align-middle py-2">${fitrah.nama_jenis}</td>
-                <td class="align-middle py-2">${fitrah.aktif ? 'Aktif' : 'Tidak Aktif'}</td>
-                <td class="text-center align-middle py-2" style="width: 10%;">
+                <td scope="row" class="text-center align-middle py-2 small">${rowIndex + 1}</td>
+                <td class="align-middle py-2 small">${fitrah.nama_jenis}</td>
+                <td class="align-middle py-2 small">${fitrah.aktif ? 'Aktif' : 'Tidak Aktif'}</td>
+                <td class="text-center align-middle py-2 small" style="width: 10%;">
                     <button class="btn btn-sm btn-outline-whatsapp p-1 edit-btn" style="border-radius: 8px; width: 36px; height: 36px;">
                         <i class="bi bi-pencil"></i>
                     </button>
