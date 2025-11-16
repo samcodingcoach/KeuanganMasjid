@@ -110,10 +110,13 @@
                 </div>
                 <div class="modal-body">
                     <form id="add-fitrah-form">
-                        <div class="form-floating mb-3 position-relative">
-                            <input type="text" class="form-control" id="nama_jenis" placeholder="Masukkan nama kategori fitrah" required>
-                            <label for="nama_jenis">Nama Kategori</label>
-                            <i class="bi bi-tags position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                        <div class="mb-3">
+                            <select class="form-select searchable-select" id="nama_jenis" required>
+                                <option value="" disabled selected>Pilih Jenis Kategori</option>
+                                <option value="Beras">Beras</option>
+                                <option value="Uang">Uang</option>
+                                <option value="Makanan Pokok Lainnya">Makanan Pokok Lainnya</option>
+                            </select>
                         </div>
                         <div class="mb-3">
                             <select class="form-select searchable-select" id="aktif" required>
@@ -146,10 +149,12 @@
                 <div class="modal-body">
                     <form id="edit-fitrah-form">
                         <input type="hidden" id="edit_id_jenis_fitrah">
-                        <div class="form-floating mb-3 position-relative">
-                            <input type="text" class="form-control" id="edit_nama_jenis" placeholder="Masukkan nama kategori fitrah" required>
-                            <label for="edit_nama_jenis">Nama Kategori</label>
-                            <i class="bi bi-tags position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                        <div class="mb-3">
+                            <select class="form-select searchable-select" id="edit_nama_jenis" required>
+                                <option value="Beras">Beras</option>
+                                <option value="Uang">Uang</option>
+                                <option value="Makanan Pokok Lainnya">Makanan Pokok Lainnya</option>
+                            </select>
                         </div>
                         <div class="mb-3">
                             <select class="form-select searchable-select" id="edit_aktif" required>

@@ -83,8 +83,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 const editSelect = document.getElementById('edit_aktif');
                 editSelect.value = fitrah.aktif.toString();
 
-                // If Select2 is initialized, update its value
+                // If Select2 is initialized, update both select values
                 if (typeof $ !== 'undefined' && typeof $.fn.select2 !== 'undefined') {
+                    $('#edit_nama_jenis').val(fitrah.nama_jenis).trigger('change');
                     $(editSelect).val(fitrah.aktif.toString()).trigger('change');
                 }
 
@@ -255,12 +256,13 @@ document.addEventListener('DOMContentLoaded', function() {
             submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Menyimpan...';
             submitBtn.disabled = true;
 
-            // Get the select value properly for Select2
+            // Get the select values properly for Select2
             const aktif_element = document.getElementById('aktif');
             const aktif_value = $('#aktif').val() || aktif_element.value;
+            const nama_jenis_value = $('#nama_jenis').val() || document.getElementById('nama_jenis').value;
 
             const newFitrah = {
-                nama_jenis: document.getElementById('nama_jenis').value,
+                nama_jenis: nama_jenis_value,
                 aktif: aktif_value === 'true' // Convert string to boolean
             };
 
@@ -282,10 +284,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     addFitrahModal.hide(); // Sembunyikan modal
                     addFitrahForm.reset(); // Reset form
 
-                    // Reset the Select2 element after form reset
+                    // Reset the Select2 elements after form reset
                     setTimeout(() => {
                         if (typeof $ !== 'undefined' && typeof $.fn.select2 !== 'undefined') {
                             $('#aktif').val('').trigger('change');
+                            $('#nama_jenis').val('').trigger('change');
                         }
                     }, 100);
 
@@ -368,13 +371,14 @@ document.addEventListener('DOMContentLoaded', function() {
             submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Menyimpan...';
             submitBtn.disabled = true;
 
-            // Get the select value properly for Select2
+            // Get the select values properly for Select2
             const edit_aktif_element = document.getElementById('edit_aktif');
             const edit_aktif_value = $('#edit_aktif').val() || edit_aktif_element.value;
+            const edit_nama_jenis_value = $('#edit_nama_jenis').val() || document.getElementById('edit_nama_jenis').value;
 
             const updatedFitrah = {
                 id_jenis_fitrah: document.getElementById('edit_id_jenis_fitrah').value,
-                nama_jenis: document.getElementById('edit_nama_jenis').value,
+                nama_jenis: edit_nama_jenis_value,
                 aktif: edit_aktif_value === 'true' // Convert string to boolean
             };
 
