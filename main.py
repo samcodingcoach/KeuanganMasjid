@@ -267,6 +267,10 @@ def kategori_transaksi_page():
 def jenis_fitrah_page():
     return send_from_directory('public', 'jenisfitrah.html')
 
+@app.route('/proyekfitrah')
+def proyek_fitrah_page():
+    return send_from_directory('public', 'proyekfitrah.html')
+
 @app.route('/pegawai')
 def pegawai_page():
     return send_from_directory('public', 'pegawai.html')
