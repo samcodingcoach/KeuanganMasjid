@@ -49,7 +49,7 @@ def create_harga_fitrah(supabase_client, request):
         if existing_record.data:
             return jsonify({
                 'success': False,
-                'error': 'A harga_fitrah record with the same id_fitrah, id_jenis_fitrah, and keterangan already exists'
+                'error': 'Data fitrah already exists'
             }), 409  # Conflict status code
 
         # Validate numeric fields
