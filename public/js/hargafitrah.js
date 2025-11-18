@@ -489,6 +489,19 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Event listener for berat input to validate decimal format
+    document.getElementById('berat').addEventListener('input', function(e) {
+        let value = e.target.value;
+        // Allow only numbers and decimal point, maximum one decimal point
+        value = value.replace(/[^0-9.]/g, '');
+        // Ensure only one decimal point
+        const parts = value.split('.');
+        if (parts.length > 2) {
+            value = parts[0] + '.' + parts.slice(1).join('');
+        }
+        e.target.value = value;
+    });
+
     // Reset form state when modal is hidden
     document.getElementById('addHargaFitrahModal').addEventListener('hidden.bs.modal', function () {
         // Uncheck the confirmation checkbox
