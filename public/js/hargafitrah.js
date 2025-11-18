@@ -75,6 +75,13 @@ document.addEventListener('DOMContentLoaded', function() {
     addHargaFitrahForm.addEventListener('submit', function(event) {
         event.preventDefault();
 
+        // Validate confirmation checkbox first
+        const konfirmasi = document.getElementById('konfirmasi');
+        if (!konfirmasi.checked) {
+            showHargaFitrahToast('Harap centang konfirmasi bahwa data sudah benar.', 'error');
+            return; // Stop form submission
+        }
+
         // Show spinner and disable button
         const submitBtn = addHargaFitrahForm.querySelector('button[type="submit"]');
         const originalText = submitBtn.innerHTML;
@@ -142,8 +149,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 addHargaFitrahForm.reset();
                 // Reset the confirmation checkbox
                 document.getElementById('konfirmasi').checked = false;
-                // Update submit button state
-                updateSubmitButtonState();
                 fetchAndDisplayHargaFitrah(); // Refresh data
             } else {
                 showHargaFitrahToast('Gagal menambahkan harga fitrah: ' + (data.message || data.error), 'error');
@@ -167,9 +172,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Restore button state
             submitBtn.innerHTML = originalText;
-            // Keep the button disabled initially after form submission
-            submitBtn.disabled = true;
-            submitBtn.classList.add('disabled');
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('disabled');
         });
     });
 
@@ -485,44 +489,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Function to update submit button state based on confirmation
-    function updateSubmitButtonState() {
-        const konfirmasi = document.getElementById('konfirmasi');
-        const submitBtn = document.querySelector('#add-harga-fitrah-form button[type="submit"]');
-
-        if (konfirmasi.checked) {
-            submitBtn.disabled = false;
-            submitBtn.classList.remove('disabled');
-        } else {
-            submitBtn.disabled = true;
-            submitBtn.classList.add('disabled');
-        }
-    }
-
-    // Event listener for confirmation checkbox
-    document.getElementById('konfirmasi').addEventListener('change', updateSubmitButtonState);
-
-    // Also update submit button state when form elements change
-    const formElements = document.querySelectorAll('#add-harga-fitrah-form input, #add-harga-fitrah-form select');
-    formElements.forEach(element => {
-        if (element.id !== 'konfirmasi') { // Don't add to konfirmasi itself
-            element.addEventListener('input', function() {
-                // Only disable submit button if checkbox is not checked
-                if (!document.getElementById('konfirmasi').checked) {
-                    const submitBtn = document.querySelector('#add-harga-fitrah-form button[type="submit"]');
-                    submitBtn.disabled = true;
-                    submitBtn.classList.add('disabled');
-                }
-            });
-        }
-    });
-
     // Reset form state when modal is hidden
     document.getElementById('addHargaFitrahModal').addEventListener('hidden.bs.modal', function () {
         // Uncheck the confirmation checkbox
         document.getElementById('konfirmasi').checked = false;
-        // Update submit button state
-        updateSubmitButtonState();
         // Clear form fields
         document.getElementById('keterangan').value = '';
         document.getElementById('nominal').value = '';
