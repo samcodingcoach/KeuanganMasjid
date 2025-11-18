@@ -249,6 +249,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 <td class="text-end" style="padding: 15px 20px; vertical-align: middle; font-size: 0.9em;">Rp ${hargaFitrah.nominal?.toLocaleString('id-ID') || '0'}</td>
                 <td style="padding: 15px 20px; vertical-align: middle; font-size: 0.9em;">${hargaFitrah.berat || '0'} kg</td>
                 <td style="padding: 15px 20px; vertical-align: middle; font-size: 0.9em;">
+                    <button class="btn btn-sm btn-outline-info p-1 detail-btn" style="border-radius: 8px; width: 36px; height: 36px; margin-right: 0.25rem;">
+                        <i class="bi bi-eye"></i>
+                    </button>
                     <button class="btn btn-sm btn-outline-whatsapp p-1 edit-btn" style="border-radius: 8px; width: 36px; height: 36px;">
                         <i class="bi bi-pencil"></i>
                     </button>
@@ -551,6 +554,37 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Event listener for edit confirmation checkbox
     document.getElementById('edit_konfirmasi').addEventListener('change', updateEditSubmitButtonState);
+
+    // Event listener for detail button
+    document.getElementById('harga-fitrah-table').addEventListener('click', function(event) {
+        if (event.target.classList.contains('detail-btn') || event.target.closest('.detail-btn')) {
+            const button = event.target.classList.contains('detail-btn') ? event.target : event.target.closest('.detail-btn');
+            const row = button.closest('tr');
+            const id = row.dataset.id;
+
+            const hargaFitrah = allHargaFitrahData.find(h => h.id_hargafitrah == id);
+            if (!hargaFitrah) return;
+
+            // Populate detail modal with data
+            document.querySelector('#detail-utama-pane #detail_tahun_hijriah').textContent = hargaFitrah.tahun_hijriah || '-';
+            document.querySelector('#detail-utama-pane #detail_nama_lengkap').textContent = hargaFitrah.nama_lengkap || '-';
+            document.querySelector('#detail-utama-pane #detail_nama_jenis').textContent = hargaFitrah.nama_jenis || '-';
+            document.querySelector('#detail-utama-pane #detail_keterangan').textContent = hargaFitrah.keterangan || '-';
+
+            document.querySelector('#detail-detail-pane #detail_berat').textContent = (hargaFitrah.berat || 0) + ' kg';
+            document.querySelector('#detail-detail-pane #detail_nominal').textContent = 'Rp ' + (hargaFitrah.nominal?.toLocaleString('id-ID') || '0');
+            document.querySelector('#detail-detail-pane #detail_created_at').textContent = hargaFitrah.created_at || '-';
+
+            // Format aktif status as badge
+            const aktifStatus = hargaFitrah.aktif ?
+                '<span class="badge bg-success">Aktif</span>' :
+                '<span class="badge bg-danger">Tidak Aktif</span>';
+            document.querySelector('#detail-detail-pane #detail_aktif').innerHTML = aktifStatus;
+
+            const detailModal = new bootstrap.Modal(document.getElementById('detailHargaFitrahModal'));
+            detailModal.show();
+        }
+    });
 
     // Event listener untuk tombol edit
     document.getElementById('harga-fitrah-table').addEventListener('click', function(event) {
