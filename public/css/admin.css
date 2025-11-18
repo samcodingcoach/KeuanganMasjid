@@ -219,7 +219,6 @@ body {
     #sidebar.collapsed .sidebar-content .user-info,
     #sidebar.collapsed .sidebar-content .user-details,
     #sidebar.collapsed .sidebar-content .user-role,
-    #sidebar.collapsed .sidebar-content .profile-settings,
     #sidebar.collapsed .sidebar-content .menu-group,
     #sidebar.collapsed .sidebar-content .nav-link span,
     #sidebar.collapsed .sidebar-content .footer-section,
@@ -232,6 +231,18 @@ body {
         margin-left: auto;
         margin-right: auto;
     }
+
+    #sidebar.collapsed .sidebar-content .user-info {
+        flex-direction: column;
+        align-items: center;
+        padding: 10px 0;
+    }
+
+    #sidebar.collapsed .sidebar-content .profile-settings {
+        margin-top: 8px;
+        width: 100%;
+        justify-content: center;
+    }
     
     #sidebar.collapsed .nav-link {
         justify-content: center;
@@ -242,8 +253,27 @@ body {
         margin-right: 0;
     }
     
+    #sidebar.collapsed .profile-settings {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
     #sidebar.collapsed .profile-settings-btn {
-        display: none;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        padding: 6px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+    }
+
+    #sidebar.collapsed .profile-settings-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    #sidebar.collapsed .profile-settings i {
+        font-size: 1.1rem;
     }
 }
 
