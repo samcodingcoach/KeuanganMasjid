@@ -18,8 +18,9 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentPage = 1;
     const itemsPerPage = 10; // Default items per page
 
-    // Load jenis fitrah data when page loads
-    function loadJenisFitrah() {
+    // Load data for dropdowns when page loads
+    function loadDropdownData() {
+        // Load jenis fitrah data
         fetch('/api/jenisfitrah.list')
             .then(response => response.json())
             .then(data => {
@@ -42,6 +43,31 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(error => {
                 console.error('Error fetching jenis fitrah:', error);
+            });
+
+        // Load proyek fitrah data (tahun hijriah)
+        fetch('/api/fitrah.list')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const selectElement = document.getElementById('id_fitrah');
+                    selectElement.innerHTML = '<option value="">Pilih Tahun Fitrah</option>';
+
+                    // Filter only active proyek fitrah
+                    const activeProyekFitrah = data.data.filter(item => item.aktif === true);
+
+                    activeProyekFitrah.forEach(proyek => {
+                        const option = document.createElement('option');
+                        option.value = proyek.id_fitrah;
+                        option.textContent = proyek.tahun_hijriah;
+                        selectElement.appendChild(option);
+                    });
+                } else {
+                    console.error('Gagal memuat data proyek fitrah:', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching proyek fitrah:', error);
             });
     }
 
@@ -95,7 +121,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const newHargaFitrah = {
             keterangan: document.getElementById('keterangan').value,
-            id_jenis_fitrah: parseInt(document.getElementById('id_jenis_fitrah').value)
+            id_jenis_fitrah: parseInt(document.getElementById('id_jenis_fitrah').value),
+            id_fitrah: parseInt(document.getElementById('id_fitrah').value)
         };
 
         fetch('/api/hargafitrah.new', {
@@ -385,19 +412,33 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Reload jenis fitrah data when modal is shown to ensure fresh data
+    // Reload dropdown data when modal is shown to ensure fresh data
     document.getElementById('addHargaFitrahModal').addEventListener('shown.bs.modal', function () {
         // Reload the data to ensure it's fresh
-        loadJenisFitrah();
+        loadDropdownData();
 
-        // Reinitialize Select2 with proper dropdownParent for modal context
+        // Reinitialize both Select2 dropdowns with proper dropdownParent for modal context
         setTimeout(function() {
+            // Destroy existing instances first
             if ($('#id_jenis_fitrah').hasClass('select2-hidden-accessible')) {
                 $('#id_jenis_fitrah').select2('destroy');
             }
+            if ($('#id_fitrah').hasClass('select2-hidden-accessible')) {
+                $('#id_fitrah').select2('destroy');
+            }
+
+            // Initialize both dropdowns
             $('#id_jenis_fitrah').select2({
                 theme: 'bootstrap-5',
                 placeholder: 'Pilih Jenis Fitrah',
+                allowClear: true,
+                width: '100%',
+                dropdownParent: $('#addHargaFitrahModal') // Ensure dropdown appears above modal
+            });
+
+            $('#id_fitrah').select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Pilih Tahun Fitrah',
                 allowClear: true,
                 width: '100%',
                 dropdownParent: $('#addHargaFitrahModal') // Ensure dropdown appears above modal
@@ -410,10 +451,13 @@ document.addEventListener('DOMContentLoaded', function() {
         if ($('#id_jenis_fitrah').hasClass('select2-hidden-accessible')) {
             $('#id_jenis_fitrah').select2('destroy');
         }
+        if ($('#id_fitrah').hasClass('select2-hidden-accessible')) {
+            $('#id_fitrah').select2('destroy');
+        }
     });
 
     // Panggil fungsi untuk pertama kali memuat data
-    loadJenisFitrah(); // Load jenis fitrah data first
+    loadDropdownData(); // Load dropdown data first
     fetchAndDisplayHargaFitrah();
 });
 
