@@ -18,6 +18,33 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentPage = 1;
     const itemsPerPage = 10; // Default items per page
 
+    // Load jenis fitrah data when page loads
+    function loadJenisFitrah() {
+        fetch('/api/jenisfitrah.list')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const selectElement = document.getElementById('id_jenis_fitrah');
+                    selectElement.innerHTML = '<option value="">Pilih Jenis Fitrah</option>';
+
+                    // Filter only active jenis fitrah
+                    const activeJenisFitrah = data.data.filter(item => item.aktif === true);
+
+                    activeJenisFitrah.forEach(jenis => {
+                        const option = document.createElement('option');
+                        option.value = jenis.id_jenis_fitrah;
+                        option.textContent = jenis.nama_jenis;
+                        selectElement.appendChild(option);
+                    });
+                } else {
+                    console.error('Gagal memuat data jenis fitrah:', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching jenis fitrah:', error);
+            });
+    }
+
     // Event listener untuk form tambah harga fitrah
     addHargaFitrahForm.addEventListener('submit', function(event) {
         event.preventDefault();
@@ -68,9 +95,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const newHargaFitrah = {
             keterangan: document.getElementById('keterangan').value,
-            nominal: parseFloat(document.getElementById('nominal').value),
-            berat: parseFloat(document.getElementById('berat').value),
-            aktif: true // default value
+            id_jenis_fitrah: parseInt(document.getElementById('id_jenis_fitrah').value)
         };
 
         fetch('/api/hargafitrah.new', {
@@ -360,7 +385,35 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Reload jenis fitrah data when modal is shown to ensure fresh data
+    document.getElementById('addHargaFitrahModal').addEventListener('shown.bs.modal', function () {
+        // Reload the data to ensure it's fresh
+        loadJenisFitrah();
+
+        // Reinitialize Select2 with proper dropdownParent for modal context
+        setTimeout(function() {
+            if ($('#id_jenis_fitrah').hasClass('select2-hidden-accessible')) {
+                $('#id_jenis_fitrah').select2('destroy');
+            }
+            $('#id_jenis_fitrah').select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Pilih Jenis Fitrah',
+                allowClear: true,
+                width: '100%',
+                dropdownParent: $('#addHargaFitrahModal') // Ensure dropdown appears above modal
+            });
+        }, 100);
+    });
+
+    // Destroy Select2 when modal is hidden to prevent issues on next open
+    document.getElementById('addHargaFitrahModal').addEventListener('hidden.bs.modal', function () {
+        if ($('#id_jenis_fitrah').hasClass('select2-hidden-accessible')) {
+            $('#id_jenis_fitrah').select2('destroy');
+        }
+    });
+
     // Panggil fungsi untuk pertama kali memuat data
+    loadJenisFitrah(); // Load jenis fitrah data first
     fetchAndDisplayHargaFitrah();
 });
 

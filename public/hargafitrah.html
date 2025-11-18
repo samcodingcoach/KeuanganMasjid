@@ -109,15 +109,10 @@
                             <label for="keterangan">Keterangan</label>
                             <i class="bi bi-info-circle position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
                         </div>
-                        <div class="form-floating mb-3 position-relative">
-                            <input type="number" class="form-control" id="nominal" placeholder="Masukkan nominal" required>
-                            <label for="nominal">Nominal</label>
-                            <i class="bi bi-currency-dollar position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
-                        </div>
-                        <div class="form-floating mb-3 position-relative">
-                            <input type="number" class="form-control" id="berat" placeholder="Masukkan berat" required step="0.01">
-                            <label for="berat">Berat</label>
-                            <i class="bi bi-balance-scale position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                        <div class="mb-3">
+                            <select class="form-select searchable-select" id="id_jenis_fitrah" aria-label="Jenis Fitrah" required>
+                                <option value="">Pilih Jenis Fitrah</option>
+                            </select>
                         </div>
                     </form>
                 </div>
