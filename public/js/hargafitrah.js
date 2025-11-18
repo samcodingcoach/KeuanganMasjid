@@ -83,7 +83,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Show spinner and disable button
-        const submitBtn = addHargaFitrahForm.querySelector('button[type="submit"]');
+        const submitBtn = document.querySelector('button[type="submit"][form="add-harga-fitrah-form"]');
+        if (!submitBtn) {
+            showHargaFitrahToast('Tombol submit tidak ditemukan.', 'error');
+            return; // Stop form submission
+        }
+
         const originalText = submitBtn.innerHTML;
         const originalDisabled = submitBtn.disabled;
 
@@ -126,12 +131,22 @@ document.addEventListener('DOMContentLoaded', function() {
         submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Menyimpan...';
         submitBtn.disabled = true;
 
+        // Get id_pegawai from session storage
+        const userData = JSON.parse(sessionStorage.getItem('userData'));
+        const idPegawai = userData ? userData.id_pegawai : null;
+
+        if (!idPegawai) {
+            showHargaFitrahToast('Data pengguna tidak ditemukan. Silakan login kembali.', 'error');
+            return; // Stop form submission
+        }
+
         const newHargaFitrah = {
             keterangan: document.getElementById('keterangan').value,
             id_jenis_fitrah: parseInt(document.getElementById('id_jenis_fitrah').value),
             id_fitrah: parseInt(document.getElementById('id_fitrah').value),
             nominal: parseFloat(document.getElementById('nominal').value.replace(/\./g, '')), // Remove thousands separators
-            berat: parseFloat(document.getElementById('berat').value)
+            berat: parseFloat(document.getElementById('berat').value),
+            id_pegawai: idPegawai
         };
 
         fetch('/api/hargafitrah.new', {
@@ -170,10 +185,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 formElements[i].disabled = false;
             }
 
-            // Restore button state
-            submitBtn.innerHTML = originalText;
-            submitBtn.disabled = false;
-            submitBtn.classList.remove('disabled');
+            // Restore button state - use the same selector
+            const finalSubmitBtn = document.querySelector('button[type="submit"][form="add-harga-fitrah-form"]');
+            if (finalSubmitBtn) {
+                finalSubmitBtn.innerHTML = originalText;
+                finalSubmitBtn.disabled = false;
+                finalSubmitBtn.classList.remove('disabled');
+            }
         });
     });
 
