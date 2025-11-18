@@ -533,6 +533,199 @@ document.addEventListener('DOMContentLoaded', function() {
         $('#id_fitrah').val('').trigger('change');
     });
 
+    // Function to update edit submit button state based on confirmation
+    function updateEditSubmitButtonState() {
+        const editKonfirmasi = document.getElementById('edit_konfirmasi');
+        const editSubmitBtn = document.querySelector('#edit-harga-fitrah-form button[type="submit"]');
+
+        if (editKonfirmasi && editSubmitBtn) {
+            if (editKonfirmasi.checked) {
+                editSubmitBtn.disabled = false;
+                editSubmitBtn.classList.remove('disabled');
+            } else {
+                editSubmitBtn.disabled = true;
+                editSubmitBtn.classList.add('disabled');
+            }
+        }
+    }
+
+    // Event listener for edit confirmation checkbox
+    document.getElementById('edit_konfirmasi').addEventListener('change', updateEditSubmitButtonState);
+
+    // Event listener untuk tombol edit
+    document.getElementById('harga-fitrah-table').addEventListener('click', function(event) {
+        if (event.target.classList.contains('edit-btn') || event.target.closest('.edit-btn')) {
+            const button = event.target.classList.contains('edit-btn') ? event.target : event.target.closest('.edit-btn');
+            const row = button.closest('tr');
+            const id = row.dataset.id;
+
+            const hargaFitrah = allHargaFitrahData.find(h => h.id_hargafitrah == id);
+            if (!hargaFitrah) return;
+
+            document.getElementById('edit_id_hargafitrah').value = hargaFitrah.id_hargafitrah;
+
+            // Update keterangan as plain text (read-only)
+            document.getElementById('edit_keterangan').textContent = hargaFitrah.keterangan;
+
+            // Update nominal with thousand separator formatting
+            document.getElementById('edit_nominal').value = hargaFitrah.nominal?.toLocaleString('id-ID', { maximumFractionDigits: 0 }) || '';
+
+            // Update berat
+            document.getElementById('edit_berat').value = hargaFitrah.berat || '';
+
+            // Uncheck the confirmation checkbox when modal opens
+            document.getElementById('edit_konfirmasi').checked = false;
+            // Update submit button state
+            updateEditSubmitButtonState();
+
+            editHargaFitrahModal.show();
+        }
+    });
+
+    // Event listener untuk form edit harga fitrah
+    editHargaFitrahForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        // Validate confirmation checkbox first
+        const editKonfirmasi = document.getElementById('edit_konfirmasi');
+        if (!editKonfirmasi.checked) {
+            showHargaFitrahToast('Harap centang konfirmasi bahwa data sudah benar.', 'error');
+            return; // Stop form submission
+        }
+
+        // Show spinner and disable button
+        const submitBtn = document.querySelector('button[type="submit"][form="edit-harga-fitrah-form"]');
+        if (!submitBtn) {
+            showHargaFitrahToast('Tombol submit tidak ditemukan.', 'error');
+            return; // Stop form submission
+        }
+
+        const originalText = submitBtn.innerHTML;
+        const originalDisabled = submitBtn.disabled;
+
+        // Create spinner overlay inside the modal
+        const modalBody = document.querySelector('#editHargaFitrahModal .modal-body');
+
+        // Disable the form
+        const formElements = editHargaFitrahForm.elements;
+        for (let i = 0; i < formElements.length; i++) {
+            formElements[i].disabled = true;
+        }
+
+        // Show spinner overlay
+        const spinnerOverlay = document.createElement('div');
+        spinnerOverlay.id = 'edit-harga-fitrah-spinner-overlay';
+        spinnerOverlay.style.position = 'absolute';
+        spinnerOverlay.style.top = '0';
+        spinnerOverlay.style.left = '0';
+        spinnerOverlay.style.width = '100%';
+        spinnerOverlay.style.height = '100%';
+        spinnerOverlay.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
+        spinnerOverlay.style.display = 'flex';
+        spinnerOverlay.style.justifyContent = 'center';
+        spinnerOverlay.style.alignItems = 'center';
+        spinnerOverlay.style.zIndex = '9999';
+        spinnerOverlay.style.borderRadius = '0.5rem';
+
+        spinnerOverlay.innerHTML = `
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        `;
+
+        // Position the overlay relative to the modal content
+        const modalDialog = document.querySelector('#editHargaFitrahModal .modal-dialog');
+        modalDialog.style.position = 'relative';
+        modalBody.parentNode.insertBefore(spinnerOverlay, modalBody);
+
+        // Update button state
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Menyimpan...';
+        submitBtn.disabled = true;
+
+        const updatedHargaFitrah = {
+            id_hargafitrah: parseInt(document.getElementById('edit_id_hargafitrah').value),
+            nominal: parseFloat(document.getElementById('edit_nominal').value.replace(/\./g, '')), // Remove thousands separators
+            berat: parseFloat(document.getElementById('edit_berat').value)
+        };
+
+        fetch('/api/hargafitrah.update', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedHargaFitrah),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showHargaFitrahToast('Harga fitrah berhasil diperbarui!');
+                editHargaFitrahModal.hide();
+                fetchAndDisplayHargaFitrah(); // Refresh data
+            } else {
+                showHargaFitrahToast('Gagal memperbarui harga fitrah: ' + (data.message || data.error), 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showHargaFitrahToast('Terjadi kesalahan saat memperbarui harga fitrah.', 'error');
+        })
+        .finally(() => {
+            // Remove spinner overlay
+            const spinnerOverlay = document.getElementById('edit-harga-fitrah-spinner-overlay');
+            if (spinnerOverlay) {
+                spinnerOverlay.remove();
+            }
+
+            // Re-enable form elements
+            for (let i = 0; i < formElements.length; i++) {
+                formElements[i].disabled = false;
+            }
+
+            // Restore button state
+            const finalSubmitBtn = document.querySelector('button[type="submit"][form="edit-harga-fitrah-form"]');
+            if (finalSubmitBtn) {
+                finalSubmitBtn.innerHTML = originalText;
+                finalSubmitBtn.disabled = false;
+                finalSubmitBtn.classList.remove('disabled');
+            }
+        });
+    });
+
+    // Event listener for edit nominal input to format thousands
+    document.getElementById('edit_nominal').addEventListener('input', function(e) {
+        let value = e.target.value;
+        // Remove any existing formatting
+        value = value.replace(/[^\d]/g, '');
+        // Format with thousands separator
+        if (value) {
+            e.target.value = formatCurrency(value);
+        }
+    });
+
+    // Event listener for edit berat input to validate decimal format
+    document.getElementById('edit_berat').addEventListener('input', function(e) {
+        let value = e.target.value;
+        // Allow only numbers and decimal point, maximum one decimal point
+        value = value.replace(/[^0-9.]/g, '');
+        // Ensure only one decimal point
+        const parts = value.split('.');
+        if (parts.length > 2) {
+            value = parts[0] + '.' + parts.slice(1).join('');
+        }
+        e.target.value = value;
+    });
+
+    // Reset edit form state when modal is hidden
+    document.getElementById('editHargaFitrahModal').addEventListener('hidden.bs.modal', function () {
+        // Uncheck the confirmation checkbox
+        document.getElementById('edit_konfirmasi').checked = false;
+        // Update submit button state
+        updateEditSubmitButtonState();
+        // Clear form fields
+        document.getElementById('edit_nominal').value = '';
+        document.getElementById('edit_berat').value = '';
+    });
+
     // Panggil fungsi untuk pertama kali memuat data
     loadDropdownData(); // Load dropdown data first
     fetchAndDisplayHargaFitrah();
@@ -540,8 +733,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initially disable the submit button until confirmation is checked
     const submitBtn = document.querySelector('#add-harga-fitrah-form button[type="submit"]');
     if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.classList.add('disabled');
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('disabled');
     }
 });
 

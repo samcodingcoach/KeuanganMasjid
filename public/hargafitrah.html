@@ -160,22 +160,28 @@
                 <div class="modal-body">
                     <form id="edit-harga-fitrah-form">
                         <input type="hidden" id="edit_id_hargafitrah">
-                        <div class="form-floating mb-3 position-relative">
-                            <input type="text" class="form-control" id="edit_keterangan" placeholder="Masukkan keterangan" required>
-                            <label for="edit_keterangan">Keterangan</label>
-                            <i class="bi bi-info-circle position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                        <div class="mb-3">
+                            <label class="form-label">Keterangan</label>
+                            <div class="form-control-plaintext" id="edit_keterangan" style="border: 1px solid #e9ecef; border-radius: 0.375rem; padding: 0.375rem 0.75rem; background-color: #f8f9fa;"></div>
                         </div>
                         <div class="form-floating mb-3 position-relative">
-                            <input type="number" class="form-control" id="edit_nominal" placeholder="Masukkan nominal" required>
+                            <input type="text" class="form-control" id="edit_nominal" placeholder="Masukkan nominal" required>
                             <label for="edit_nominal">Nominal</label>
                             <i class="bi bi-currency-dollar position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
                         </div>
                         <div class="form-floating mb-3 position-relative">
-                            <input type="number" class="form-control" id="edit_berat" placeholder="Masukkan berat" required step="0.01">
-                            <label for="edit_berat">Berat</label>
-                            <i class="bi bi-balance-scale position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                            <input type="text" class="form-control" id="edit_berat" placeholder="Masukkan berat" required>
+                            <label for="edit_berat">Berat (kg)</label>
+                            <i class="bi bi-scale position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
                         </div>
                     </form>
+
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="edit_konfirmasi">
+                        <label class="form-check-label" for="edit_konfirmasi">
+                            Saya telah memeriksa data dengan benar
+                        </label>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary me-2" data-bs-dismiss="modal"><i class="bi bi-x-lg me-1"></i>Batal</button>
