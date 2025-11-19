@@ -55,6 +55,7 @@ from api.proyek_fitrah.update import update_proyek_fitrah
 from api.harga_fitrah.new import create_harga_fitrah
 from api.harga_fitrah.update import update_harga_fitrah
 from api.harga_fitrah.list import get_harga_fitrah_list
+from api.bayar_fitrah.list import get_bayar_fitrah_list
 
 # Initialize Supabase client
 supabase_url = os.getenv("SUPABASE_URL")
@@ -236,6 +237,10 @@ def update_harga_fitrah_route():
 @app.route('/api/hargafitrah.list', methods=['GET'])
 def list_harga_fitrah():
     return get_harga_fitrah_list(supabase)
+
+@app.route('/api/bayarfitrah.list', methods=['GET'])
+def list_bayar_fitrah():
+    return get_bayar_fitrah_list(supabase)
 
 # POST: Mengupdate data masjid
 @app.route('/api/masjid.update', methods=['POST'])
