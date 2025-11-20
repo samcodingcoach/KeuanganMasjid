@@ -138,11 +138,20 @@ document.addEventListener('DOMContentLoaded', function () {
     loginForm.addEventListener('submit', function (event) {
         event.preventDefault();
 
+        // Show spinner and change button text
+        document.getElementById('login-text').classList.add('d-none');
+        document.getElementById('login-spinner').classList.remove('d-none');
+        document.getElementById('login-btn').disabled = true;
+
         // Clear any existing messages
         clearMessage();
 
         // Check if login is blocked
         if (isLoginBlocked()) {
+            // Hide spinner and restore button if login is blocked
+            document.getElementById('login-text').classList.remove('d-none');
+            document.getElementById('login-spinner').classList.add('d-none');
+            document.getElementById('login-btn').disabled = false;
             showMessage('Login terblokir karena terlalu banyak percobaan gagal. Silakan coba lagi nanti.', 'warning');
             return;
         }
@@ -175,6 +184,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 sessionStorage.setItem('userData', JSON.stringify(data.data));
                 window.location.href = '/index'; // Redirect to index page
             } else {
+                // Hide spinner and restore button after login attempt
+                document.getElementById('login-text').classList.remove('d-none');
+                document.getElementById('login-spinner').classList.add('d-none');
+                document.getElementById('login-btn').disabled = false;
+
                 // Handle failed login - increment attempt counter
                 let attempts = parseInt(localStorage.getItem('loginAttempts')) || 0;
                 attempts++;
@@ -206,6 +220,10 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .catch((error) => {
             console.error('Error:', error);
+            // Hide spinner and restore button after error
+            document.getElementById('login-text').classList.remove('d-none');
+            document.getElementById('login-spinner').classList.add('d-none');
+            document.getElementById('login-btn').disabled = false;
             showMessage('Terjadi kesalahan saat mencoba login.', 'danger');
             currentCaptcha = displayCaptcha();
             captchaInput.value = '';
