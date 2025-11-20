@@ -305,6 +305,10 @@ def proyek_fitrah_page():
 def harga_fitrah_page():
     return send_from_directory('public', 'hargafitrah.html')
 
+@app.route('/bayarfitrah')
+def bayar_fitrah_page():
+    return send_from_directory('public', 'bayarfitrah.html')
+
 @app.route('/pegawai')
 def pegawai_page():
     return send_from_directory('public', 'pegawai.html')
