@@ -60,6 +60,7 @@ from api.harga_fitrah.list import get_harga_fitrah_list
 from api.bayar_fitrah.list import get_bayar_fitrah_list
 from api.bayar_fitrah.new import create_pembayaran_fitrah
 from api.bayar_fitrah.delete import delete_pembayaran_fitrah
+from api.beranda.tx_bulan import get_monthly_transactions_by_category
 
 # Initialize Supabase client
 supabase_url = os.getenv("SUPABASE_URL")
@@ -261,6 +262,10 @@ def new_bayar_fitrah():
 @app.route('/api/bayarfitrah.delete', methods=['POST'])
 def delete_bayar_fitrah():
     return delete_pembayaran_fitrah(supabase, request)
+
+@app.route('/api/beranda.tx-bulan', methods=['GET'])
+def tx_bulan_beranda():
+    return get_monthly_transactions_by_category(supabase)
 
 # POST: Mengupdate data masjid
 @app.route('/api/masjid.update', methods=['POST'])
