@@ -51,6 +51,7 @@ from api.jenis_fitrah.new import create_jenis_fitrah
 from api.jenis_fitrah.update import update_jenis_fitrah
 from api.beranda.total import get_total_by_account_type
 from api.beranda.asset import get_asset_statistics
+from api.beranda.mustahik import get_total_mustahik
 from api.proyek_fitrah.list import get_proyek_fitrah_list
 from api.proyek_fitrah.new import create_proyek_fitrah
 from api.proyek_fitrah.update import update_proyek_fitrah
@@ -134,6 +135,10 @@ def total_beranda():
 @app.route('/api/beranda.asset', methods=['GET'])
 def asset_beranda():
     return get_asset_statistics(supabase)
+
+@app.route('/api/beranda.mustahik', methods=['GET'])
+def mustahik_beranda():
+    return get_total_mustahik(supabase)
 
 # GET: Mengambil semua data mustahik
 @app.route('/api/mustahik.list', methods=['GET'])
