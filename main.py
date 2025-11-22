@@ -354,6 +354,10 @@ def mustahik_page():
 def masjid_page():
     return send_from_directory('public', 'masjid.html')
 
+@app.route('/dashboard')
+def dashboard_page():
+    return send_from_directory('public', 'dashboard.html')
+
 @app.route('/admin')
 def admin_page():
     return send_from_directory('public', 'admin.html')
