@@ -29,12 +29,8 @@ async function loadDashboardData() {
         // Calculate and update additional statistics
         calculateAdditionalStats();
 
-        // Show success notification
-        showNotification('Data dashboard berhasil dimuat!', 'success');
-
     } catch (error) {
         console.error('Error loading dashboard data:', error);
-        showNotification('Gagal memuat data dashboard', 'error');
     }
 }
 
