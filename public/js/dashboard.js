@@ -48,17 +48,21 @@ async function fetchAssetData() {
         const data = await response.json();
 
         if (data.success && data.data) {
-            // Display asset count and total harga
+            // Display asset count and total harga separately
             const totalActive = data.data.active_and_not_broken_count || 0;
             const totalHarga = data.data.total_harga || 0;
-            document.getElementById('total-asset').textContent = `${totalActive} item(s), ${formatRupiah(totalHarga)}`;
+
+            document.getElementById('total-asset-amount').textContent = formatRupiah(totalHarga);
+            document.getElementById('total-asset-count').textContent = `${totalActive} Items`;
         } else {
             console.error('Asset data response not as expected:', data);
-            document.getElementById('total-asset').textContent = 'Error';
+            document.getElementById('total-asset-amount').textContent = 'Error';
+            document.getElementById('total-asset-count').textContent = 'Error';
         }
     } catch (error) {
         console.error('Error fetching asset data:', error);
-        document.getElementById('total-asset').textContent = 'Error';
+        document.getElementById('total-asset-amount').textContent = 'Error';
+        document.getElementById('total-asset-count').textContent = 'Error';
     }
 }
 
