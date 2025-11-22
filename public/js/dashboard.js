@@ -17,24 +17,17 @@ document.addEventListener('DOMContentLoaded', function() {
 // Function to load all dashboard data from APIs
 async function loadDashboardData() {
     try {
-        // Fetch asset data
-        await fetchAssetData();
+        // Fetch all required data
+        await Promise.all([
+            fetchAssetData(),
+            fetchMustahikData(),
+            fetchTotalData(),
+            fetchPaymentFitrahData(),
+            fetchMonthlyTransactionsData()
+        ]);
 
-        // Fetch mustahik data
-        await fetchMustahikData();
-
-        // Fetch total data (saldo)
-        await fetchTotalData();
-
-        // Fetch payment fitrah data
-        await fetchPaymentFitrahData();
-
-        // Fetch monthly transactions data
-        await fetchMonthlyTransactionsData();
-
-        // Additional data that could be displayed (placeholder values)
-        updateAdditionalStats();
-        updateProgressBars();
+        // Calculate and update additional statistics
+        calculateAdditionalStats();
 
         // Show success notification
         showNotification('Data dashboard berhasil dimuat!', 'success');
@@ -117,18 +110,24 @@ async function fetchTotalData() {
                 }
             });
 
-            // Update the detailed breakdown cards (no main total card anymore)
+            // Update the detailed breakdown cards
             document.getElementById('total-kas').textContent = formatRupiah(kasFisikSaldo);
             document.getElementById('total-bank').textContent = formatRupiah(rekeningBankSaldo);
+
+            // Calculate and show combined total
+            const totalCombined = kasFisikSaldo + rekeningBankSaldo;
+            document.getElementById('total-saldo-combined').textContent = formatRupiah(totalCombined);
         } else {
             console.error('Total data response not as expected:', data);
             document.getElementById('total-kas').textContent = 'Error';
             document.getElementById('total-bank').textContent = 'Error';
+            document.getElementById('total-saldo-combined').textContent = 'Error';
         }
     } catch (error) {
         console.error('Error fetching total data:', error);
         document.getElementById('total-kas').textContent = 'Error';
         document.getElementById('total-bank').textContent = 'Error';
+        document.getElementById('total-saldo-combined').textContent = 'Error';
     }
 }
 
@@ -142,19 +141,31 @@ async function fetchPaymentFitrahData() {
         const data = await response.json();
 
         if (data.success && data.data) {
-            // Update the total fitrah field for the main card
-            const totalUangFitrah = data.data.total_uang || 0;
-            document.getElementById('total-fitrah').textContent = formatRupiah(totalUangFitrah);
+            // Update the total fitrah field for the main card - combining both berat (weight) and uang (money)
+            const totalBerat = data.data.total_berat || 0;
+            const totalUang = data.data.total_uang || 0;
 
-            // Note: total-beras and total-uang elements no longer exist since the detail card was removed
-            // If those elements are needed elsewhere, they would need to be added back to HTML
+            // Update the separate elements for money and weight
+            document.getElementById('total-fitrah').textContent = formatRupiah(totalUang);
+            const weightElement = document.querySelector('#total-fitrah ~ p.text-muted');
+            if (weightElement) {
+                weightElement.textContent = `${totalBerat} kg beras`;
+            }
         } else {
             console.error('Payment fitrah data response not as expected:', data);
             document.getElementById('total-fitrah').textContent = 'Error';
+            const weightElement = document.querySelector('#total-fitrah ~ p.text-muted');
+            if (weightElement) {
+                weightElement.textContent = '0 kg beras';
+            }
         }
     } catch (error) {
         console.error('Error fetching payment fitrah data:', error);
         document.getElementById('total-fitrah').textContent = 'Error';
+        const weightElement = document.querySelector('#total-fitrah ~ p.text-muted');
+        if (weightElement) {
+            weightElement.textContent = '0 kg beras';
+        }
     }
 }
 
@@ -210,30 +221,39 @@ async function fetchMonthlyTransactionsData() {
     }
 }
 
-// Function to update additional statistics (placeholder data)
-function updateAdditionalStats() {
-    // In a real implementation, these would be fetched from actual API endpoints
-    // For now, we'll use placeholder values or calculate from existing data
-    document.getElementById('total-transaksi').textContent = '0';
-    document.getElementById('total-zakat').textContent = '0';
-    document.getElementById('total-infaq').textContent = '0';
-}
+// Function to calculate and update additional statistics
+function calculateAdditionalStats() {
+    // Calculate values for additional dashboard elements
+    const penerimaan = parseFloat(document.getElementById('total-penerimaan').textContent.replace(/[Rp. ]/g, '')) || 0;
+    const pengeluaran = parseFloat(document.getElementById('total-pengeluaran').textContent.replace(/[Rp. ]/g, '')) || 0;
+    const kas = parseFloat(document.getElementById('total-kas').textContent.replace(/[Rp. ]/g, '')) || 0;
+    const bank = parseFloat(document.getElementById('total-bank').textContent.replace(/[Rp. ]/g, '')) || 0;
 
-// Function to update progress bars (placeholder data)
-function updateProgressBars() {
-    // In a real implementation, these would be calculated based on actual targets
-    // For now, we'll use placeholder values
-    document.getElementById('target-zakat-persen').textContent = '0%';
-    document.getElementById('target-zakat-bar').style.width = '0%';
-    document.getElementById('target-zakat-bar').setAttribute('aria-valuenow', '0');
+    // Net balance calculation
+    const netBalance = penerimaan - pengeluaran;
+    document.getElementById('net-balance').textContent = formatRupiah(netBalance);
 
-    document.getElementById('distribusi-persen').textContent = '0%';
-    document.getElementById('distribusi-bar').style.width = '0%';
-    document.getElementById('distribusi-bar').setAttribute('aria-valuenow', '0');
+    // Calculate progress for balance (based on max of penerimaan and pengeluaran)
+    const maxAmount = Math.max(penerimaan, pengeluaran, 1); // Avoid division by zero
+    const progressPercentage = (Math.abs(netBalance) / maxAmount) * 100;
+    document.getElementById('balance-progress').style.width = Math.min(progressPercentage, 100) + '%';
+    document.getElementById('balance-progress').setAttribute('aria-valuenow', Math.min(progressPercentage, 100));
 
-    document.getElementById('mustahik-persen').textContent = '0%';
-    document.getElementById('mustahik-bar').style.width = '0%';
-    document.getElementById('mustahik-bar').setAttribute('aria-valuenow', '0');
+    // Update color based on net balance
+    const balanceProgress = document.getElementById('balance-progress');
+    if (netBalance >= 0) {
+        balanceProgress.className = 'progress-bar bg-success';
+    } else {
+        balanceProgress.className = 'progress-bar bg-danger';
+    }
+
+    // Update monthly stats
+    document.getElementById('monthly-income').textContent = formatRupiah(penerimaan);
+    document.getElementById('monthly-expenses').textContent = formatRupiah(pengeluaran);
+
+    // Calculate savings ratio (if penerimaan > 0)
+    const savingsRatio = penerimaan > 0 ? Math.round((netBalance / penerimaan) * 100) : 0;
+    document.getElementById('savings-ratio').textContent = savingsRatio + '%';
 }
 
 // Function to format numbers as Rupiah (IDR)

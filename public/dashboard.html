@@ -14,6 +14,118 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/css/admin.css">
+    <style>
+        .dashboard-header {
+            background: linear-gradient(135deg, #075E54 0%, #128C7E 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .card-stat {
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
+            border: none;
+        }
+        
+        .card-stat:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            font-size: 24px;
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #075E54;
+        }
+        
+        .stat-title {
+            font-size: 16px;
+            color: #6c757d;
+            margin-bottom: 0;
+        }
+        
+        .gradient-bg-primary {
+            background: linear-gradient(135deg, #075E54 0%, #128C7E 100%);
+        }
+        
+        .gradient-bg-secondary {
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+        }
+        
+        .gradient-bg-success {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+        
+        .gradient-bg-warning {
+            background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            height: 100%;
+        }
+        
+        .recent-activity {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .activity-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-size: 18px;
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .progress-stat {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .text-whatsapp {
+            color: #25D366;
+        }
+        
+        .border-start-whatsapp {
+            border-left: 4px solid #25D366;
+        }
+    </style>
 </head>
 <body class="bg-light">
     <!-- Sidebar will be loaded here -->
@@ -22,94 +134,78 @@
     <!-- Main Content Area -->
     <div id="main-content" class="flex-grow-1 p-4">
         <div class="container-fluid">
-            <div class="row">
-                <div class="col-12">
-                    <h2 class="mb-4 text-whatsapp">Dashboard Masjid</h2>
+            <!-- Dashboard Header -->
+            <div class="dashboard-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="mb-1">Dashboard Masjid</h2>
+                        <p class="mb-0 opacity-75">Sistem Informasi Manajemen Masjid</p>
+                    </div>
+                    <div>
+                        <i class="bi bi-speedometer2" style="font-size: 40px;"></i>
+                    </div>
                 </div>
             </div>
 
-            <!-- Alerts/Notifications -->
+            <!-- Stats Overview -->
             <div class="row mb-4">
-                <div class="col-12">
-                    <div class="alert alert-success alert-dismissible fade show" role="alert" id="success-alert" style="display: none;">
-                        <i class="bi bi-check-circle me-2"></i>Data dashboard berhasil dimuat!
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                    <div class="alert alert-warning alert-dismissible fade show" role="alert" id="warning-alert" style="display: none;">
-                        <i class="bi bi-exclamation-triangle me-2"></i>Peringatan: Beberapa data memerlukan perhatian.
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert" id="error-alert" style="display: none;">
-                        <i class="bi bi-exclamation-triangle me-2"></i>Error saat memuat data dashboard.
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Dashboard Cards -->
-            <div class="row mb-4">
-                <div class="col-md-3 mb-3">
-                    <div class="card rounded-3" style="background-color: #e8f5e8; border: 1px solid #25D366; border-radius: 10px;">
-                        <div class="card-header bg-gradient text-white border-0 py-3" style="background: linear-gradient(180deg, #075E54 0%, #128C7E 100%); border-radius: 10px 10px 0 0 !important;">
-                            <div class="d-flex align-items-center">
-                                <i class="bi bi-box me-2"></i>
-                                <h5 class="card-title mb-0">Total Asset</h5>
-                            </div>
+                <div class="col-md-4">
+                    <div class="card card-stat">
+                        <div class="card-header gradient-bg-primary text-white border-0 py-3 rounded-top-3">
+                            <h5 class="card-title mb-0"><i class="bi bi-box me-2"></i>Asset Aktif</h5>
                         </div>
-                        <div class="card-body text-center">
-                            <h3 class="mb-0" id="total-asset">0</h3>
+                        <div class="card-body text-center py-4">
+                            <h3 class="stat-value mb-0" id="total-asset">0</h3>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-md-3 mb-3">
-                    <div class="card rounded-3" style="background-color: #e8f5e8; border: 1px solid #25D366; border-radius: 10px;">
-                        <div class="card-header bg-gradient text-white border-0 py-3" style="background: linear-gradient(180deg, #075E54 0%, #128C7E 100%); border-radius: 10px 10px 0 0 !important;">
-                            <div class="d-flex align-items-center">
-                                <i class="bi bi-people-fill me-2"></i>
-                                <h5 class="card-title mb-0">Total Mustahik</h5>
-                            </div>
+                <div class="col-md-4">
+                    <div class="card card-stat">
+                        <div class="card-header gradient-bg-primary text-white border-0 py-3 rounded-top-3">
+                            <h5 class="card-title mb-0"><i class="bi bi-people-fill me-2"></i>Mustahik</h5>
                         </div>
-                        <div class="card-body text-center">
-                            <h3 class="mb-0" id="total-mustahik">0</h3>
+                        <div class="card-body text-center py-4">
+                            <h3 class="stat-value mb-0" id="total-mustahik">0</h3>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-md-3 mb-3">
-                    <div class="card rounded-3" style="background-color: #e8f5e8; border: 1px solid #25D366; border-radius: 10px;">
-                        <div class="card-header bg-gradient text-white border-0 py-3" style="background: linear-gradient(180deg, #075E54 0%, #128C7E 100%); border-radius: 10px 10px 0 0 !important;">
-                            <div class="d-flex align-items-center">
-                                <i class="bi bi-currency-dollar me-2"></i>
-                                <h5 class="card-title mb-0">Pendapatan Fitrah</h5>
-                            </div>
+                <div class="col-md-4">
+                    <div class="card card-stat">
+                        <div class="card-header gradient-bg-primary text-white border-0 py-3 rounded-top-3">
+                            <h5 class="card-title mb-0"><i class="bi bi-currency-dollar me-2"></i>Pendapatan Fitrah</h5>
                         </div>
-                        <div class="card-body text-center">
-                            <h3 class="mb-0" id="total-fitrah">0</h3>
+                        <div class="card-body text-center py-4">
+                            <h3 class="stat-value mb-1" id="total-fitrah">Rp 0</h3>
+                            <p class="text-muted mb-0" style="font-size: 0.9rem;">0 kg beras</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Additional Cards -->
+            <!-- Detailed Financial Overview -->
             <div class="row mb-4">
                 <div class="col-md-6">
-                    <div class="card border-0 shadow-sm rounded-3" style="border-radius: 10px;">
-                        <div class="card-header border-0 py-3" style="background: linear-gradient(180deg, #075E54 0%, #128C7E 100%); border-radius: 10px 10px 0 0 !important;">
-                            <div class="d-flex align-items-center">
-                                <i class="bi bi-calendar me-2 text-white"></i>
-                                <h5 class="card-title mb-0 text-white">Transaksi Bulan Ini</h5>
-                            </div>
+                    <div class="card card-stat">
+                        <div class="card-header gradient-bg-primary text-white border-0 py-3 rounded-top-3">
+                            <h5 class="card-title mb-0"><i class="bi bi-wallet me-2"></i>Rincian Saldo</h5>
                         </div>
                         <div class="card-body">
-                            <div class="d-flex justify-content-around text-center">
-                                <div>
-                                    <h4 class="text-whatsapp mb-0" id="total-penerimaan">0</h4>
-                                    <small class="text-muted">Penerimaan</small>
+                            <div class="d-flex justify-content-between mb-3">
+                                <div class="text-center">
+                                    <div class="stat-value text-whatsapp" id="total-kas">0</div>
+                                    <p class="stat-title">Kas Fisik</p>
                                 </div>
-                                <div>
-                                    <h4 class="text-whatsapp mb-0" id="total-pengeluaran">0</h4>
-                                    <small class="text-muted">Pengeluaran</small>
+                                <div class="text-center">
+                                    <div class="stat-value text-whatsapp" id="total-bank">0</div>
+                                    <p class="stat-title">Rekening Bank</p>
+                                </div>
+                            </div>
+                            <div class="border-top pt-3 mt-3">
+                                <div class="d-flex justify-content-between">
+                                    <span class="text-muted">Total Keseluruhan:</span>
+                                    <span class="fw-bold" id="total-saldo-combined">Rp 0</span>
                                 </div>
                             </div>
                         </div>
@@ -117,92 +213,125 @@
                 </div>
 
                 <div class="col-md-6">
-                    <div class="card border-0 shadow-sm rounded-3" style="border-radius: 10px;">
-                        <div class="card-header bg-gradient text-white border-0 py-3" style="background: linear-gradient(180deg, #075E54 0%, #128C7E 100%); border-radius: 10px 10px 0 0 !important;">
-                            <div class="d-flex align-items-center">
-                                <i class="bi bi-currency-dollar me-2"></i>
-                                <h5 class="card-title mb-0">Rincian Saldo</h5>
-                            </div>
+                    <div class="card card-stat">
+                        <div class="card-header gradient-bg-primary text-white border-0 py-3 rounded-top-3">
+                            <h5 class="card-title mb-0"><i class="bi bi-calendar-check me-2"></i>Transaksi Bulan Ini</h5>
                         </div>
                         <div class="card-body">
-                            <div class="d-flex justify-content-around text-center">
-                                <div>
-                                    <h4 class="text-whatsapp mb-0" id="total-kas">0</h4>
-                                    <small class="text-muted">Kas Fisik</small>
+                            <div class="d-flex justify-content-between mb-4">
+                                <div class="text-center">
+                                    <div class="stat-value text-success" id="total-penerimaan">0</div>
+                                    <p class="stat-title">Penerimaan</p>
                                 </div>
-                                <div>
-                                    <h4 class="text-whatsapp mb-0" id="total-bank">0</h4>
-                                    <small class="text-muted">Rekening Bank</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Additional info cards similar to admin.html -->
-            <div class="row mb-4">
-                <div class="col-md-6">
-                    <div class="card border-0 shadow-sm rounded-3" style="border-radius: 10px;">
-                        <div class="card-header border-0 py-3" style="background: linear-gradient(180deg, #075E54 0%, #128C7E 100%); border-radius: 10px 10px 0 0 !important;">
-                            <div class="d-flex align-items-center">
-                                <i class="bi bi-bar-chart me-2 text-white"></i>
-                                <h5 class="card-title mb-0 text-white">Info Statistik</h5>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="d-flex justify-content-around text-center">
-                                <div>
-                                    <h4 class="text-whatsapp mb-0" id="total-transaksi">0</h4>
-                                    <small class="text-muted">Transaksi</small>
-                                </div>
-                                <div>
-                                    <h4 class="text-whatsapp mb-0" id="total-zakat">0</h4>
-                                    <small class="text-muted">Zakat</small>
-                                </div>
-                                <div>
-                                    <h4 class="text-whatsapp mb-0" id="total-infaq">0</h4>
-                                    <small class="text-muted">Infaq</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="card border-0 shadow-sm rounded-3" style="border-radius: 10px;">
-                        <div class="card-header border-0 py-3" style="background: linear-gradient(180deg, #075E54 0%, #128C7E 100%); border-radius: 10px 10px 0 0 !important;">
-                            <div class="d-flex align-items-center">
-                                <i class="bi bi-graph-up me-2 text-white"></i>
-                                <h5 class="card-title mb-0 text-white">Progres Aktivitas</h5>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="mb-3">
-                                <div class="d-flex justify-content-between mb-1">
-                                    <span>Target Zakat</span>
-                                    <span id="target-zakat-persen">0%</span>
-                                </div>
-                                <div class="progress" style="height: 10px;">
-                                    <div class="progress-bar bg-whatsapp" role="progressbar" id="target-zakat-bar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <div class="d-flex justify-content-between mb-1">
-                                    <span>Distribusi</span>
-                                    <span id="distribusi-persen">0%</span>
-                                </div>
-                                <div class="progress" style="height: 10px;">
-                                    <div class="progress-bar bg-info" role="progressbar" id="distribusi-bar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                <div class="text-center">
+                                    <div class="stat-value text-danger" id="total-pengeluaran">0</div>
+                                    <p class="stat-title">Pengeluaran</p>
                                 </div>
                             </div>
                             <div>
-                                <div class="d-flex justify-content-between mb-1">
-                                    <span>Mustahik</span>
-                                    <span id="mustahik-persen">0%</span>
+                                <div class="progress-label">
+                                    <span class="progress-stat">Saldo Bulan Ini</span>
+                                    <span class="progress-stat" id="net-balance">Rp 0</span>
                                 </div>
-                                <div class="progress" style="height: 10px;">
-                                    <div class="progress-bar bg-success" role="progressbar" id="mustahik-bar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                <div class="progress">
+                                    <div class="progress-bar bg-whatsapp" role="progressbar" id="balance-progress" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Stats and Charts -->
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card card-stat">
+                        <div class="card-header gradient-bg-primary text-white border-0 py-3 rounded-top-3">
+                            <h5 class="card-title mb-0"><i class="bi bi-graph-up me-2"></i>Statistik Keuangan</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-md-4 mb-3 mb-md-0">
+                                    <div class="border-start-whatsapp ps-3">
+                                        <h4 class="text-whatsapp mb-1" id="monthly-income">0</h4>
+                                        <p class="text-muted mb-0">Pemasukan Bulan Ini</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3 mb-md-0">
+                                    <div class="border-start-whatsapp ps-3">
+                                        <h4 class="text-whatsapp mb-1" id="monthly-expenses">0</h4>
+                                        <p class="text-muted mb-0">Pengeluaran Bulan Ini</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="border-start-whatsapp ps-3">
+                                        <h4 class="text-whatsapp mb-1" id="savings-ratio">0%</h4>
+                                        <p class="text-muted mb-0">Rasio Tabungan</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4">
+                                <canvas id="financeChart" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card card-stat">
+                        <div class="card-header gradient-bg-primary text-white border-0 py-3 rounded-top-3">
+                            <h5 class="card-title mb-0"><i class="bi bi-clock-history me-2"></i>Aktivitas Terbaru</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="recent-activity" id="recent-activity">
+                                <div class="activity-item">
+                                    <div class="d-flex">
+                                        <div class="activity-icon bg-whatsapp text-white me-3">
+                                            <i class="bi bi-currency-dollar"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">Pembayaran Fitrah</h6>
+                                            <p class="text-muted mb-1">Rp 500.000 dari Budi Santoso</p>
+                                            <small class="text-muted">Baru saja</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="d-flex">
+                                        <div class="activity-icon bg-success text-white me-3">
+                                            <i class="bi bi-cash-stack"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">Penerimaan Zakat</h6>
+                                            <p class="text-muted mb-1">Rp 1.200.000 dari Siti Aminah</p>
+                                            <small class="text-muted">2 jam lalu</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="d-flex">
+                                        <div class="activity-icon bg-danger text-white me-3">
+                                            <i class="bi bi-currency-exchange"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">Pengeluaran Operasional</h6>
+                                            <p class="text-muted mb-1">Rp 750.000 untuk listrik</p>
+                                            <small class="text-muted">Hari ini</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="d-flex">
+                                        <div class="activity-icon bg-info text-white me-3">
+                                            <i class="bi bi-box-seam"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">Pembelian Asset</h6>
+                                            <p class="text-muted mb-1">Speaker Masjid baru</p>
+                                            <small class="text-muted">Kemarin</small>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -215,7 +344,7 @@
     <!-- Toast Container -->
     <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
         <div id="liveToast" class="toast rounded-3" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header" style="background: linear-gradient(180deg, #075E54 0%, #128C7E 100%); border-radius: 10px 10px 0 0 !important;">
+            <div class="toast-header" style="background: linear-gradient(180deg, #075E54 0%, #128C7E 100%);">
                 <div class="d-flex align-items-center">
                     <i class="bi bi-bell me-2 text-white"></i>
                     <strong class="me-auto text-white">Notifikasi</strong>
@@ -228,6 +357,9 @@
             </div>
         </div>
     </div>
+
+    <!-- Include Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
