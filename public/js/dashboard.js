@@ -258,6 +258,63 @@ function calculateAdditionalStats() {
     // Calculate savings ratio (if penerimaan > 0)
     const savingsRatio = penerimaan > 0 ? Math.round((netBalance / penerimaan) * 100) : 0;
     document.getElementById('savings-ratio').textContent = savingsRatio + '%';
+
+    // Create finance chart
+    createFinanceChart(penerimaan, pengeluaran);
+}
+
+// Function to create the finance chart
+function createFinanceChart(penerimaan, pengeluaran) {
+    const ctx = document.getElementById('financeChart').getContext('2d');
+
+    // Destroy existing chart if it exists to avoid duplication
+    if (window.financeChartInstance) {
+        window.financeChartInstance.destroy();
+    }
+
+    // Create new chart
+    window.financeChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Pemasukan', 'Pengeluaran'],
+            datasets: [{
+                label: 'Jumlah (Rp)',
+                data: [penerimaan, pengeluaran],
+                backgroundColor: [
+                    'rgba(37, 211, 102, 0.7)', // WhatsApp green for income
+                    'rgba(220, 53, 69, 0.7)'    // Danger red for expenses
+                ],
+                borderColor: [
+                    'rgba(37, 211, 102, 1)',
+                    'rgba(220, 53, 69, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                title: {
+                    display: true,
+                    text: 'Perbandingan Pemasukan vs Pengeluaran'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return 'Rp ' + value.toLocaleString();
+                        }
+                    }
+                }
+            }
+        }
+    });
 }
 
 // Function to format numbers as Rupiah (IDR)
