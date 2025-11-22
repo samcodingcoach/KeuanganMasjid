@@ -1,0 +1,25 @@
+SELECT
+	concat(kategori_transaksi.jenis_kategori, ' ',kategori_transaksi.nama_kategori) AS deskripsi, 
+  concat('Rp ', transaksi_detail.subtotal, ' ',muzakki.nama_lengkap) as nilai,
+	transaksi.tanggal_transaksi, 
+	transaksi_detail.subtotal, 
+	akun_kas_bank.jenis_akun
+	
+FROM
+	transaksi_detail
+	INNER JOIN
+	transaksi
+	ON 
+		transaksi_detail.id_transaksi = transaksi.id_transaksi
+	INNER JOIN
+	kategori_transaksi
+	ON 
+		transaksi_detail.id_kategori = kategori_transaksi.id_kategori
+	INNER JOIN
+	akun_kas_bank
+	ON 
+		transaksi.id_akun = akun_kas_bank.id_akun
+	LEFT JOIN
+	muzakki
+	ON 
+		transaksi.id_muzakki = muzakki.id_muzakki
