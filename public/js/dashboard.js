@@ -396,6 +396,45 @@ function createActivityElement(activity) {
     // Format the date
     const formattedDate = formatActivityDate(activity.tanggal_transaksi);
 
+    // Format nilai with proper thousand separators
+    let formattedNilai = activity.nilai;
+
+    // Check if nilai contains a currency value that needs formatting
+    if (typeof activity.nilai === 'string' && activity.nilai.startsWith('Rp ')) {
+        // Extract the numeric part from the string
+        const nilaiText = activity.nilai.substring(3); // Remove 'Rp ' prefix
+        const numericPart = nilaiText.split(' ')[0]; // Get the number part (e.g., "50000.0" from "50000.0 Haji John Doe")
+
+        // Check if the numeric part can be converted to a number
+        const numberValue = parseFloat(numericPart);
+        if (!isNaN(numberValue)) {
+            // Format the number with thousand separators using Indonesian locale
+            // This will format as "50.000" instead of "50,000" for the integer part
+            const formattedAmount = new Intl.NumberFormat('id-ID', {
+                maximumFractionDigits: 2  // Show up to 2 decimal places if needed
+            }).format(numberValue);
+
+            // Replace the numeric part in the original string
+            formattedNilai = activity.nilai.replace(numericPart, formattedAmount);
+        }
+    } else if (typeof activity.nilai === 'number') {
+        // If nilai is a number, format it as currency
+        formattedNilai = 'Rp ' + new Intl.NumberFormat('id-ID', {
+            maximumFractionDigits: 2
+        }).format(activity.nilai);
+    }
+
+    // Check if the name is already contained in the formattedNilai to prevent duplication
+    let displayNilai = formattedNilai;
+    if (activity.nama_lengkap && activity.nama_lengkap.trim() !== '') {
+        // Check if nama_lengkap is already part of formattedNilai (case insensitive)
+        const isNameAlreadyIncluded = formattedNilai.toLowerCase().includes(activity.nama_lengkap.toLowerCase());
+        if (!isNameAlreadyIncluded) {
+            // Add the name to the nilai if it's not already included
+            displayNilai += ` dari ${activity.nama_lengkap}`;
+        }
+    }
+
     activityItem.innerHTML = `
         <div class="d-flex">
             <div class="activity-icon ${bgClass} text-white me-3">
@@ -403,7 +442,7 @@ function createActivityElement(activity) {
             </div>
             <div>
                 <h6 class="mb-1">${activity.deskripsi}</h6>
-                <p class="text-muted mb-1">${activity.nilai}${activity.nama_lengkap ? ' dari ' + activity.nama_lengkap : ''}</p>
+                <p class="text-muted mb-1">${displayNilai}</p>
                 <small class="text-muted">${formattedDate}</small>
             </div>
         </div>
