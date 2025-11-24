@@ -41,3 +41,4 @@ FROM
 	muzakki
 	ON 
 		pembayaran_fitrah.id_muzakki = muzakki.id_muzakki
+		
