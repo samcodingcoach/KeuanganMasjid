@@ -1,9 +1,0 @@
-[2025-11-19 15:25:01] DELETE action - kode_pembayaran: FT048-00001, created_at: 2025-11-19, records_deleted: 1
-  - Deleted record ID: 1, kode_pembayaran: FT048-00001, created_at: 2025-11-19T02:03:33.79294+00:00
-
-[2025-11-19 15:50:12] DELETE action - kode_pembayaran: FT048-00003, created_at: 2025-11-19, records_deleted: 1
-  - Deleted record ID: 12, kode_pembayaran: FT048-00003, created_at: 2025-11-19T07:48:42.389315+00:00
-
-[2025-11-19 15:50:37] DELETE action - kode_pembayaran: FT048-00002, created_at: 2025-11-19, records_deleted: 1
-  - Deleted record ID: 11, kode_pembayaran: FT048-00002, created_at: 2025-11-19T07:47:23.446509+00:00
-
