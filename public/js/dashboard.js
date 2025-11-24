@@ -23,7 +23,8 @@ async function loadDashboardData() {
             fetchMustahikData(),
             fetchTotalData(),
             fetchPaymentFitrahData(),
-            fetchMonthlyTransactionsData()
+            fetchMonthlyTransactionsData(),
+            fetchActivitiesData()
         ]);
 
         // Calculate and update additional statistics
@@ -321,6 +322,189 @@ function formatRupiah(angka) {
 
     // Convert to string and format with dots as thousand separators, with "Rp " prefix
     return 'Rp ' + number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+// Function to fetch activities data from api/beranda.aktifitas
+async function fetchActivitiesData() {
+    try {
+        const response = await fetch('/api/beranda.aktifitas');
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+
+        if (data.success && Array.isArray(data.data)) {
+            displayActivities(data.data);
+        } else {
+            console.error('Activities data response not as expected:', data);
+            // Show default activities if API fails
+            displayDefaultActivities();
+        }
+    } catch (error) {
+        console.error('Error fetching activities data:', error);
+        // Show default activities if API fails
+        displayDefaultActivities();
+    }
+}
+
+// Function to display activities in the recent-activity container
+function displayActivities(activities) {
+    const container = document.getElementById('recent-activity');
+    if (!container) {
+        console.error('Recent activity container not found');
+        return;
+    }
+
+    // Clear existing activities
+    container.innerHTML = '';
+
+    if (activities.length === 0) {
+        container.innerHTML = '<div class="activity-item text-center text-muted">Tidak ada aktivitas terbaru</div>';
+        return;
+    }
+
+    activities.forEach(activity => {
+        const activityElement = createActivityElement(activity);
+        container.appendChild(activityElement);
+    });
+}
+
+// Function to create a single activity element
+function createActivityElement(activity) {
+    const activityItem = document.createElement('div');
+    activityItem.className = 'activity-item';
+
+    // Determine icon and color based on activity description
+    let iconClass = 'bi bi-currency-dollar';
+    let bgClass = 'bg-whatsapp';
+
+    const description = activity.deskripsi ? activity.deskripsi.toLowerCase() : '';
+    if (description.includes('zakat') || description.includes('infaq') || description.includes('sodakoh') || description.includes('shodaqoh')) {
+        iconClass = 'bi bi-cash-stack';
+        bgClass = 'bg-success';
+    } else if (description.includes('pengeluaran') || description.includes('biaya') || description.includes('operasional')) {
+        iconClass = 'bi bi-currency-exchange';
+        bgClass = 'bg-danger';
+    } else if (description.includes('pembelian') || description.includes('asset') || description.includes('barang')) {
+        iconClass = 'bi bi-box-seam';
+        bgClass = 'bg-info';
+    } else if (description.includes('fitrah')) {
+        iconClass = 'bi bi-currency-dollar';
+        bgClass = 'bg-whatsapp';
+    }
+
+    // Format the date
+    const formattedDate = formatActivityDate(activity.tanggal_transaksi);
+
+    activityItem.innerHTML = `
+        <div class="d-flex">
+            <div class="activity-icon ${bgClass} text-white me-3">
+                <i class="bi ${iconClass}"></i>
+            </div>
+            <div>
+                <h6 class="mb-1">${activity.deskripsi}</h6>
+                <p class="text-muted mb-1">${activity.nilai}${activity.nama_lengkap ? ' dari ' + activity.nama_lengkap : ''}</p>
+                <small class="text-muted">${formattedDate}</small>
+            </div>
+        </div>
+    `;
+
+    return activityItem;
+}
+
+// Function to format activity date (convert ISO date to readable format)
+function formatActivityDate(dateString) {
+    if (!dateString) return 'Tanggal tidak tersedia';
+
+    try {
+        // Try to parse the date string
+        const date = new Date(dateString);
+
+        // Check if date is valid
+        if (isNaN(date.getTime())) {
+            return dateString; // Return original if parsing fails
+        }
+
+        // Format as "X minutes/hours/days ago" or specific date
+        const now = new Date();
+        const diffMs = now - date;
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+        if (diffMins < 1) {
+            return 'Baru saja';
+        } else if (diffMins < 60) {
+            return `${diffMins} menit lalu`;
+        } else if (diffHours < 24) {
+            return `${diffHours} jam lalu`;
+        } else if (diffDays < 7) {
+            return `${diffDays} hari lalu`;
+        } else {
+            // Format as DD/MM/YYYY for older dates
+            return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
+        }
+    } catch (e) {
+        // If parsing fails, return the original date string
+        return dateString;
+    }
+}
+
+// Function to display default activities (backup when API fails)
+function displayDefaultActivities() {
+    const container = document.getElementById('recent-activity');
+    if (!container) return;
+
+    container.innerHTML = `
+        <div class="activity-item">
+            <div class="d-flex">
+                <div class="activity-icon bg-whatsapp text-white me-3">
+                    <i class="bi bi-currency-dollar"></i>
+                </div>
+                <div>
+                    <h6 class="mb-1">Pembayaran Fitrah</h6>
+                    <p class="text-muted mb-1">Rp 500.000 dari Budi Santoso</p>
+                    <small class="text-muted">Baru saja</small>
+                </div>
+            </div>
+        </div>
+        <div class="activity-item">
+            <div class="d-flex">
+                <div class="activity-icon bg-success text-white me-3">
+                    <i class="bi bi-cash-stack"></i>
+                </div>
+                <div>
+                    <h6 class="mb-1">Penerimaan Zakat</h6>
+                    <p class="text-muted mb-1">Rp 1.200.000 dari Siti Aminah</p>
+                    <small class="text-muted">2 jam lalu</small>
+                </div>
+            </div>
+        </div>
+        <div class="activity-item">
+            <div class="d-flex">
+                <div class="activity-icon bg-danger text-white me-3">
+                    <i class="bi bi-currency-exchange"></i>
+                </div>
+                <div>
+                    <h6 class="mb-1">Pengeluaran Operasional</h6>
+                    <p class="text-muted mb-1">Rp 750.000 untuk listrik</p>
+                    <small class="text-muted">Hari ini</small>
+                </div>
+            </div>
+        </div>
+        <div class="activity-item">
+            <div class="d-flex">
+                <div class="activity-icon bg-info text-white me-3">
+                    <i class="bi bi-box-seam"></i>
+                </div>
+                <div>
+                    <h6 class="mb-1">Pembelian Asset</h6>
+                    <p class="text-muted mb-1">Speaker Masjid baru</p>
+                    <small class="text-muted">Kemarin</small>
+                </div>
+            </div>
+        </div>
+    `;
 }
 
 // Function to show notification toast
