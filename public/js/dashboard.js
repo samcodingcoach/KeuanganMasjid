@@ -72,16 +72,28 @@ async function fetchMustahikData() {
         }
         const data = await response.json();
 
-        if (data.success && data.data && data.data.total_mustahik !== undefined) {
+        if (data.success && data.data &&
+            data.data.total_mustahik !== undefined &&
+            data.data.total_aktif !== undefined &&
+            data.data.total_tidak_aktif !== undefined) {
+
             // Display total mustahik count
             document.getElementById('total-mustahik').textContent = data.data.total_mustahik;
+            // Display active mustahik count
+            document.getElementById('total-mustahik-aktif').textContent = data.data.total_aktif;
+            // Display inactive mustahik count
+            document.getElementById('total-mustahik-tidak-aktif').textContent = data.data.total_tidak_aktif;
         } else {
             console.error('Mustahik data response not as expected:', data);
             document.getElementById('total-mustahik').textContent = 'Error';
+            document.getElementById('total-mustahik-aktif').textContent = 'Error';
+            document.getElementById('total-mustahik-tidak-aktif').textContent = 'Error';
         }
     } catch (error) {
         console.error('Error fetching mustahik data:', error);
         document.getElementById('total-mustahik').textContent = 'Error';
+        document.getElementById('total-mustahik-aktif').textContent = 'Error';
+        document.getElementById('total-mustahik-tidak-aktif').textContent = 'Error';
     }
 }
 
