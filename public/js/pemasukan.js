@@ -3,7 +3,7 @@ let allIncomeTransactions = [];
 let filteredTransactions = [];
 
 // Fetch data from the API endpoint
-fetch('http://127.0.0.1:5002/api/transaksi.list')
+fetch('/api/transaksi.list')
     .then(response => response.json())
     .then(response => {
         if (response.success && response.data) {
@@ -213,7 +213,7 @@ function editDetail(detail, transaction) {
 
 // Function to load categories for edit modal and select the current category
 function loadEditCategories(currentCategoryId) {
-    fetch('http://127.0.0.1:5002/api/kategori.list')
+    fetch('/api/kategori.list')
         .then(response => response.json())
         .then(response => {
             if (response.success && response.data) {
@@ -429,7 +429,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Function to load accounts from API and populate dropdown
 function loadAccounts() {
-    fetch('http://127.0.0.1:5002/api/akun.list')
+    fetch('/api/akun.list')
         .then(response => response.json())
         .then(response => {
             if (response.success && response.data) {
@@ -476,7 +476,7 @@ function loadAccounts() {
 
 // Function to load muzakki from API and populate dropdown
 function loadMuzakki() {
-    fetch('http://127.0.0.1:5002/api/muzakki.list')
+    fetch('/api/muzakki.list')
         .then(response => response.json())
         .then(response => {
             if (response.success && response.data) {
@@ -545,7 +545,7 @@ document.getElementById('confirm-finish-btn').addEventListener('click', function
 
     if (transaction) {
         // Call the API to finish the transaction
-        fetch('http://127.0.0.1:5002/api/transaksi.close', {
+        fetch('/api/transaksi.close', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -559,7 +559,7 @@ document.getElementById('confirm-finish-btn').addEventListener('click', function
             if (data.success) {
                 showTransactionToast('Transaksi berhasil diselesaikan');
                 // Refresh the transaction list
-                fetch('http://127.0.0.1:5002/api/transaksi.list')
+                fetch('/api/transaksi.list')
                     .then(response => response.json())
                     .then(response => {
                         if (response.success && response.data) {
@@ -649,7 +649,7 @@ function addIncomeDetail(transaction) {
 
 // Function to load categories from API and populate dropdown
 function loadCategories() {
-    fetch('http://127.0.0.1:5002/api/kategori.list')
+    fetch('/api/kategori.list')
         .then(response => response.json())
         .then(response => {
             if (response.success && response.data) {
@@ -916,7 +916,7 @@ document.getElementById('save-income-detail-btn').addEventListener('click', asyn
     };
 
     // Call the API to save the income detail
-    fetch('http://127.0.0.1:5002/api/transaksi.createdetail', {
+    fetch('/api/transaksi.createdetail', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -933,7 +933,7 @@ document.getElementById('save-income-detail-btn').addEventListener('click', asyn
             modal.hide();
 
             // Refresh the transaction list to show updated totals
-            fetch('http://127.0.0.1:5002/api/transaksi.list')
+            fetch('/api/transaksi.list')
                 .then(response => response.json())
                 .then(response => {
                     if (response.success && response.data) {
@@ -990,7 +990,7 @@ document.getElementById('save-edit-detail-btn').addEventListener('click', async 
     };
 
     // Call the API to update the income detail
-    fetch('http://127.0.0.1:5002/api/transaksi.updatedetail', {
+    fetch('/api/transaksi.updatedetail', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -1009,7 +1009,7 @@ document.getElementById('save-edit-detail-btn').addEventListener('click', async 
             }
 
             // Update the main transaction list to reflect the changes
-            fetch('http://127.0.0.1:5002/api/transaksi.list')
+            fetch('/api/transaksi.list')
                 .then(response => response.json())
                 .then(response => {
                     if (response.success && response.data) {
@@ -1127,7 +1127,7 @@ document.getElementById('save-transaction-btn').addEventListener('click', functi
     };
 
     // Call the API to save the transaction
-    fetch('http://127.0.0.1:5002/api/transaksi.create', {
+    fetch('/api/transaksi.create', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -1144,7 +1144,7 @@ document.getElementById('save-transaction-btn').addEventListener('click', functi
             modal.hide();
 
             // Refresh the transaction list
-            fetch('http://127.0.0.1:5002/api/transaksi.list')
+            fetch('/api/transaksi.list')
                 .then(response => response.json())
                 .then(response => {
                     if (response.success && response.data) {
