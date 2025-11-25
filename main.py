@@ -21,6 +21,7 @@ from api.pegawai.pegawai import get_pegawai
 from api.pegawai.update import update_pegawai
 from api.pegawai.update_pribadi import update_pribadi
 from api.pegawai.cek_login import cek_login_pegawai
+from api.pegawai.logout import logout_pegawai
 from api.pegawai.reset import request_reset, verify_code, reset_password
 from api.pegawai.cek_kodeverifikasi import cek_kodeverifikasi
 from api.pegawai.update_resetpw import update_newpassword
@@ -129,6 +130,10 @@ def update_pribadi_route():
 @app.route('/api/pegawai.login', methods=['POST'])
 def cek_login_pegawai_route():
     return cek_login_pegawai(supabase, request)
+
+@app.route('/api/logout', methods=['POST'])
+def logout_pegawai_route():
+    return logout_pegawai()
 
 @app.route('/api/beranda.total', methods=['GET'])
 def total_beranda():

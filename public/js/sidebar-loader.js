@@ -324,11 +324,34 @@ function showProfileToast(message, isSuccess) {
 
 // Function to handle logout
 function logout() {
-    // Clear all session storage
-    sessionStorage.clear();
-    
-    // Redirect to login page
-    window.location.href = '/login';
+    // Make API call to backend to handle server-side logout if needed
+    fetch('/api/logout', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Clear all session storage
+            sessionStorage.clear();
+
+            // Redirect to login page
+            window.location.href = '/login';
+        } else {
+            console.error('Logout failed:', data.message);
+            // Still clear session and redirect even if API call fails
+            sessionStorage.clear();
+            window.location.href = '/login';
+        }
+    })
+    .catch(error => {
+        console.error('Error during logout API call:', error);
+        // Still clear session and redirect even if API call fails
+        sessionStorage.clear();
+        window.location.href = '/login';
+    });
 }
 
 // Function to setup logout confirmation functionality
