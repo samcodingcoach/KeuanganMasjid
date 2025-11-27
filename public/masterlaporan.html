@@ -65,8 +65,58 @@
                     <div class="tab-content" id="reportTabsContent">
                         <!-- Jurnal Tab Content -->
                         <div class="tab-pane fade show active" id="jurnal" role="tabpanel" aria-labelledby="jurnal-tab">
-                            <div class="p-3 bg-light rounded-3 shadow-sm">
-                                <p>Isi tab Jurnal akan ditampilkan di sini.</p>
+                            <div class="card border-0 shadow-sm rounded-3">
+                                <div class="card-header d-flex justify-content-between align-items-center border-0 py-3" style="background: linear-gradient(180deg, #075E54 0%, #128C7E 100%); border-radius: 10px 10px 0 0 !important;">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-journal me-2 text-white"></i>
+                                        <h5 class="card-title mb-0 text-white">Laporan Jurnal</h5>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <div class="form-floating">
+                                                <input type="date" class="form-control" id="tanggalAwalJurnal" value="">
+                                                <label for="tanggalAwalJurnal">Tanggal Awal</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-floating">
+                                                <input type="date" class="form-control" id="tanggalAkhirJurnal" value="">
+                                                <label for="tanggalAkhirJurnal">Tanggal Akhir</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-floating">
+                                                <input type="text" class="form-control" id="namaKategoriJurnal" placeholder="Cari nama kategori">
+                                                <label for="namaKategoriJurnal">Nama Kategori</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button class="btn btn-whatsapp w-100 h-100" id="btnFilterJurnal">
+                                                <i class="bi bi-funnel me-1"></i>Filter
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="table-responsive">
+                                        <table class="table table-hover mb-0" id="jurnal-table">
+                                            <thead class="border-0 bg-light">
+                                                <tr>
+                                                    <th scope="col" class="border-0" style="padding: 15px 20px; width: 60px;">No</th>
+                                                    <th scope="col" class="border-0" style="padding: 15px 20px; width: 12%;">Tanggal</th>
+                                                    <th scope="col" class="border-0" style="padding: 15px 20px; width: auto;">Keterangan</th>
+                                                    <th scope="col" class="border-0 text-end" style="padding: 15px 20px; width: 12%;">Debet</th>
+                                                    <th scope="col" class="border-0 text-end" style="padding: 15px 20px; width: 12%;">Kredit</th>
+                                                    <th scope="col" class="border-0 text-end" style="padding: 15px 20px; width: 12%;">Saldo</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- Data akan diisi oleh JavaScript -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -97,5 +147,108 @@
     <script src="/js/sidebar-loader.js"></script>
     <!-- Custom JS -->
     <script src="/js/admin.js"></script>
+
+    <script>
+        // Function to format currency
+        function formatCurrency(amount) {
+            if (amount === null || amount === undefined) return 'Rp 0';
+            return 'Rp ' + parseFloat(amount).toLocaleString('id-ID');
+        }
+
+        // Function to format date
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('id-ID', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+        }
+
+        // Function to set default dates to current month
+        function setDefaultDates() {
+            const today = new Date();
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+
+            const firstDayFormatted = firstDay.toISOString().split('T')[0];
+            const todayFormatted = today.toISOString().split('T')[0];
+
+            document.getElementById('tanggalAwalJurnal').value = firstDayFormatted;
+            document.getElementById('tanggalAkhirJurnal').value = todayFormatted;
+        }
+
+        // Function to load jurnal data
+        async function loadJurnalData(page = 1) {
+            const tanggalAwal = document.getElementById('tanggalAwalJurnal').value;
+            const tanggalAkhir = document.getElementById('tanggalAkhirJurnal').value;
+            const namaKategori = document.getElementById('namaKategoriJurnal').value;
+
+            try {
+                // Build query parameters - using ts and tf as per API implementation
+                const params = new URLSearchParams();
+
+                if (tanggalAwal) params.append('ts', tanggalAwal);
+                if (tanggalAkhir) params.append('tf', tanggalAkhir);
+                // Note: namaKategori not supported in the current API, but we can implement server-side filtering if needed
+
+                const response = await fetch(`/api/laporan.gl?${params}`);
+                const result = await response.json();
+
+                const tbody = document.querySelector('#jurnal-table tbody');
+                tbody.innerHTML = '';
+
+                if (result.status === 'success' && result.data && result.data.length > 0) {
+                    result.data.forEach((item, index) => {
+                        const row = document.createElement('tr');
+
+                        // Format the row according to the actual API response structure
+                        row.innerHTML = `
+                            <td class="align-middle" style="padding: 15px 20px;">${((page - 1) * 10) + index + 1}</td>
+                            <td class="align-middle" style="padding: 15px 20px;">${item.tanggal || ''}</td>
+                            <td class="align-middle" style="padding: 15px 20px;">
+                                ${item.nama_kategori || ''}<br>
+                                <small class="text-muted">${item.ket || ''}</small>
+                                <br><small class="text-muted">Sumber: ${item.sumber || ''}</small>
+                            </td>
+                            <td class="align-middle text-end" style="padding: 15px 20px;">${formatCurrency(item.debet)}</td>
+                            <td class="align-middle text-end" style="padding: 15px 20px;">${formatCurrency(item.kredit)}</td>
+                            <td class="align-middle text-end" style="padding: 15px 20px;">${formatCurrency(item.saldo)}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                } else {
+                    // Show no data row
+                    const row = document.createElement('tr');
+                    row.innerHTML = `<td colspan="6" class="text-center py-4">Tidak ada data ditemukan</td>`;
+                    tbody.appendChild(row);
+                }
+
+                // Note: The current API doesn't return pagination, so we'll skip pagination update for now
+                // If pagination is needed in the future, it would need to be added to the API
+
+            } catch (error) {
+                console.error('Error loading jurnal data:', error);
+
+                // Show error message in table
+                const tbody = document.querySelector('#jurnal-table tbody');
+                tbody.innerHTML = '';
+                const row = document.createElement('tr');
+                row.innerHTML = `<td colspan="6" class="text-center py-4 text-danger">Terjadi kesalahan saat memuat data: ${error.message}</td>`;
+                tbody.appendChild(row);
+            }
+        }
+
+        // Event listener for filter button
+        document.getElementById('btnFilterJurnal').addEventListener('click', function() {
+            loadJurnalData(1);  // Load first page after filter
+        });
+
+        // Load data when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            setDefaultDates(); // Set default dates to current month
+            loadJurnalData(1);
+        });
+    </script>
 </body>
 </html>
