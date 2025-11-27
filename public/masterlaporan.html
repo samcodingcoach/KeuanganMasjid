@@ -198,7 +198,7 @@
 
                 if (tanggalAwal) params.append('ts', tanggalAwal);
                 if (tanggalAkhir) params.append('tf', tanggalAkhir);
-                // Note: namaKategori not supported in the current API, but we can implement server-side filtering if needed
+                if (namaKategori) params.append('keyword', namaKategori);
 
                 const response = await fetch(`/api/laporan.gl?${params}`);
                 const result = await response.json();

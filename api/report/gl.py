@@ -9,6 +9,7 @@ def get_general_ledger():
         # Get date parameters - using ts and tf as per your request
         tanggal_awal = request.args.get('ts')
         tanggal_akhir = request.args.get('tf')
+        keyword = request.args.get('keyword')
 
         # If no dates provided, default to current month
         if not tanggal_awal or not tanggal_akhir:
@@ -29,18 +30,35 @@ def get_general_ledger():
         # Using Supabase client to fetch data
         # We need to join multiple tables: transaksi_detail, kategori_transaksi, transaksi, and akun_kas_bank
 
-        # First, get all transaksi_detail records within date range
-        detail_response = (
-            supabase.table('transaksi_detail')
-            .select(
-                'id_detail, created_at, subtotal, deskripsi, id_kategori, transaksi!inner(id_transaksi, id_akun)'
-            )
-            .gte('created_at', tanggal_awal)
-            .lte('created_at', tanggal_akhir)
-            .order('created_at', desc=False)
-            .order('id_transaksi', desc=False)
-            .order('id_detail', desc=False)
-        ).execute()
+        # Build query for transaksi_detail records
+        query = supabase.table('transaksi_detail').select(
+            'id_detail, created_at, subtotal, deskripsi, id_kategori, transaksi!inner(id_transaksi, id_akun)'
+        ).gte('created_at', tanggal_awal).lte('created_at', tanggal_akhir)
+
+        # Add keyword filter if provided
+        if keyword:
+            # First get the category IDs that match the search term
+            category_response = (
+                supabase.table('kategori_transaksi')
+                .select('id_kategori')
+                .ilike('nama_kategori', f'%{keyword}%')
+            ).execute()
+
+            if category_response.data:
+                category_ids = [cat['id_kategori'] for cat in category_response.data]
+                if category_ids:
+                    query = query.in_('id_kategori', category_ids)
+            else:
+                # If no matching categories found, return empty result
+                return jsonify({
+                    'status': 'success',
+                    'data': [],
+                    'ts': tanggal_awal,
+                    'tf': tanggal_akhir
+                }), 200
+
+        query = query.order('created_at', desc=False).order('id_transaksi', desc=False).order('id_detail', desc=False)
+        detail_response = query.execute()
 
         if not detail_response.data:
             return jsonify({
