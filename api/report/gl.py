@@ -98,15 +98,30 @@ def get_general_ledger():
             created_at = datetime.fromisoformat(detail['created_at'].replace('Z', '+00:00'))
             formatted_date = created_at.strftime('%d %b %Y, %H:%M')
 
-            # Create the record
+            # Create the record - handling None values in sumber
+            nama_akun = account_info.get('nama_akun', '') or ''
+            no_referensi = account_info.get('no_referensi', '') or ''
+            nama_bank = account_info.get('nama_bank', '') or ''
+
+            # Build sumber string, avoiding None values
+            parts = []
+            if nama_akun:
+                parts.append(nama_akun)
+            if no_referensi:
+                parts.append(f"({no_referensi})")
+            if nama_bank:
+                parts.append(nama_bank)
+
+            sumber = ' '.join(parts) if parts else ''
+
             record = {
                 'tanggal': formatted_date,
-                'sumber': f"{account_info.get('nama_akun', '')} ({account_info.get('no_referensi', '')}) {account_info.get('nama_bank', '')}".strip(),
-                'nama_kategori': category_info.get('nama_kategori', ''),
+                'sumber': sumber,
+                'nama_kategori': category_info.get('nama_kategori', '') or '',
                 'debet': debet,
                 'kredit': kredit,
                 'saldo': running_balance,
-                'ket': detail.get('deskripsi', '')
+                'ket': detail.get('deskripsi', '') or ''
             }
             data.append(record)
 
