@@ -65,6 +65,7 @@ from api.bayar_fitrah.new import create_pembayaran_fitrah
 from api.bayar_fitrah.delete import delete_pembayaran_fitrah
 from api.beranda.tx_bulan import get_monthly_transactions_by_category
 from api.beranda.aktifitas import handle_beranda_aktifitas
+from api.report.gl import gl_bp
 
 # Initialize Supabase client
 supabase_url = os.getenv("SUPABASE_URL")
@@ -78,6 +79,15 @@ else:
     print(f"Supabase Key: {supabase_key[:20]}...")  # Print sebagian key saja
 
 supabase: Client = create_client(supabase_url, supabase_key)
+
+# Register blueprints
+app.register_blueprint(gl_bp, url_prefix='/api/laporan')  # This creates /api/laporan/gl
+
+# Additional route to match exact requirement /api/laporan.gl
+@app.route('/api/laporan.gl', methods=['GET'])
+def general_ledger_report():
+    from api.report.gl import get_general_ledger
+    return get_general_ledger()
 
 
 
