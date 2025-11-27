@@ -390,6 +390,10 @@ def pemasukan_page():
 def pengeluaran_page():
     return send_from_directory('public', 'pengeluaran.html')
 
+@app.route('/laporan')
+def laporan_page():
+    return send_from_directory('public', 'masterlaporan.html')
+
 @app.route('/test')
 def test_page():
     return send_from_directory('public', 'test_sidebar.html')
@@ -435,4 +439,4 @@ def send_components(path):
     return send_from_directory('public/components', path)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0',port=5000, debug=True)
+    app.run(host='0.0.0.0',port=5001, debug=True)
