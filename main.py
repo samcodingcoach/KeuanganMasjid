@@ -66,6 +66,7 @@ from api.bayar_fitrah.delete import delete_pembayaran_fitrah
 from api.beranda.tx_bulan import get_monthly_transactions_by_category
 from api.beranda.aktifitas import handle_beranda_aktifitas
 from api.report.gl import gl_bp
+from api.report.aruskas import aruskas_bp
 
 # Initialize Supabase client
 supabase_url = os.getenv("SUPABASE_URL")
@@ -82,12 +83,19 @@ supabase: Client = create_client(supabase_url, supabase_key)
 
 # Register blueprints
 app.register_blueprint(gl_bp, url_prefix='/api/laporan')  # This creates /api/laporan/gl
+app.register_blueprint(aruskas_bp, url_prefix='/api/laporan')  # This creates /api/laporan/aruskas
 
 # Additional route to match exact requirement /api/laporan.gl
 @app.route('/api/laporan.gl', methods=['GET'])
 def general_ledger_report():
     from api.report.gl import get_general_ledger
     return get_general_ledger()
+
+# Additional route to match exact requirement /api/laporan.aruskas
+@app.route('/api/laporan.aruskas', methods=['GET'])
+def cash_flow_report():
+    from api.report.aruskas import get_aruskas
+    return get_aruskas()
 
 
 
