@@ -52,8 +52,8 @@
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="tab2-tab" data-bs-toggle="tab" data-bs-target="#tab2" type="button" role="tab" aria-controls="tab2" aria-selected="false">
-                                Tab 2
+                            <button class="nav-link" id="aruskas-tab" data-bs-toggle="tab" data-bs-target="#aruskas" type="button" role="tab" aria-controls="aruskas" aria-selected="false">
+                                Arus Kas
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
@@ -120,10 +120,57 @@
                             </div>
                         </div>
 
-                        <!-- Tab 2 Content -->
-                        <div class="tab-pane fade" id="tab2" role="tabpanel" aria-labelledby="tab2-tab">
-                            <div class="p-3 bg-light rounded-3 shadow-sm">
-                                <p>Isi tab 2 akan ditampilkan di sini.</p>
+                        <!-- Arus Kas Tab Content -->
+                        <div class="tab-pane fade" id="aruskas" role="tabpanel" aria-labelledby="aruskas-tab">
+                            <div class="card border-0 shadow-sm rounded-3">
+                                <div class="card-header d-flex justify-content-between align-items-center border-0 py-3" style="background: linear-gradient(180deg, #075E54 0%, #128C7E 100%); border-radius: 10px 10px 0 0 !important;">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-cash-coin me-2 text-white"></i>
+                                        <h5 class="card-title mb-0 text-white">Laporan Arus Kas</h5>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <div class="form-floating">
+                                                <input type="date" class="form-control" id="tanggalAwalArusKas" value="">
+                                                <label for="tanggalAwalArusKas">Tanggal Awal</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-floating">
+                                                <input type="date" class="form-control" id="tanggalAkhirArusKas" value="">
+                                                <label for="tanggalAkhirArusKas">Tanggal Akhir</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-floating">
+                                                <input type="text" class="form-control" id="namaKategoriArusKas" placeholder="Cari nama kategori">
+                                                <label for="namaKategoriArusKas">Nama Kategori</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button class="btn btn-whatsapp w-100 h-100" id="btnFilterArusKas">
+                                                <i class="bi bi-funnel me-1"></i>Filter
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="table-responsive">
+                                        <table class="table table-hover mb-0" id="aruskas-table">
+                                            <thead class="border-bottom bg-light">
+                                                <tr>
+                                                    <th scope="col" class="border-0" style="padding: 15px 20px; width: 60px;">No</th>
+                                                    <th scope="col" class="border-0" style="padding: 15px 20px; width: auto;">Keterangan</th>
+                                                    <th scope="col" class="border-0 text-end" style="padding: 15px 20px; width: 15%;">Jumlah</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- Data akan diisi oleh JavaScript -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -282,10 +329,113 @@
             loadJurnalData(1);  // Load first page after filter
         });
 
+        // Function to set default dates for Arus Kas
+        function setDefaultDatesArusKas() {
+            const today = new Date();
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+
+            const firstDayFormatted = firstDay.toISOString().split('T')[0];
+            const todayFormatted = today.toISOString().split('T')[0];
+
+            document.getElementById('tanggalAwalArusKas').value = firstDayFormatted;
+            document.getElementById('tanggalAkhirArusKas').value = todayFormatted;
+        }
+
+        // Function to load arus kas data
+        async function loadArusKasData() {
+            const tanggalAwal = document.getElementById('tanggalAwalArusKas').value;
+            const tanggalAkhir = document.getElementById('tanggalAkhirArusKas').value;
+            const namaKategori = document.getElementById('namaKategoriArusKas').value;
+
+            try {
+                // Build query parameters
+                const params = new URLSearchParams();
+
+                if (tanggalAwal) params.append('ts', tanggalAwal);
+                if (tanggalAkhir) params.append('tf', tanggalAkhir);
+                if (namaKategori) params.append('keyword', namaKategori);
+
+                const response = await fetch(`/api/laporan/aruskas?${params}`);
+                const result = await response.json();
+
+                const tbody = document.querySelector('#aruskas-table tbody');
+                tbody.innerHTML = '';
+
+                if (result.status === 'success' && result.data && result.data.length > 0) {
+                    let rowNumber = 1;
+
+                    result.data.forEach((item, index) => {
+                        const row = document.createElement('tr');
+
+                        if (item.type === 'group') {
+                            // Group header row
+                            row.innerHTML = `
+                                <td class="align-middle" style="padding: 15px 20px; font-weight: bold;">&nbsp;</td>
+                                <td class="align-middle" style="padding: 15px 20px; font-weight: bold; background-color: #e9ecef;">
+                                    <strong>${item.name}</strong>
+                                </td>
+                                <td class="align-middle text-end" style="padding: 15px 20px; font-weight: bold; background-color: #e9ecef;"></td>
+                            `;
+                        } else if (item.type === 'subcategory') {
+                            // Subcategory row (income/expense)
+                            const formattedAmount = formatCurrency(item.subtotal);
+                            row.innerHTML = `
+                                <td class="align-middle" style="padding: 15px 20px;">${rowNumber++}</td>
+                                <td class="align-middle" style="padding: 15px 20px; padding-left: 30px;">${item.name}</td>
+                                <td class="align-middle text-end" style="padding: 15px 20px;">${formattedAmount}</td>
+                            `;
+                        } else if (item.type === 'net_total') {
+                            // Net total row for account
+                            const formattedAmount = formatCurrency(item.total);
+                            row.style.cssText = 'background-color: #f8f9fa; font-weight: bold;';
+                            row.innerHTML = `
+                                <td class="align-middle" style="padding: 15px 20px;">&nbsp;</td>
+                                <td class="align-middle" style="padding: 15px 20px; text-align: right;">${item.label}:</td>
+                                <td class="align-middle text-end" style="padding: 15px 20px;">${formattedAmount}</td>
+                            `;
+                        } else if (item.type === 'final_total') {
+                            // Final total row
+                            const formattedAmount = formatCurrency(item.total);
+                            row.style.cssText = 'background-color: #e9ecef; font-weight: bold; font-size: 1.1em;';
+                            row.innerHTML = `
+                                <td class="align-middle" style="padding: 15px 20px;">&nbsp;</td>
+                                <td class="align-middle" style="padding: 15px 20px; text-align: right;">${item.label}:</td>
+                                <td class="align-middle text-end" style="padding: 15px 20px;">${formattedAmount}</td>
+                            `;
+                        }
+
+                        tbody.appendChild(row);
+                    });
+                } else {
+                    // Show no data row
+                    const row = document.createElement('tr');
+                    row.innerHTML = `<td colspan="3" class="text-center py-4">Tidak ada data ditemukan</td>`;
+                    tbody.appendChild(row);
+                }
+
+            } catch (error) {
+                console.error('Error loading arus kas data:', error);
+
+                // Show error message in table
+                const tbody = document.querySelector('#aruskas-table tbody');
+                tbody.innerHTML = '';
+                const row = document.createElement('tr');
+                row.innerHTML = `<td colspan="3" class="text-center py-4 text-danger">Terjadi kesalahan saat memuat data: ${error.message}</td>`;
+                tbody.appendChild(row);
+            }
+        }
+
+        // Event listener for arus kas filter button
+        document.getElementById('btnFilterArusKas').addEventListener('click', function() {
+            loadArusKasData();
+        });
+
         // Load data when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            setDefaultDates(); // Set default dates to current month
+            setDefaultDates(); // Set default dates to current month for jurnal
+            setDefaultDatesArusKas(); // Set default dates for arus kas
             loadJurnalData(1);
+            loadArusKasData();
         });
     </script>
 </body>
