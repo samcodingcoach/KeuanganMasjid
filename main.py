@@ -63,6 +63,7 @@ from api.harga_fitrah.list import get_harga_fitrah_list
 from api.bayar_fitrah.list import get_bayar_fitrah_list
 from api.bayar_fitrah.new import create_pembayaran_fitrah
 from api.bayar_fitrah.delete import delete_pembayaran_fitrah
+from api.penyaluran_fitrah.new import create_penyaluran_fitrah
 from api.beranda.tx_bulan import get_monthly_transactions_by_category
 from api.beranda.aktifitas import handle_beranda_aktifitas
 from api.report.gl import gl_bp
@@ -304,6 +305,10 @@ def new_bayar_fitrah():
 @app.route('/api/bayarfitrah.delete', methods=['POST'])
 def delete_bayar_fitrah():
     return delete_pembayaran_fitrah(supabase, request)
+
+@app.route('/api/salurfitrah.new', methods=['POST'])
+def new_penyaluran_fitrah():
+    return create_penyaluran_fitrah(supabase, request)
 
 @app.route('/api/beranda.tx-bulan', methods=['GET'])
 def tx_bulan_beranda():
