@@ -185,25 +185,19 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="row mb-3">
-                                        <div class="col-md-3">
+                                        <div class="col-md-4">
                                             <div class="form-floating">
                                                 <input type="date" class="form-control" id="tanggalAwalRugiLaba" value="">
                                                 <label for="tanggalAwalRugiLaba">Tanggal Awal</label>
                                             </div>
                                         </div>
-                                        <div class="col-md-3">
+                                        <div class="col-md-4">
                                             <div class="form-floating">
                                                 <input type="date" class="form-control" id="tanggalAkhirRugiLaba" value="">
                                                 <label for="tanggalAkhirRugiLaba">Tanggal Akhir</label>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
-                                            <div class="form-floating">
-                                                <input type="text" class="form-control" id="namaKategoriRugiLaba" placeholder="Cari nama kategori">
-                                                <label for="namaKategoriRugiLaba">Nama Kategori</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-2">
                                             <button class="btn btn-whatsapp w-100 h-100" id="btnFilterRugiLaba">
                                                 <i class="bi bi-funnel me-1"></i>Filter
                                             </button>
@@ -499,7 +493,6 @@
         async function loadRugiLabaData() {
             const tanggalAwal = document.getElementById('tanggalAwalRugiLaba').value;
             const tanggalAkhir = document.getElementById('tanggalAkhirRugiLaba').value;
-            const namaKategori = document.getElementById('namaKategoriRugiLaba').value;
 
             try {
                 // Build query parameters
@@ -507,7 +500,6 @@
 
                 if (tanggalAwal) params.append('ts', tanggalAwal);
                 if (tanggalAkhir) params.append('tf', tanggalAkhir);
-                if (namaKategori) params.append('keyword', namaKategori);
 
                 const response = await fetch(`/api/laporan.rl?${params}`);
                 const result = await response.json();
