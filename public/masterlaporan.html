@@ -265,14 +265,11 @@
                                                 <tr>
                                                     <th scope="col" class="border-0" style="padding: 15px 20px; width: 60px;">No</th>
                                                     <th scope="col" class="border-0" style="padding: 15px 20px;">Mode</th>
-                                                    <th scope="col" class="border-0" style="padding: 15px 20px;">Tanggal</th>
-                                                    <th scope="col" class="border-0" style="padding: 15px 20px;">Tahun Hijriah</th>
-                                                    <th scope="col" class="border-0" style="padding: 15px 20px;">Penanggung Jawab</th>
                                                     <th scope="col" class="border-0" style="padding: 15px 20px;">Keterangan</th>
-                                                    <th scope="col" class="border-0" style="padding: 15px 20px;">Jenis</th>
                                                     <th scope="col" class="border-0" style="padding: 15px 20px;">Akun</th>
                                                     <th scope="col" class="border-0 text-end" style="padding: 15px 20px; width: 12%;">Nominal</th>
                                                     <th scope="col" class="border-0 text-end" style="padding: 15px 20px; width: 12%;">Beras (Kg)</th>
+                                                    <th scope="col" class="border-0 text-center" style="padding: 15px 20px; width: 100px;">Action</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -305,7 +302,7 @@
             return 'Rp ' + parseFloat(amount).toLocaleString('id-ID');
         }
 
-        // Function to format date
+        // Function to format date as dd-MMM-yyyy
         function formatDate(dateString) {
             if (!dateString) return '';
             // Check if dateString is already formatted (like "01 Jan 2025, 10:30")
@@ -317,11 +314,13 @@
             if (isNaN(date.getTime())) {
                 return dateString; // Return as is if can't parse
             }
-            return date.toLocaleDateString('id-ID', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric'
-            });
+
+            // Format as dd-MMM-yyyy (e.g., 02-Dec-2025)
+            const day = String(date.getDate()).padStart(2, '0');
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const month = months[date.getMonth()];
+            const year = date.getFullYear();
+            return `${day}-${month}-${year}`;
         }
 
         // Function to set default dates to current month
@@ -705,56 +704,129 @@
                 tbody.innerHTML = '';
 
                 if (result.success && result.data && result.data.length > 0) {
+                    // Group data by Tahun Hijriah, then Tanggal, then Jenis
+                    const grouped = {};
+
+                    result.data.forEach(item => {
+                        const tahunHijriah = item.tahun_hijriah || 'N/A';
+                        const tanggal = formatDate(item.created_at) || 'N/A';
+                        const jenis = item.nama_jenis || 'N/A';
+
+                        if (!grouped[tahunHijriah]) {
+                            grouped[tahunHijriah] = {};
+                        }
+
+                        if (!grouped[tahunHijriah][tanggal]) {
+                            grouped[tahunHijriah][tanggal] = {};
+                        }
+
+                        if (!grouped[tahunHijriah][tanggal][jenis]) {
+                            grouped[tahunHijriah][tanggal][jenis] = [];
+                        }
+
+                        grouped[tahunHijriah][tanggal][jenis].push(item);
+                    });
+
+                    let rowNum = 1;
                     let totalNominal = 0;
                     let totalBeras = 0;
 
-                    result.data.forEach((item, index) => {
-                        const row = document.createElement('tr');
-
-                        // Add to totals
-                        totalNominal += parseFloat(item.nominal || 0);
-                        totalBeras += parseFloat(item.beras || 0);
-
-                        row.innerHTML = `
-                            <td class="align-middle" style="padding: 15px 20px;">${index + 1}</td>
-                            <td class="align-middle" style="padding: 15px 20px;">${item.Mode || ''}</td>
-                            <td class="align-middle" style="padding: 15px 20px;">${formatDate(item.created_at) || ''}</td>
-                            <td class="align-middle" style="padding: 15px 20px;">${item.tahun_hijriah || ''}</td>
-                            <td class="align-middle" style="padding: 15px 20px;">${item.penanggung_jawab || ''}</td>
-                            <td class="align-middle" style="padding: 15px 20px;">${item.keterangan || ''}</td>
-                            <td class="align-middle" style="padding: 15px 20px;">${item.nama_jenis || ''}</td>
-                            <td class="align-middle" style="padding: 15px 20px;">${item.nama_akun || ''}</td>
-                            <td class="align-middle text-end" style="padding: 15px 20px;">${formatCurrency(item.nominal || 0)}</td>
-                            <td class="align-middle text-end" style="padding: 15px 20px;">${item.beras || 0}</td>
+                    // Iterate through grouped data
+                    for (const tahunHijriah in grouped) {
+                        // Add year header row
+                        const tahunHeader = document.createElement('tr');
+                        tahunHeader.style.cssText = 'background-color: #e9ecef; font-weight: bold;';
+                        tahunHeader.innerHTML = `
+                            <td colspan="7" class="p-3">${tahunHijriah}</td>
                         `;
-                        tbody.appendChild(row);
-                    });
+                        tbody.appendChild(tahunHeader);
+
+                        for (const tanggal in grouped[tahunHijriah]) {
+                            // Add date header row - without "Tanggal:" caption and with light gray background
+                            const tanggalHeader = document.createElement('tr');
+                            tanggalHeader.style.cssText = 'background-color: #f0f0f0; font-weight: bold;'; // Light gray background
+                            tanggalHeader.innerHTML = `
+                                <td colspan="7" class="p-2" style="padding-left: 15px !important;">${tanggal}</td>
+                            `;
+                            tbody.appendChild(tanggalHeader);
+
+                            for (const jenis in grouped[tahunHijriah][tanggal]) {
+                                // Add jenis header row with more indentation
+                                const jenisHeader = document.createElement('tr');
+                                jenisHeader.style.cssText = 'background-color: #f8f9fa;';
+                                jenisHeader.innerHTML = `
+                                    <td colspan="7" class="p-2" style="font-weight: bold; padding-left: 30px !important;">${jenis}</td>
+                                `;
+                                tbody.appendChild(jenisHeader);
+
+                                // Add data rows for this group
+                                const items = grouped[tahunHijriah][tanggal][jenis];
+                                items.forEach(item => {
+                                    const row = document.createElement('tr');
+
+                                    row.innerHTML = `
+                                        <td class="align-middle" style="padding: 15px 20px;">${rowNum++}</td>
+                                        <td class="align-middle" style="padding: 15px 20px;">${item.Mode || ''}</td>
+                                        <td class="align-middle" style="padding: 15px 20px;">${item.keterangan || ''}</td>
+                                        <td class="align-middle" style="padding: 15px 20px;">${item.nama_akun || ''}</td>
+                                        <td class="align-middle text-end" style="padding: 15px 20px;">${formatCurrency(item.nominal || 0)}</td>
+                                        <td class="align-middle text-end" style="padding: 15px 20px;">${item.beras || 0}</td>
+                                        <td class="align-middle text-center" style="padding: 15px 20px;">
+                                            <button class="btn btn-sm btn-outline-primary btn-detail" data-item='${JSON.stringify(item).replace(/'/g, '&apos;')}'>
+                                                <i class="bi bi-eye"></i> Detail
+                                            </button>
+                                        </td>
+                                    `;
+                                    tbody.appendChild(row);
+
+                                    // Update totals based on mode (Pembayaran adds, Penyaluran subtracts)
+                                    if (item.Mode === 'Pembayaran') {
+                                        totalNominal += parseFloat(item.nominal || 0);
+                                        totalBeras += parseFloat(item.beras || 0);
+                                    } else if (item.Mode === 'Penyaluran') {
+                                        totalNominal -= parseFloat(item.nominal || 0);
+                                        totalBeras -= parseFloat(item.beras || 0);
+                                    }
+                                });
+                            }
+                        }
+                    }
 
                     // Add subtotal row
                     const subtotalRow = document.createElement('tr');
                     subtotalRow.style.cssText = 'background-color: #f8f9fa; font-weight: bold;';
                     subtotalRow.innerHTML = `
-                        <td colspan="8" class="text-end" style="padding: 15px 20px;">Subtotal</td>
+                        <td colspan="4" class="text-end" style="padding: 15px 20px;">Subtotal</td>
                         <td class="text-end" style="padding: 15px 20px;">${formatCurrency(totalNominal)}</td>
                         <td class="text-end" style="padding: 15px 20px;">${totalBeras.toFixed(2)}</td>
+                        <td class="text-center" style="padding: 15px 20px;"></td>
                     `;
                     tbody.appendChild(subtotalRow);
                 } else {
                     // Show no data row
                     const row = document.createElement('tr');
-                    row.innerHTML = `<td colspan="10" class="text-center py-4">Tidak ada data ditemukan</td>`;
+                    row.innerHTML = `<td colspan="7" class="text-center py-4">Tidak ada data ditemukan</td>`;
                     tbody.appendChild(row);
 
                     // Add empty subtotal row even when no data
                     const subtotalRow = document.createElement('tr');
                     subtotalRow.style.cssText = 'background-color: #f8f9fa; font-weight: bold;';
                     subtotalRow.innerHTML = `
-                        <td colspan="8" class="text-end" style="padding: 15px 20px;">Subtotal</td>
+                        <td colspan="4" class="text-end" style="padding: 15px 20px;">Subtotal</td>
                         <td class="text-end" style="padding: 15px 20px;">${formatCurrency(0)}</td>
                         <td class="text-end" style="padding: 15px 20px;">0.00</td>
+                        <td class="text-center" style="padding: 15px 20px;"></td>
                     `;
                     tbody.appendChild(subtotalRow);
                 }
+
+                // Add event listeners to detail buttons
+                document.querySelectorAll('.btn-detail').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const item = JSON.parse(this.getAttribute('data-item'));
+                        showFitrahDetailModal(item);
+                    });
+                });
 
             } catch (error) {
                 console.error('Error loading fitrah data:', error);
@@ -763,9 +835,64 @@
                 const tbody = document.querySelector('#fitrah-table tbody');
                 tbody.innerHTML = '';
                 const row = document.createElement('tr');
-                row.innerHTML = `<td colspan="10" class="text-center py-4 text-danger">Terjadi kesalahan saat memuat data: ${error.message}</td>`;
+                row.innerHTML = `<td colspan="7" class="text-center py-4 text-danger">Terjadi kesalahan saat memuat data: ${error.message}</td>`;
                 tbody.appendChild(row);
             }
+        }
+
+        // Function to show Fitrah detail modal
+        function showFitrahDetailModal(item) {
+            const modalBody = document.getElementById('fitrah-detail-content');
+
+            // Format the detail content
+            modalBody.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Mode:</label>
+                            <p class="mb-1">${item.Mode || ''}</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Tanggal:</label>
+                            <p class="mb-1">${formatDate(item.created_at) || ''}</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Tahun Hijriah:</label>
+                            <p class="mb-1">${item.tahun_hijriah || ''}</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Penanggung Jawab:</label>
+                            <p class="mb-1">${item.penanggung_jawab || ''}</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Keterangan:</label>
+                            <p class="mb-1">${item.keterangan || ''}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Jenis:</label>
+                            <p class="mb-1">${item.nama_jenis || ''}</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Akun:</label>
+                            <p class="mb-1">${item.nama_akun || ''}</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Nominal:</label>
+                            <p class="mb-1">${formatCurrency(item.nominal || 0)}</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Beras (Kg):</label>
+                            <p class="mb-1">${item.beras || 0}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Show the modal
+            const modal = new bootstrap.Modal(document.getElementById('fitrahDetailModal'));
+            modal.show();
         }
 
         // Event listener for fitrah filter button
@@ -785,5 +912,25 @@
             loadFitrahData(); // Load fitrah data
         });
     </script>
+
+    <!-- Modal for Fitrah Data Detail -->
+    <div class="modal fade" id="fitrahDetailModal" tabindex="-1" aria-labelledby="fitrahDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" style="background: linear-gradient(180deg, #075E54 0%, #128C7E 100%);">
+                    <h5 class="modal-title text-white" id="fitrahDetailModalLabel">Detail Data Fitrah</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="fitrah-detail-content">
+                        <!-- Detail content will be populated by JavaScript -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
