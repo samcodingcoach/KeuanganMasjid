@@ -733,16 +733,17 @@
 
                     // Iterate through grouped data
                     for (const tahunHijriah in grouped) {
-                        // Add year header row
+                        // Add year header row with the icon and year only
                         const tahunHeader = document.createElement('tr');
                         tahunHeader.style.cssText = 'background-color: #e9ecef; font-weight: bold;';
                         tahunHeader.innerHTML = `
-                            <td colspan="7" class="p-3">${tahunHijriah}</td>
+                            <td colspan="6" class="p-3"><i class="bi bi-calendar me-2"></i>${tahunHijriah}</td>
+                            <td class="p-3 text-end" style="font-weight: bold;">&nbsp;</td>
                         `;
                         tbody.appendChild(tahunHeader);
 
                         for (const tanggal in grouped[tahunHijriah]) {
-                            // Add date header row - without "Tanggal:" caption and with light gray background
+                            // Add date header row - with only the date (without year header)
                             const tanggalHeader = document.createElement('tr');
                             tanggalHeader.style.cssText = 'background-color: #f0f0f0; font-weight: bold;'; // Light gray background
                             tanggalHeader.innerHTML = `
@@ -751,7 +752,7 @@
                             tbody.appendChild(tanggalHeader);
 
                             for (const jenis in grouped[tahunHijriah][tanggal]) {
-                                // Add jenis header row with more indentation
+                                // Add jenis header row - left-aligned
                                 const jenisHeader = document.createElement('tr');
                                 jenisHeader.style.cssText = 'background-color: #f8f9fa;';
                                 jenisHeader.innerHTML = `
@@ -765,13 +766,13 @@
                                     const row = document.createElement('tr');
 
                                     row.innerHTML = `
-                                        <td class="align-middle" style="padding: 15px 20px;">${rowNum++}</td>
-                                        <td class="align-middle" style="padding: 15px 20px;">${item.Mode || ''}</td>
-                                        <td class="align-middle" style="padding: 15px 20px;">${item.keterangan || ''}</td>
-                                        <td class="align-middle" style="padding: 15px 20px;">${item.nama_akun || ''}</td>
-                                        <td class="align-middle text-end" style="padding: 15px 20px;">${formatCurrency(item.nominal || 0)}</td>
-                                        <td class="align-middle text-end" style="padding: 15px 20px;">${item.beras || 0}</td>
-                                        <td class="align-middle text-center" style="padding: 15px 20px;">
+                                        <td class="align-middle" style="padding: 15px 10px;">${rowNum++}</td>
+                                        <td class="align-middle" style="padding: 15px 10px;">${item.Mode || ''}</td>
+                                        <td class="align-middle" style="padding: 15px 10px;">${item.keterangan || ''}</td>
+                                        <td class="align-middle" style="padding: 15px 10px;">${item.nama_akun || ''}</td>
+                                        <td class="align-middle text-end" style="padding: 15px 10px;">${formatCurrency(item.nominal || 0)}</td>
+                                        <td class="align-middle text-end" style="padding: 15px 10px;">${item.beras || 0}</td>
+                                        <td class="align-middle text-center" style="padding: 15px 10px;">
                                             <button class="btn btn-sm btn-outline-primary btn-detail" data-item='${JSON.stringify(item).replace(/'/g, '&apos;')}'>
                                                 <i class="bi bi-eye"></i> Detail
                                             </button>
@@ -796,10 +797,10 @@
                     const subtotalRow = document.createElement('tr');
                     subtotalRow.style.cssText = 'background-color: #f8f9fa; font-weight: bold;';
                     subtotalRow.innerHTML = `
-                        <td colspan="4" class="text-end" style="padding: 15px 20px;">Subtotal</td>
-                        <td class="text-end" style="padding: 15px 20px;">${formatCurrency(totalNominal)}</td>
-                        <td class="text-end" style="padding: 15px 20px;">${totalBeras.toFixed(2)}</td>
-                        <td class="text-center" style="padding: 15px 20px;"></td>
+                        <td colspan="4" class="text-end" style="padding: 15px 10px;">Subtotal</td>
+                        <td class="text-end" style="padding: 15px 10px;">${formatCurrency(totalNominal)}</td>
+                        <td class="text-end" style="padding: 15px 10px;">${totalBeras.toFixed(2)}</td>
+                        <td class="text-center" style="padding: 15px 10px;"></td>
                     `;
                     tbody.appendChild(subtotalRow);
                 } else {
@@ -812,10 +813,10 @@
                     const subtotalRow = document.createElement('tr');
                     subtotalRow.style.cssText = 'background-color: #f8f9fa; font-weight: bold;';
                     subtotalRow.innerHTML = `
-                        <td colspan="4" class="text-end" style="padding: 15px 20px;">Subtotal</td>
-                        <td class="text-end" style="padding: 15px 20px;">${formatCurrency(0)}</td>
-                        <td class="text-end" style="padding: 15px 20px;">0.00</td>
-                        <td class="text-center" style="padding: 15px 20px;"></td>
+                        <td colspan="4" class="text-end" style="padding: 15px 10px;">Subtotal</td>
+                        <td class="text-end" style="padding: 15px 10px;">${formatCurrency(0)}</td>
+                        <td class="text-end" style="padding: 15px 10px;">0.00</td>
+                        <td class="text-center" style="padding: 15px 10px;"></td>
                     `;
                     tbody.appendChild(subtotalRow);
                 }
