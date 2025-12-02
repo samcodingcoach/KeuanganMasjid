@@ -61,6 +61,11 @@
                                 Rugi Laba
                             </button>
                         </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="fitrah-tab" data-bs-toggle="tab" data-bs-target="#fitrah" type="button" role="tab" aria-controls="fitrah" aria-selected="false">
+                                Fitrah
+                            </button>
+                        </li>
                     </ul>
                     <div class="tab-content" id="reportTabsContent">
                         <!-- Jurnal Tab Content -->
@@ -210,6 +215,64 @@
                                                 <tr>
                                                     <th scope="col" class="border-0" style="padding: 15px 20px; width: auto;">Keterangan</th>
                                                     <th scope="col" class="border-0 text-end" style="padding: 15px 20px; width: 15%;">Jumlah</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- Data will be filled by JavaScript -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Fitrah Tab Content -->
+                        <div class="tab-pane fade" id="fitrah" role="tabpanel" aria-labelledby="fitrah-tab">
+                            <div class="card border-0 shadow-sm rounded-3">
+                                <div class="card-header d-flex justify-content-between align-items-center border-0 py-3" style="background: linear-gradient(180deg, #075E54 0%, #128C7E 100%); border-radius: 10px 10px 0 0 !important;">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-cash-stack me-2 text-white"></i>
+                                        <h5 class="card-title mb-0 text-white">Laporan Fitrah</h5>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <div class="form-floating">
+                                                <input type="date" class="form-control" id="tanggalAwalFitrah" value="">
+                                                <label for="tanggalAwalFitrah">Tanggal Awal</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-floating">
+                                                <input type="date" class="form-control" id="tanggalAkhirFitrah" value="">
+                                                <label for="tanggalAkhirFitrah">Tanggal Akhir</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <!-- Placeholder for additional filters if needed -->
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button class="btn btn-whatsapp w-100 h-100" id="btnFilterFitrah">
+                                                <i class="bi bi-funnel me-1"></i>Filter
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="table-responsive">
+                                        <table class="table table-hover mb-0" id="fitrah-table">
+                                            <thead class="border-bottom bg-light">
+                                                <tr>
+                                                    <th scope="col" class="border-0" style="padding: 15px 20px; width: 60px;">No</th>
+                                                    <th scope="col" class="border-0" style="padding: 15px 20px;">Mode</th>
+                                                    <th scope="col" class="border-0" style="padding: 15px 20px;">Tanggal</th>
+                                                    <th scope="col" class="border-0" style="padding: 15px 20px;">Tahun Hijriah</th>
+                                                    <th scope="col" class="border-0" style="padding: 15px 20px;">Penanggung Jawab</th>
+                                                    <th scope="col" class="border-0" style="padding: 15px 20px;">Keterangan</th>
+                                                    <th scope="col" class="border-0" style="padding: 15px 20px;">Jenis</th>
+                                                    <th scope="col" class="border-0" style="padding: 15px 20px;">Akun</th>
+                                                    <th scope="col" class="border-0 text-end" style="padding: 15px 20px; width: 12%;">Nominal</th>
+                                                    <th scope="col" class="border-0 text-end" style="padding: 15px 20px; width: 12%;">Beras (Kg)</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -611,14 +674,115 @@
             loadRugiLabaData();
         });
 
+        // Function to set default dates for Fitrah
+        function setDefaultDatesFitrah() {
+            const today = new Date();
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+
+            const firstDayFormatted = firstDay.toISOString().split('T')[0];
+            const todayFormatted = today.toISOString().split('T')[0];
+
+            document.getElementById('tanggalAwalFitrah').value = firstDayFormatted;
+            document.getElementById('tanggalAkhirFitrah').value = todayFormatted;
+        }
+
+        // Function to load fitrah data
+        async function loadFitrahData() {
+            const tanggalAwal = document.getElementById('tanggalAwalFitrah').value;
+            const tanggalAkhir = document.getElementById('tanggalAkhirFitrah').value;
+
+            try {
+                // Build query parameters - using tanggal_awal and tanggal_akhir as per API implementation
+                const params = new URLSearchParams();
+
+                if (tanggalAwal) params.append('tanggal_awal', tanggalAwal);
+                if (tanggalAkhir) params.append('tanggal_akhir', tanggalAkhir);
+
+                const response = await fetch(`/api/laporan.fitrah?${params}`);
+                const result = await response.json();
+
+                const tbody = document.querySelector('#fitrah-table tbody');
+                tbody.innerHTML = '';
+
+                if (result.success && result.data && result.data.length > 0) {
+                    let totalNominal = 0;
+                    let totalBeras = 0;
+
+                    result.data.forEach((item, index) => {
+                        const row = document.createElement('tr');
+
+                        // Add to totals
+                        totalNominal += parseFloat(item.nominal || 0);
+                        totalBeras += parseFloat(item.beras || 0);
+
+                        row.innerHTML = `
+                            <td class="align-middle" style="padding: 15px 20px;">${index + 1}</td>
+                            <td class="align-middle" style="padding: 15px 20px;">${item.Mode || ''}</td>
+                            <td class="align-middle" style="padding: 15px 20px;">${formatDate(item.created_at) || ''}</td>
+                            <td class="align-middle" style="padding: 15px 20px;">${item.tahun_hijriah || ''}</td>
+                            <td class="align-middle" style="padding: 15px 20px;">${item.penanggung_jawab || ''}</td>
+                            <td class="align-middle" style="padding: 15px 20px;">${item.keterangan || ''}</td>
+                            <td class="align-middle" style="padding: 15px 20px;">${item.nama_jenis || ''}</td>
+                            <td class="align-middle" style="padding: 15px 20px;">${item.nama_akun || ''}</td>
+                            <td class="align-middle text-end" style="padding: 15px 20px;">${formatCurrency(item.nominal || 0)}</td>
+                            <td class="align-middle text-end" style="padding: 15px 20px;">${item.beras || 0}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+
+                    // Add subtotal row
+                    const subtotalRow = document.createElement('tr');
+                    subtotalRow.style.cssText = 'background-color: #f8f9fa; font-weight: bold;';
+                    subtotalRow.innerHTML = `
+                        <td colspan="8" class="text-end" style="padding: 15px 20px;">Subtotal</td>
+                        <td class="text-end" style="padding: 15px 20px;">${formatCurrency(totalNominal)}</td>
+                        <td class="text-end" style="padding: 15px 20px;">${totalBeras.toFixed(2)}</td>
+                    `;
+                    tbody.appendChild(subtotalRow);
+                } else {
+                    // Show no data row
+                    const row = document.createElement('tr');
+                    row.innerHTML = `<td colspan="10" class="text-center py-4">Tidak ada data ditemukan</td>`;
+                    tbody.appendChild(row);
+
+                    // Add empty subtotal row even when no data
+                    const subtotalRow = document.createElement('tr');
+                    subtotalRow.style.cssText = 'background-color: #f8f9fa; font-weight: bold;';
+                    subtotalRow.innerHTML = `
+                        <td colspan="8" class="text-end" style="padding: 15px 20px;">Subtotal</td>
+                        <td class="text-end" style="padding: 15px 20px;">${formatCurrency(0)}</td>
+                        <td class="text-end" style="padding: 15px 20px;">0.00</td>
+                    `;
+                    tbody.appendChild(subtotalRow);
+                }
+
+            } catch (error) {
+                console.error('Error loading fitrah data:', error);
+
+                // Show error message in table
+                const tbody = document.querySelector('#fitrah-table tbody');
+                tbody.innerHTML = '';
+                const row = document.createElement('tr');
+                row.innerHTML = `<td colspan="10" class="text-center py-4 text-danger">Terjadi kesalahan saat memuat data: ${error.message}</td>`;
+                tbody.appendChild(row);
+            }
+        }
+
+        // Event listener for fitrah filter button
+        document.getElementById('btnFilterFitrah').addEventListener('click', function() {
+            loadFitrahData();
+        });
+
         // Load data when page loads
         document.addEventListener('DOMContentLoaded', function() {
             setDefaultDates(); // Set default dates to current month for jurnal
             setDefaultDatesArusKas(); // Set default dates for arus kas
             setDefaultDatesRugiLaba(); // Set default dates for rugi laba
+            setDefaultDatesFitrah(); // Set default dates for fitrah
             loadJurnalData(1);
             loadArusKasData();
             loadRugiLabaData();
+            loadFitrahData(); // Load fitrah data
         });
     </script>
 </body>
