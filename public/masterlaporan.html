@@ -57,8 +57,8 @@
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="tab3-tab" data-bs-toggle="tab" data-bs-target="#tab3" type="button" role="tab" aria-controls="tab3" aria-selected="false">
-                                Tab 3
+                            <button class="nav-link" id="rugilaba-tab" data-bs-toggle="tab" data-bs-target="#rugilaba" type="button" role="tab" aria-controls="rugilaba" aria-selected="false">
+                                Rugi Laba
                             </button>
                         </li>
                     </ul>
@@ -174,10 +174,56 @@
                             </div>
                         </div>
 
-                        <!-- Tab 3 Content -->
-                        <div class="tab-pane fade" id="tab3" role="tabpanel" aria-labelledby="tab3-tab">
-                            <div class="p-3 bg-light rounded-3 shadow-sm">
-                                <p>Isi tab 3 akan ditampilkan di sini.</p>
+                        <!-- Rugi Laba Tab Content -->
+                        <div class="tab-pane fade" id="rugilaba" role="tabpanel" aria-labelledby="rugilaba-tab">
+                            <div class="card border-0 shadow-sm rounded-3">
+                                <div class="card-header d-flex justify-content-between align-items-center border-0 py-3" style="background: linear-gradient(180deg, #075E54 0%, #128C7E 100%); border-radius: 10px 10px 0 0 !important;">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-graph-up me-2 text-white"></i>
+                                        <h5 class="card-title mb-0 text-white">Laporan Rugi Laba</h5>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <div class="form-floating">
+                                                <input type="date" class="form-control" id="tanggalAwalRugiLaba" value="">
+                                                <label for="tanggalAwalRugiLaba">Tanggal Awal</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-floating">
+                                                <input type="date" class="form-control" id="tanggalAkhirRugiLaba" value="">
+                                                <label for="tanggalAkhirRugiLaba">Tanggal Akhir</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-floating">
+                                                <input type="text" class="form-control" id="namaKategoriRugiLaba" placeholder="Cari nama kategori">
+                                                <label for="namaKategoriRugiLaba">Nama Kategori</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button class="btn btn-whatsapp w-100 h-100" id="btnFilterRugiLaba">
+                                                <i class="bi bi-funnel me-1"></i>Filter
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="table-responsive">
+                                        <table class="table table-hover mb-0" id="rugilaba-table">
+                                            <thead class="border-bottom bg-light">
+                                                <tr>
+                                                    <th scope="col" class="border-0" style="padding: 15px 20px; width: auto;">Keterangan</th>
+                                                    <th scope="col" class="border-0 text-end" style="padding: 15px 20px; width: 15%;">Jumlah</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- Data will be filled by JavaScript -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -437,12 +483,150 @@
             loadArusKasData();
         });
 
+        // Function to set default dates for Rugi Laba
+        function setDefaultDatesRugiLaba() {
+            const today = new Date();
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+
+            const firstDayFormatted = firstDay.toISOString().split('T')[0];
+            const todayFormatted = today.toISOString().split('T')[0];
+
+            document.getElementById('tanggalAwalRugiLaba').value = firstDayFormatted;
+            document.getElementById('tanggalAkhirRugiLaba').value = todayFormatted;
+        }
+
+        // Function to load rugi laba data
+        async function loadRugiLabaData() {
+            const tanggalAwal = document.getElementById('tanggalAwalRugiLaba').value;
+            const tanggalAkhir = document.getElementById('tanggalAkhirRugiLaba').value;
+            const namaKategori = document.getElementById('namaKategoriRugiLaba').value;
+
+            try {
+                // Build query parameters
+                const params = new URLSearchParams();
+
+                if (tanggalAwal) params.append('ts', tanggalAwal);
+                if (tanggalAkhir) params.append('tf', tanggalAkhir);
+                if (namaKategori) params.append('keyword', namaKategori);
+
+                const response = await fetch(`/api/laporan.rl?${params}`);
+                const result = await response.json();
+
+                const tbody = document.querySelector('#rugilaba-table tbody');
+                tbody.innerHTML = '';
+
+                if (result.status === 'success' && result.data && result.data.length > 0) {
+                    let currentSection = '';
+                    let sectionTotal = 0;
+                    let sectionTotalRow = null;
+
+                    result.data.forEach((item, index) => {
+                        const row = document.createElement('tr');
+
+                        if (item.type === 'title') {
+                            // Title row
+                            row.innerHTML = `
+                                <td class="p-3" style="font-weight: bold; font-size: 1.2em; border-bottom: 2px solid #dee2e6;" colspan="2">
+                                    ${item.text}
+                                </td>
+                            `;
+                        } else if (item.type === 'section') {
+                            // Section header (Penerimaan or Pengeluaran)
+                            if (sectionTotalRow) {
+                                // Add the previous section's total row
+                                tbody.appendChild(sectionTotalRow);
+                                sectionTotalRow = null;
+                            }
+
+                            row.innerHTML = `
+                                <td class="p-3" style="font-weight: bold; font-size: 1.1em; background-color: #e9ecef;" colspan="2">
+                                    ${item.name}
+                                </td>
+                            `;
+                            currentSection = item.name;
+                            sectionTotal = 0;
+                        } else if (item.type === 'account') {
+                            // Account name row - indented under section
+                            row.innerHTML = `
+                                <td class="p-2">
+                                    <div style="margin-left: 20px; padding-left: 10px; border-left: 2px solid #dee2e6; font-weight: bold;">
+                                        ${item.name}
+                                    </div>
+                                </td>
+                                <td class="p-2 text-end"></td>
+                            `;
+                        } else if (item.type === 'category') {
+                            // Category name and amount - indented under account (more than account)
+                            row.innerHTML = `
+                                <td class="p-2">
+                                    <div style="margin-left: 50px; padding-left: 15px; border-left: 1px solid #e9ecef;">
+                                        ${item.name}
+                                    </div>
+                                </td>
+                                <td class="p-2 text-end">${formatCurrency(item.amount)}</td>
+                            `;
+                            sectionTotal += item.amount;
+                        } else if (item.type === 'section_total') {
+                            // Section total row
+                            sectionTotalRow = document.createElement('tr');
+                            sectionTotalRow.style.cssText = 'background-color: #f8f9fa; font-weight: bold;';
+                            sectionTotalRow.innerHTML = `
+                                <td class="p-2 text-end">Total ${currentSection}:</td>
+                                <td class="p-2 text-end">${formatCurrency(item.amount)}</td>
+                            `;
+                        } else if (item.type === 'net_total') {
+                            // Net profit/loss row - add previous section total if not added yet
+                            if (sectionTotalRow) {
+                                tbody.appendChild(sectionTotalRow);
+                                sectionTotalRow = null;
+                            }
+
+                            row.style.cssText = 'background-color: #e9ecef; font-weight: bold; font-size: 1.1em;';
+                            row.innerHTML = `
+                                <td class="p-2 text-end">${item.label}:</td>
+                                <td class="p-2 text-end">${formatCurrency(item.amount)}</td>
+                            `;
+                        }
+
+                        tbody.appendChild(row);
+                    });
+
+                    // Add the last section's total if not already added
+                    if (sectionTotalRow) {
+                        tbody.appendChild(sectionTotalRow);
+                    }
+                } else {
+                    // Show no data row
+                    const row = document.createElement('tr');
+                    row.innerHTML = `<td colspan="2" class="text-center py-4">Tidak ada data ditemukan</td>`;
+                    tbody.appendChild(row);
+                }
+
+            } catch (error) {
+                console.error('Error loading rugi laba data:', error);
+
+                // Show error message in table
+                const tbody = document.querySelector('#rugilaba-table tbody');
+                tbody.innerHTML = '';
+                const row = document.createElement('tr');
+                row.innerHTML = `<td colspan="2" class="text-center py-4 text-danger">Terjadi kesalahan saat memuat data: ${error.message}</td>`;
+                tbody.appendChild(row);
+            }
+        }
+
+        // Event listener for rugi laba filter button
+        document.getElementById('btnFilterRugiLaba').addEventListener('click', function() {
+            loadRugiLabaData();
+        });
+
         // Load data when page loads
         document.addEventListener('DOMContentLoaded', function() {
             setDefaultDates(); // Set default dates to current month for jurnal
             setDefaultDatesArusKas(); // Set default dates for arus kas
+            setDefaultDatesRugiLaba(); // Set default dates for rugi laba
             loadJurnalData(1);
             loadArusKasData();
+            loadRugiLabaData();
         });
     </script>
 </body>
