@@ -69,6 +69,7 @@ from api.beranda.aktifitas import handle_beranda_aktifitas
 from api.report.gl import gl_bp
 from api.report.aruskas import aruskas_bp
 from api.report.rl import rl_bp
+from api.report.fitrah import report_fitrah_bp
 
 # Initialize Supabase client
 supabase_url = os.getenv("SUPABASE_URL")
@@ -87,6 +88,7 @@ supabase: Client = create_client(supabase_url, supabase_key)
 app.register_blueprint(gl_bp, url_prefix='/api/laporan')  # This creates /api/laporan/gl
 app.register_blueprint(aruskas_bp, url_prefix='/api/laporan')  # This creates /api/laporan/aruskas
 app.register_blueprint(rl_bp, url_prefix='/api/laporan')  # This creates /api/laporan/rl
+app.register_blueprint(report_fitrah_bp, url_prefix='/api')  # This creates /api/laporan.fitrah
 
 # Additional route to match exact requirement /api/laporan.gl
 @app.route('/api/laporan.gl', methods=['GET'])

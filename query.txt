@@ -1,11 +1,27 @@
 #query1
-
+select 'Pembayaran' as Mode, pf.created_at, 
+pf2.tahun_hijriah,pf2.penanggung_jawab,
+hf.keterangan,jf.nama_jenis,  
+akb.nama_akun,
+case 
+	when pf.total_berat = 0 then pf.total_uang 
+	else 0
+end as nominal,
+case 
+	when pf.total_berat > 0 then pf.total_berat  
+	else 0
+end beras
+from pembayaran_fitrah pf 
+join harga_fitrah hf on hf.id_hargafitrah  = pf.id_hargafitrah 
+join jenis_fitrah jf on jf.id_jenis_fitrah  = hf.id_jenis_fitrah 
+join akun_kas_bank akb on akb.id_akun = pf.id_akun 
+join proyek_fitrah pf2 on pf2.id_fitrah  = hf.id_fitrah 
 
 
 
 #query2
-
 SELECT
+  'Penyaluran' as mode,
 	penyaluran_fitrah.tanggal_penerimaan AS created_at, 
 	proyek_fitrah.tahun_hijriah, 
 	proyek_fitrah.penanggung_jawab, 
