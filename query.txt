@@ -1,0 +1,44 @@
+#query1
+
+
+
+
+#query2
+
+SELECT
+	penyaluran_fitrah.tanggal_penerimaan AS created_at, 
+	proyek_fitrah.tahun_hijriah, 
+	proyek_fitrah.penanggung_jawab, 
+	mustahik.nama_lengkap AS keterangan, 
+  CASE
+    WHEN penyaluran_fitrah.jumlah_beras = 0 then 'Uang' ELSE 'Beras'
+  
+  END as nama_jenis,
+	akun_kas_bank.nama_akun,
+  CASE
+    WHEN penyaluran_fitrah.jumlah_beras = 0 then jumlah_uang ELSE 0
+  
+  END as nominal,
+  CASE
+    WHEN penyaluran_fitrah.jumlah_beras > 0 then jumlah_beras ELSE 0
+  
+  END as beras
+  
+FROM
+	penyaluran_fitrah
+	INNER JOIN
+	stok_beras
+	ON 
+		penyaluran_fitrah.id_stokberas = stok_beras.id_stokberas
+	INNER JOIN
+	proyek_fitrah
+	ON 
+		penyaluran_fitrah.id_fitrah = proyek_fitrah.id_fitrah
+	INNER JOIN
+	akun_kas_bank
+	ON 
+		penyaluran_fitrah.id_akun = akun_kas_bank.id_akun
+	INNER JOIN
+	mustahik
+	ON 
+		penyaluran_fitrah.id_mustahik = mustahik.id_mustahik
