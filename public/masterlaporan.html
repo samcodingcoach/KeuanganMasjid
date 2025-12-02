@@ -378,7 +378,14 @@
                             `;
                         } else if (item.type === 'subcategory') {
                             // Subcategory row (income/expense)
-                            const formattedAmount = formatCurrency(item.subtotal);
+                            // For expenses (Pengeluaran), show in parentheses as negative
+                            let formattedAmount;
+                            if (item.jenis_kategori === 'Pengeluaran' && item.subtotal < 0) {
+                                // Format as (Rp X,XXX) when it's an expense and negative
+                                formattedAmount = '(' + formatCurrency(Math.abs(item.subtotal)) + ')';
+                            } else {
+                                formattedAmount = formatCurrency(item.subtotal);
+                            }
                             row.innerHTML = `
                                 <td class="align-middle" style="padding: 15px 20px;">${rowNumber++}</td>
                                 <td class="align-middle" style="padding: 15px 20px; padding-left: 30px;">${item.name}</td>

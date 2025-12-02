@@ -67,6 +67,7 @@ from api.beranda.tx_bulan import get_monthly_transactions_by_category
 from api.beranda.aktifitas import handle_beranda_aktifitas
 from api.report.gl import gl_bp
 from api.report.aruskas import aruskas_bp
+from api.report.rl import rl_bp
 
 # Initialize Supabase client
 supabase_url = os.getenv("SUPABASE_URL")
@@ -84,6 +85,7 @@ supabase: Client = create_client(supabase_url, supabase_key)
 # Register blueprints
 app.register_blueprint(gl_bp, url_prefix='/api/laporan')  # This creates /api/laporan/gl
 app.register_blueprint(aruskas_bp, url_prefix='/api/laporan')  # This creates /api/laporan/aruskas
+app.register_blueprint(rl_bp, url_prefix='/api/laporan')  # This creates /api/laporan/rl
 
 # Additional route to match exact requirement /api/laporan.gl
 @app.route('/api/laporan.gl', methods=['GET'])
@@ -96,6 +98,12 @@ def general_ledger_report():
 def cash_flow_report():
     from api.report.aruskas import get_aruskas
     return get_aruskas()
+
+# Additional route to match exact requirement /api/laporan.rl
+@app.route('/api/laporan.rl', methods=['GET'])
+def profit_loss_report():
+    from api.report.rl import get_profit_loss
+    return get_profit_loss()
 
 
 
