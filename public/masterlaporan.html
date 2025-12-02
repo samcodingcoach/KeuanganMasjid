@@ -263,13 +263,8 @@
                                         <table class="table table-hover mb-0" id="fitrah-table">
                                             <thead class="border-bottom bg-light">
                                                 <tr>
-                                                    <th scope="col" class="border-0" style="padding: 15px 20px; width: 60px;">No</th>
-                                                    <th scope="col" class="border-0" style="padding: 15px 20px;">Mode</th>
                                                     <th scope="col" class="border-0" style="padding: 15px 20px;">Keterangan</th>
-                                                    <th scope="col" class="border-0" style="padding: 15px 20px;">Akun</th>
-                                                    <th scope="col" class="border-0 text-end" style="padding: 15px 20px; width: 12%;">Nominal</th>
-                                                    <th scope="col" class="border-0 text-end" style="padding: 15px 20px; width: 12%;">Beras (Kg)</th>
-                                                    <th scope="col" class="border-0 text-center" style="padding: 15px 20px; width: 100px;">Action</th>
+                                                    <th scope="col" class="border-0 text-end" style="padding: 15px 20px; width: 25%;">Jumlah</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -727,98 +722,110 @@
                         grouped[tahunHijriah][tanggal][jenis].push(item);
                     });
 
-                    let rowNum = 1;
-                    let totalNominal = 0;
-                    let totalBeras = 0;
-
-                    // Iterate through grouped data
+                    // Iterate through grouped data following Rugi Laba pattern
                     for (const tahunHijriah in grouped) {
-                        // Add year header row with the icon and year only
-                        const tahunHeader = document.createElement('tr');
-                        tahunHeader.style.cssText = 'background-color: #e9ecef; font-weight: bold;';
-                        tahunHeader.innerHTML = `
-                            <td colspan="6" class="p-3"><i class="bi bi-calendar me-2"></i>${tahunHijriah}</td>
-                            <td class="p-3 text-end" style="font-weight: bold;">&nbsp;</td>
+                        // Year header (like title in Rugi Laba)
+                        const yearHeader = document.createElement('tr');
+                        yearHeader.innerHTML = `
+                            <td class="p-3" style="font-weight: bold; font-size: 1.2em; border-bottom: 2px solid #dee2e6;" colspan="2">
+                                Tahun Hijriah: ${tahunHijriah}
+                            </td>
                         `;
-                        tbody.appendChild(tahunHeader);
+                        tbody.appendChild(yearHeader);
 
                         for (const tanggal in grouped[tahunHijriah]) {
-                            // Add date header row - with only the date (without year header)
-                            const tanggalHeader = document.createElement('tr');
-                            tanggalHeader.style.cssText = 'background-color: #f0f0f0; font-weight: bold;'; // Light gray background
-                            tanggalHeader.innerHTML = `
-                                <td colspan="7" class="p-2" style="padding-left: 15px !important;">${tanggal}</td>
+                            // Date header (like section in Rugi Laba)
+                            const dateHeader = document.createElement('tr');
+                            dateHeader.innerHTML = `
+                                <td class="p-3" style="font-weight: bold; font-size: 1.1em; background-color: #e9ecef;" colspan="2">
+                                    ${tanggal}
+                                </td>
                             `;
-                            tbody.appendChild(tanggalHeader);
+                            tbody.appendChild(dateHeader);
 
                             for (const jenis in grouped[tahunHijriah][tanggal]) {
-                                // Add jenis header row - left-aligned
+                                // Jenis header (like account in Rugi Laba)
                                 const jenisHeader = document.createElement('tr');
-                                jenisHeader.style.cssText = 'background-color: #f8f9fa;';
                                 jenisHeader.innerHTML = `
-                                    <td colspan="7" class="p-2" style="font-weight: bold; padding-left: 30px !important;">${jenis}</td>
+                                    <td class="p-2">
+                                        <div style="margin-left: 20px; padding-left: 10px; border-left: 2px solid #dee2e6; font-weight: bold;">
+                                            ${jenis}
+                                        </div>
+                                    </td>
+                                    <td class="p-2 text-end"></td>
                                 `;
                                 tbody.appendChild(jenisHeader);
 
-                                // Add data rows for this group
+                                // Data rows for this group (like categories in Rugi Laba)
                                 const items = grouped[tahunHijriah][tanggal][jenis];
-                                items.forEach(item => {
-                                    const row = document.createElement('tr');
+                                let jenisTotalNominal = 0;
+                                let jenisTotalBeras = 0;
 
+                                items.forEach(item => {
+                                    // Calculate total for this item (nominal or beras depending on what's present)
+                                    const amount = item.nominal > 0 ? item.nominal : item.beras;
+                                    const keterangan = `${item.Mode} - ${item.keterangan} (${item.nama_akun})`;
+
+                                    const row = document.createElement('tr');
                                     row.innerHTML = `
-                                        <td class="align-middle" style="padding: 15px 10px;">${rowNum++}</td>
-                                        <td class="align-middle" style="padding: 15px 10px;">${item.Mode || ''}</td>
-                                        <td class="align-middle" style="padding: 15px 10px;">${item.keterangan || ''}</td>
-                                        <td class="align-middle" style="padding: 15px 10px;">${item.nama_akun || ''}</td>
-                                        <td class="align-middle text-end" style="padding: 15px 10px;">${formatCurrency(item.nominal || 0)}</td>
-                                        <td class="align-middle text-end" style="padding: 15px 10px;">${item.beras || 0}</td>
-                                        <td class="align-middle text-center" style="padding: 15px 10px;">
-                                            <button class="btn btn-sm btn-outline-primary btn-detail" data-item='${JSON.stringify(item).replace(/'/g, '&apos;')}'>
-                                                <i class="bi bi-eye"></i> Detail
-                                            </button>
+                                        <td class="p-2">
+                                            <div style="margin-left: 50px; padding-left: 15px; border-left: 1px solid #e9ecef;">
+                                                ${keterangan}
+                                                <button class="btn btn-sm btn-outline-primary btn-detail ms-2" data-item='${JSON.stringify(item).replace(/'/g, '&apos;')}'>
+                                                    <i class="bi bi-eye"></i>
+                                                </button>
+                                            </div>
                                         </td>
+                                        <td class="p-2 text-end">${formatCurrency(amount)}</td>
                                     `;
                                     tbody.appendChild(row);
 
-                                    // Update totals based on mode (Pembayaran adds, Penyaluran subtracts)
+                                    // Update jenis totals based on mode (Pembayaran adds, Penyaluran subtracts)
                                     if (item.Mode === 'Pembayaran') {
-                                        totalNominal += parseFloat(item.nominal || 0);
-                                        totalBeras += parseFloat(item.beras || 0);
+                                        jenisTotalNominal += parseFloat(item.nominal || 0);
+                                        jenisTotalBeras += parseFloat(item.beras || 0);
                                     } else if (item.Mode === 'Penyaluran') {
-                                        totalNominal -= parseFloat(item.nominal || 0);
-                                        totalBeras -= parseFloat(item.beras || 0);
+                                        jenisTotalNominal -= parseFloat(item.nominal || 0);
+                                        jenisTotalBeras -= parseFloat(item.beras || 0);
                                     }
                                 });
+
+                                // Add jenis total row
+                                const jenisTotalRow = document.createElement('tr');
+                                jenisTotalRow.style.cssText = 'background-color: #f8f9fa; font-weight: bold;';
+                                jenisTotalRow.innerHTML = `
+                                    <td class="p-2 text-end">Total ${jenis}:</td>
+                                    <td class="p-2 text-end">${formatCurrency(Math.abs(jenisTotalNominal))}</td>
+                                `;
+                                tbody.appendChild(jenisTotalRow);
                             }
                         }
                     }
 
-                    // Add subtotal row
-                    const subtotalRow = document.createElement('tr');
-                    subtotalRow.style.cssText = 'background-color: #f8f9fa; font-weight: bold;';
-                    subtotalRow.innerHTML = `
-                        <td colspan="4" class="text-end" style="padding: 15px 10px;">Subtotal</td>
-                        <td class="text-end" style="padding: 15px 10px;">${formatCurrency(totalNominal)}</td>
-                        <td class="text-end" style="padding: 15px 10px;">${totalBeras.toFixed(2)}</td>
-                        <td class="text-center" style="padding: 15px 10px;"></td>
+                    // Calculate overall total
+                    let overallTotal = 0;
+                    result.data.forEach(item => {
+                        const amount = item.nominal > 0 ? item.nominal : item.beras;
+                        if (item.Mode === 'Pembayaran') {
+                            overallTotal += amount;
+                        } else if (item.Mode === 'Penyaluran') {
+                            overallTotal -= amount;
+                        }
+                    });
+
+                    // Add net total row
+                    const netTotalRow = document.createElement('tr');
+                    netTotalRow.style.cssText = 'background-color: #e9ecef; font-weight: bold; font-size: 1.1em;';
+                    netTotalRow.innerHTML = `
+                        <td class="p-2 text-end">Total Keseluruhan:</td>
+                        <td class="p-2 text-end">${formatCurrency(overallTotal)}</td>
                     `;
-                    tbody.appendChild(subtotalRow);
+                    tbody.appendChild(netTotalRow);
                 } else {
                     // Show no data row
                     const row = document.createElement('tr');
-                    row.innerHTML = `<td colspan="7" class="text-center py-4">Tidak ada data ditemukan</td>`;
+                    row.innerHTML = `<td colspan="2" class="text-center py-4">Tidak ada data ditemukan</td>`;
                     tbody.appendChild(row);
-
-                    // Add empty subtotal row even when no data
-                    const subtotalRow = document.createElement('tr');
-                    subtotalRow.style.cssText = 'background-color: #f8f9fa; font-weight: bold;';
-                    subtotalRow.innerHTML = `
-                        <td colspan="4" class="text-end" style="padding: 15px 10px;">Subtotal</td>
-                        <td class="text-end" style="padding: 15px 10px;">${formatCurrency(0)}</td>
-                        <td class="text-end" style="padding: 15px 10px;">0.00</td>
-                        <td class="text-center" style="padding: 15px 10px;"></td>
-                    `;
-                    tbody.appendChild(subtotalRow);
                 }
 
                 // Add event listeners to detail buttons
@@ -836,7 +843,7 @@
                 const tbody = document.querySelector('#fitrah-table tbody');
                 tbody.innerHTML = '';
                 const row = document.createElement('tr');
-                row.innerHTML = `<td colspan="7" class="text-center py-4 text-danger">Terjadi kesalahan saat memuat data: ${error.message}</td>`;
+                row.innerHTML = `<td colspan="2" class="text-center py-4 text-danger">Terjadi kesalahan saat memuat data: ${error.message}</td>`;
                 tbody.appendChild(row);
             }
         }
@@ -845,47 +852,47 @@
         function showFitrahDetailModal(item) {
             const modalBody = document.getElementById('fitrah-detail-content');
 
-            // Format the detail content
+            // Format the detail content with elegant card-like structure
             modalBody.innerHTML = `
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Mode:</label>
-                            <p class="mb-1">${item.Mode || ''}</p>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Tanggal:</label>
-                            <p class="mb-1">${formatDate(item.created_at) || ''}</p>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Tahun Hijriah:</label>
-                            <p class="mb-1">${item.tahun_hijriah || ''}</p>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Penanggung Jawab:</label>
-                            <p class="mb-1">${item.penanggung_jawab || ''}</p>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Keterangan:</label>
-                            <p class="mb-1">${item.keterangan || ''}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Jenis:</label>
-                            <p class="mb-1">${item.nama_jenis || ''}</p>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Akun:</label>
-                            <p class="mb-1">${item.nama_akun || ''}</p>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Nominal:</label>
-                            <p class="mb-1">${formatCurrency(item.nominal || 0)}</p>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Beras (Kg):</label>
-                            <p class="mb-1">${item.beras || 0}</p>
+                <div class="card border-0">
+                    <div class="card-body p-0">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="d-flex justify-content-between border-bottom pb-2">
+                                    <span class="text-muted">Mode:</span>
+                                    <span class="fw-semibold">${item.Mode || '-'}</span>
+                                </div>
+                                <div class="d-flex justify-content-between border-bottom py-2">
+                                    <span class="text-muted">Tanggal:</span>
+                                    <span class="fw-semibold">${formatDate(item.created_at) || '-'}</span>
+                                </div>
+                                <div class="d-flex justify-content-between border-bottom py-2">
+                                    <span class="text-muted">Tahun Hijriah:</span>
+                                    <span class="fw-semibold">${item.tahun_hijriah || '-'}</span>
+                                </div>
+                                <div class="d-flex justify-content-between border-bottom py-2">
+                                    <span class="text-muted">Penanggung Jawab:</span>
+                                    <span class="fw-semibold">${item.penanggung_jawab || '-'}</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex justify-content-between border-bottom pb-2">
+                                    <span class="text-muted">Jenis:</span>
+                                    <span class="fw-semibold">${item.nama_jenis || '-'}</span>
+                                </div>
+                                <div class="d-flex justify-content-between border-bottom py-2">
+                                    <span class="text-muted">Akun:</span>
+                                    <span class="fw-semibold">${item.nama_akun || '-'}</span>
+                                </div>
+                                <div class="d-flex justify-content-between border-bottom py-2">
+                                    <span class="text-muted">Nominal:</span>
+                                    <span class="fw-semibold">${formatCurrency(item.nominal || 0)}</span>
+                                </div>
+                                <div class="d-flex justify-content-between py-2">
+                                    <span class="text-muted">Beras (Kg):</span>
+                                    <span class="fw-semibold">${item.beras || 0}</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
