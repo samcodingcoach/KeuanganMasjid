@@ -1,6 +1,7 @@
 '''API for Creating New Transaction Detail'''
 from flask import jsonify, request
 from datetime import datetime
+from api.asset.new_fromtx import create_asset_from_transaction
 
 def create_transaksi_detail(supabase_client, req):
     '''Create a new transaction detail record'''
@@ -23,6 +24,8 @@ def create_transaksi_detail(supabase_client, req):
         subtotal = data.get('subtotal')
         id_transaksi = data.get('id_transaksi')
         url_bukti = data.get('url_bukti')
+        # Get asset data if provided
+        asset_data = data.get('assetData')
 
         # Validate required field
         if not id_transaksi:
@@ -77,6 +80,13 @@ def create_transaksi_detail(supabase_client, req):
                 'message': 'isAsset harus berupa boolean'
             }), 400
 
+        # If isAsset is True, ensure assetData is provided
+        if isAsset and (not asset_data or not isinstance(asset_data, list) or len(asset_data) == 0):
+            return jsonify({
+                'success': False,
+                'message': 'assetData is required when isAsset is True'
+            }), 400
+
         # Calculate subtotal if not provided
         if subtotal is None and jumlah is not None and nominal is not None:
             subtotal = jumlah * nominal
@@ -100,6 +110,31 @@ def create_transaksi_detail(supabase_client, req):
 
         # Insert into the database
         response = supabase_client.table('transaksi_detail').insert(new_detail).execute()
+
+        # If isAsset is true, create asset records
+        if isAsset and asset_data and isinstance(asset_data, list) and len(asset_data) > 0:
+            # Need to get id_pegawai from the transaction to link the asset to the same person
+            # First get the transaction details to get id_pegawai
+            transaction_response = supabase_client.table('transaksi').select('id_pegawai').eq('id_transaksi', id_transaksi).execute()
+
+            if not transaction_response.data:
+                return jsonify({
+                    'success': False,
+                    'message': 'Gagal mendapatkan informasi pegawai dari transaksi'
+                }), 404
+
+            id_pegawai = transaction_response.data[0].get('id_pegawai')
+
+            # Call the asset creation function directly with the parameters
+            asset_response_data, asset_status_code = create_asset_from_transaction(
+                supabase_client,
+                asset_data,
+                id_pegawai,
+                nominal
+            )
+
+            if asset_status_code != 200:
+                return asset_response_data, asset_status_code
 
         return jsonify({
             'success': True,

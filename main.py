@@ -33,6 +33,7 @@ from api.akun.new import create_akun_kas_bank
 from api.akun.update import update_akun_kas_bank
 from api.asset.asset import get_all_assets, get_asset_by_kode_barang
 from api.asset.new import create_asset
+from api.asset.new_fromtx import create_asset_from_transaction
 from api.asset.update import update_asset
 from api.asset.upload import upload_asset_image
 from api.muzakki.muzakki import get_muzakki_list

@@ -912,6 +912,9 @@ document.getElementById('save-expense-detail-btn').addEventListener('click', asy
         }
     }
 
+    // Get user data from sessionStorage for asset creation
+    const userData = JSON.parse(sessionStorage.getItem('userData'));
+
     // Prepare data for API request
     const requestData = {
         id_transaksi: parseInt(id_transaksi),
@@ -959,6 +962,8 @@ document.getElementById('save-expense-detail-btn').addEventListener('click', asy
 
         // Add assetData to the request
         requestData.assetData = assetData;
+        // Include id_pegawai from user session data for asset creation
+        requestData.id_pegawai = userData?.id_pegawai || null;
     }
 
     // Call the API to save the expense detail
