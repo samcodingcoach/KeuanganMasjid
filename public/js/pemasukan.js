@@ -163,7 +163,7 @@ function showDetail(transaction) {
             row.innerHTML = `
                 <td>${index + 1}</td>
                 <td>
-                    <div>${formatDate(detail.created_at)}</div>
+                    <div>${formatDetailTimestamp(detail.created_at)}</div>
                     <div class="text-muted small">Deskripsi: ${detail.deskripsi || '-'}</div>
                     <div class="text-muted small">${detail.jenis_kategori || '-'}</div>
                     <div class="text-muted small">${detail.nama_kategori || '-'}</div>
@@ -274,6 +274,42 @@ function formatDate(dateString) {
     } else {
         date = dateString;
     }
+
+    // Array of month names in Indonesian
+    const months = [
+        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
+
+    // Get date components
+    const day = date.getDate();
+    const month = months[date.getMonth()];
+    const year = date.getFullYear();
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+
+    // Format as 'Day Month Year, Time WITA'
+    return `${day} ${month} ${year}, ${hours}:${minutes} WITA`;
+}
+
+// Function to format detail timestamps in 'Day Month Year, Time WITA' format (adds 8 hours)
+function formatDetailTimestamp(dateString) {
+    if (!dateString) return '-';
+
+    // Parse the date string - handle both 'T' format and space format
+    let date;
+    if (typeof dateString === 'string') {
+        // Replace space with 'T' to handle 'YYYY-MM-DD HH:mm:ss' format properly
+        if (dateString.includes(' ')) {
+            dateString = dateString.replace(' ', 'T');
+        }
+        date = new Date(dateString);
+    } else {
+        date = dateString;
+    }
+
+    // Add 8 hours to convert from UTC to WITA (UTC+8)
+    date = new Date(date.getTime() + (8 * 60 * 60 * 1000));
 
     // Array of month names in Indonesian
     const months = [
@@ -1058,7 +1094,7 @@ document.getElementById('save-edit-detail-btn').addEventListener('click', async 
                                                     subtotalCell.textContent = 'Rp ' + (updatedDetail.subtotal || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
                                                     // Update description cell with new details
-                                                    const newDescContent = `<div>${formatDate(updatedDetail.created_at)}</div>
+                                                    const newDescContent = `<div>${formatDetailTimestamp(updatedDetail.created_at)}</div>
                                                         <div class="text-muted small">Deskripsi: ${updatedDetail.deskripsi || '-'}</div>
                                                         <div class="text-muted small">${updatedDetail.jenis_kategori || '-'}</div>
                                                         <div class="text-muted small">${updatedDetail.nama_kategori || '-'}</div>`;
