@@ -1,1 +1,2 @@
-trigger update stok beras
+trigger after insert pembayaran_fitrah insert akun kas bank, insert transaksi, insert stok beras
+id_akun is required
