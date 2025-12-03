@@ -304,6 +304,9 @@
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="details-tab" data-bs-toggle="tab" data-bs-target="#details-pane" type="button" role="tab" aria-controls="details-pane" aria-selected="false">Details</button>
                             </li>
+                            <li class="nav-item" role="presentation" id="asset-tab-item" style="display: none;">
+                                <button class="nav-link" id="asset-tab" data-bs-toggle="tab" data-bs-target="#asset-pane" type="button" role="tab" aria-controls="asset-pane" aria-selected="false">Asset</button>
+                            </li>
                         </ul>
 
                         <!-- Tabs Content -->
@@ -364,6 +367,46 @@
                                             <i class="bi bi-file-earmark-arrow-up position-absolute top-0 end-0 mt-3 me-3"></i>
                                             <input class="form-control" type="file" id="bukti" accept="image/*,application/pdf">
                                             <div class="form-text mt-2">Format: PDF, JPG, PNG (Maks. 5MB)</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Asset Tab Content -->
+                        <div class="tab-pane fade" id="asset-pane" role="tabpanel" aria-labelledby="asset-tab">
+                            <div id="asset-groups-container">
+                                <!-- Asset groups will be dynamically generated here -->
+                                <!-- Single asset group by default -->
+                                <div class="asset-group mb-3 p-3 border rounded">
+                                    <h6 class="mb-3">Asset 1</h6>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-floating mb-3 position-relative">
+                                                <input type="text" class="form-control" id="kode_barang_1" placeholder="Kode Barang">
+                                                <label for="kode_barang_1">Kode Barang</label>
+                                                <i class="bi bi-hash position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-floating mb-3 position-relative">
+                                                <input type="text" class="form-control" id="nama_barang_1" placeholder="Nama Barang">
+                                                <label for="nama_barang_1">Nama Barang</label>
+                                                <i class="bi bi-card-text position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-floating mb-3 position-relative">
+                                                <select class="form-select searchable-select" id="jenis_barang_1" data-placeholder="Pilih Jenis Barang">
+                                                    <option value="">Pilih Jenis Barang</option>
+                                                    <option value="Elektronik">Elektronik</option>
+                                                    <option value="Furniture">Furniture</option>
+                                                    <option value="Peralatan">Peralatan</option>
+                                                    <option value="Bangunan">Bangunan</option>
+                                                    <option value="Lainnya">Lainnya</option>
+                                                </select>
+                                                <label for="jenis_barang_1">Jenis Barang</label>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
