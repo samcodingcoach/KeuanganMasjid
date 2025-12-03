@@ -14,6 +14,16 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/css/admin.css">
+    <script>
+        // Check authentication on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const userData = JSON.parse(sessionStorage.getItem('userData'));
+            if (!userData) {
+                // Redirect to login if no user data found
+                window.location.href = '/login';
+            }
+        });
+    </script>
     <style>
         .dashboard-header {
             background: linear-gradient(135deg, #075E54 0%, #128C7E 100%);
@@ -128,6 +138,14 @@
     </style>
 </head>
 <body class="bg-light">
+    <script>
+        // Double-check authentication on page load (in case script in head didn't execute)
+        const userData = JSON.parse(sessionStorage.getItem('userData'));
+        if (!userData) {
+            // Redirect to login if no user data found
+            window.location.href = '/login';
+        }
+    </script>
     <!-- Sidebar will be loaded here -->
     <div id="sidebar-container"></div>
 
