@@ -66,7 +66,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 <td scope="row" class="text-center align-middle py-2 small">${rowIndex + 1}</td>
                 <td class="align-middle py-2 small">${proyek.tahun_hijriah}</td>
                 <td class="align-middle py-2 small">${proyek.penanggung_jawab || '-'}</td>
-                <td class="align-middle py-2 small">${proyek.aktif ? 'Aktif' : 'Tidak Aktif'}</td>
+                <td class="align-middle py-2 small text-end">${proyek.total_terimauang?.toLocaleString('id-ID') || '0'}</td>
+                <td class="align-middle py-2 small text-end">${proyek.total_terimaberas?.toFixed(2) || '0.00'}</td>
+                <td class="align-middle py-2 small text-end">${proyek.total_salurberas?.toFixed(2) || '0.00'}</td>
+                <td class="align-middle py-2 small text-center">${proyek.aktif ? 'Aktif' : 'Tidak Aktif'}</td>
                 <td class="text-center align-middle py-2 small">
                     <button class="btn btn-sm btn-outline-whatsapp p-1 edit-btn" style="border-radius: 8px; width: 36px; height: 36px;">
                         <i class="bi bi-pencil"></i>
@@ -201,6 +204,9 @@ document.addEventListener('DOMContentLoaded', function() {
             filteredProyekData = allProyekData.filter(proyek =>
                 proyek.tahun_hijriah.toString().includes(searchTerm) ||
                 (proyek.penanggung_jawab || '').toLowerCase().includes(searchTerm) ||
+                proyek.total_terimauang.toString().includes(searchTerm) ||
+                proyek.total_terimaberas.toString().includes(searchTerm) ||
+                proyek.total_salurberas.toString().includes(searchTerm) ||
                 (proyek.aktif ? 'aktif' : 'tidak aktif').toLowerCase().includes(searchTerm)
             );
         }

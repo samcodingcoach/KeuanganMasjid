@@ -1,2 +1,6 @@
-trigger after insert pembayaran_fitrah insert akun kas bank, insert transaksi, insert stok beras
+trigger after insert pembayaran_fitrah insert akun kas bank 
+
+, insert transaksi, insert stok beras
 id_akun is required
+
+pada kategori_transaksi hapus zakat fitrah uang dan zakat fitrah
