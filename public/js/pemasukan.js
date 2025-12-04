@@ -951,6 +951,47 @@ document.getElementById('save-income-detail-btn').addEventListener('click', asyn
         url_bukti: url_bukti
     };
 
+    // If is_asset is true, collect asset information from the asset tab
+    if (is_asset) {
+        const assetData = [];
+        const assetGroups = document.querySelectorAll('.asset-group');
+        let hasEmptyAssetData = false;
+
+        assetGroups.forEach((group, index) => {
+            const kode_barang = document.getElementById(`kode_barang_${index + 1}`);
+            const nama_barang = document.getElementById(`nama_barang_${index + 1}`);
+            const jenis_barang = document.getElementById(`jenis_barang_${index + 1}`);
+
+            if (kode_barang && nama_barang && jenis_barang) {
+                const asset = {
+                    kode_barang: kode_barang.value,
+                    nama_barang: nama_barang.value,
+                    jenis_barang: jenis_barang.value
+                };
+
+                // Check if any of the required asset fields are empty
+                if (!asset.kode_barang || !asset.nama_barang || !asset.jenis_barang) {
+                    hasEmptyAssetData = true;
+                }
+
+                assetData.push(asset);
+            }
+        });
+
+        // Check if any asset data is empty
+        if (hasEmptyAssetData) {
+            showTransactionToast('Harap lengkapi semua data asset yang diperlukan', 'error');
+            return;
+        }
+
+        // Add assetData to the request
+        requestData.assetData = assetData;
+
+        // Get user data from sessionStorage for asset creation
+        const userData = JSON.parse(sessionStorage.getItem('userData'));
+        requestData.id_pegawai = userData?.id_pegawai || null;
+    }
+
     // Call the API to save the income detail
     fetch('/api/transaksi.createdetail', {
         method: 'POST',
