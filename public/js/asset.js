@@ -496,11 +496,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${index + 1}</td>
+                <td class='text-center'>${index + 1}</td>
                 <td>${asset.nama_barang}</td>
                 <td>${asset.created_at}</td>
                 <td class="text-end">${formattedHarga}</td>
-                <td>
+                <td class='text-center'>
                     <button class="btn btn-sm btn-outline-info p-1 detail-btn" style="border-radius: 8px; width: 36px; height: 36px; margin-right: 0.25rem;"
                             data-id="${asset.id_asset}"
                             data-kode="${asset.kode_barang}"
