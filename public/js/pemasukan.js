@@ -1210,3 +1210,183 @@ document.getElementById('save-transaction-btn').addEventListener('click', functi
         showTransactionToast('Terjadi kesalahan saat menyimpan transaksi', 'error');
     });
 });
+
+// JavaScript to handle the asset tab functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Wait for the modal to be available in the DOM
+    setTimeout(function() {
+        const isAssetCheckbox = document.getElementById('is_asset');
+        const assetTabItem = document.getElementById('asset-tab-item');
+        const jumlahInput = document.getElementById('jumlah');
+        const assetGroupsContainer = document.getElementById('asset-groups-container');
+
+        if (!isAssetCheckbox || !jumlahInput || !assetGroupsContainer) {
+            console.log('Asset functionality elements not found, waiting...');
+            // Retry after a delay
+            setTimeout(retryAssetFunctionality, 500);
+            return;
+        }
+
+        // Function to update the jumlah input to ensure it's a valid number
+        function validateJumlahInput() {
+            let value = jumlahInput.value;
+            value = value.replace(/[^\d]/g, ''); // Remove non-digit characters
+            if (value === '' || parseInt(value) <= 0) {
+                value = '1';
+            }
+            jumlahInput.value = value;
+            generateAssetGroups(parseInt(value));
+        }
+
+        // Function to generate asset groups based on jumlah
+        function generateAssetGroups(count) {
+            if (!count || count <= 0) count = 1;
+
+            // Clear existing asset groups
+            assetGroupsContainer.innerHTML = '';
+
+            // Create new asset groups
+            for (let i = 1; i <= count; i++) {
+                const assetGroup = document.createElement('div');
+                assetGroup.className = 'asset-group mb-3 p-3 border rounded';
+                assetGroup.innerHTML = '<h6 class="mb-3">Asset ' + i + '</h6>' +
+                    '<div class="row">' +
+                        '<div class="col-md-4">' +
+                            '<div class="form-floating mb-3 position-relative">' +
+                                '<input type="text" class="form-control" id="kode_barang_' + i + '" placeholder="Kode Barang">' +
+                                '<label for="kode_barang_' + i + '">Kode Barang</label>' +
+                                '<i class="bi bi-hash position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>' +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="col-md-4">' +
+                            '<div class="form-floating mb-3 position-relative">' +
+                                '<input type="text" class="form-control" id="nama_barang_' + i + '" placeholder="Nama Barang">' +
+                                '<label for="nama_barang_' + i + '">Nama Barang</label>' +
+                                '<i class="bi bi-card-text position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"></i>' +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="col-md-4">' +
+                            '<div class="form-floating mb-3 position-relative">' +
+                                '<select class="form-select searchable-select" id="jenis_barang_' + i + '" data-placeholder="Pilih Jenis Barang">' +
+                                    '<option value="">Pilih Jenis Barang</option>' +
+                                    '<option value="Elektronik">Elektronik</option>' +
+                                    '<option value="Furniture">Furniture</option>' +
+                                    '<option value="Peralatan">Peralatan</option>' +
+                                    '<option value="Bangunan">Bangunan</option>' +
+                                    '<option value="Lainnya">Lainnya</option>' +
+                                '</select>' +
+                                '<label for="jenis_barang_' + i + '">Jenis Barang</label>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>';
+                assetGroupsContainer.appendChild(assetGroup);
+            }
+
+            // Initialize Select2 for the new dropdowns
+            setTimeout(function() {
+                if (typeof $ !== 'undefined' && typeof $.fn.select2 !== 'undefined') {
+                    $('.searchable-select', assetGroupsContainer).each(function() {
+                        if (!$(this).data('select2')) {
+                            $(this).select2({
+                                theme: 'bootstrap-5',
+                                placeholder: $(this).data('placeholder'),
+                                allowClear: true,
+                                width: '100%',
+                                dropdownParent: $('#addIncomeDetailModal')
+                            });
+                        }
+                    });
+                }
+            }, 100);
+        }
+
+        // Function to retry if elements are not ready
+        function retryAssetFunctionality() {
+            const isAssetCheckbox = document.getElementById('is_asset');
+            const assetTabItem = document.getElementById('asset-tab-item');
+            const jumlahInput = document.getElementById('jumlah');
+            const assetGroupsContainer = document.getElementById('asset-groups-container');
+
+            if (isAssetCheckbox && jumlahInput && assetGroupsContainer) {
+                // Elements are now available, set up event listeners
+                isAssetCheckbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        // Show the asset tab
+                        assetTabItem.style.display = 'list-item';
+                    } else {
+                        // Hide the asset tab
+                        assetTabItem.style.display = 'none';
+                    }
+                });
+
+                // Event listener for jumlah input to regenerate asset groups
+                jumlahInput.addEventListener('input', function() {
+                    // Remove non-numeric characters except potentially the first character if it's a zero
+                    let value = this.value.replace(/[^\d]/g, '');
+
+                    // Prevent empty or negative values
+                    if (value === '' || parseInt(value) <= 0) {
+                        value = '1';
+                    }
+
+                    // Update the input value and generate asset groups
+                    this.value = value;
+                    generateAssetGroups(parseInt(value));
+                });
+
+                // Also handle the blur event to ensure valid input
+                jumlahInput.addEventListener('blur', function() {
+                    validateJumlahInput();
+                });
+
+                // Initialize asset groups when modal is shown
+                document.getElementById('addIncomeDetailModal').addEventListener('shown.bs.modal', function() {
+                    // Generate initial asset groups based on jumlah value
+                    let jumlahValue = parseInt(unformatNumber(jumlahInput.value)) || 1;
+                    generateAssetGroups(jumlahValue);
+                });
+            } else {
+                // Still not ready, try again
+                setTimeout(retryAssetFunctionality, 500);
+            }
+        }
+
+        // Set up initial event listeners
+        isAssetCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                // Show the asset tab
+                assetTabItem.style.display = 'list-item';
+            } else {
+                // Hide the asset tab
+                assetTabItem.style.display = 'none';
+            }
+        });
+
+        // Event listener for jumlah input to regenerate asset groups
+        jumlahInput.addEventListener('input', function() {
+            // Remove non-numeric characters except potentially the first character if it's a zero
+            let value = this.value.replace(/[^\d]/g, '');
+
+            // Prevent empty or negative values
+            if (value === '' || parseInt(value) <= 0) {
+                value = '1';
+            }
+
+            // Update the input value and generate asset groups
+            this.value = value;
+            generateAssetGroups(parseInt(value));
+        });
+
+        // Also handle the blur event to ensure valid input
+        jumlahInput.addEventListener('blur', function() {
+            validateJumlahInput();
+        });
+
+        // Initialize asset groups when modal is shown
+        document.getElementById('addIncomeDetailModal').addEventListener('shown.bs.modal', function() {
+            // Generate initial asset groups based on jumlah value
+            let jumlahValue = parseInt(unformatNumber(jumlahInput.value)) || 1;
+            generateAssetGroups(jumlahValue);
+        });
+    }, 500);
+});
