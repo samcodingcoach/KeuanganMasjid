@@ -58,6 +58,7 @@ from api.beranda.pembayaranfitrah import get_pembayaran_fitrah_summary
 from api.proyek_fitrah.list import get_proyek_fitrah_list
 from api.proyek_fitrah.new import create_proyek_fitrah
 from api.proyek_fitrah.update import update_proyek_fitrah
+from api.proyek_fitrah.stokberas import get_stok_beras
 from api.harga_fitrah.new import create_harga_fitrah
 from api.harga_fitrah.update import update_harga_fitrah
 from api.harga_fitrah.list import get_harga_fitrah_list
@@ -286,6 +287,10 @@ def new_proyek_fitrah():
 @app.route('/api/fitrah.update', methods=['POST'])
 def update_proyek_fitrah_route():
     return update_proyek_fitrah(supabase, request)
+
+@app.route('/api/fitrah.stokberas', methods=['GET'])
+def stok_beras_route():
+    return get_stok_beras(supabase)
 
 @app.route('/api/hargafitrah.new', methods=['POST'])
 def new_harga_fitrah():
