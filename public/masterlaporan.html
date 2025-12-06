@@ -84,6 +84,11 @@
                                 Fitrah
                             </button>
                         </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="asset-tab" data-bs-toggle="tab" data-bs-target="#asset" type="button" role="tab" aria-controls="asset" aria-selected="false">
+                                Asset
+                            </button>
+                        </li>
                     </ul>
                     <div class="tab-content" id="reportTabsContent">
                         <!-- Jurnal Tab Content -->
@@ -283,6 +288,55 @@
                                                 <tr>
                                                     <th scope="col" class="border-0" style="padding: 15px 20px;">Keterangan</th>
                                                     <th scope="col" class="border-0 text-end" style="padding: 15px 20px; width: 25%;">Jumlah</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- Data will be filled by JavaScript -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Asset Tab Content -->
+                        <div class="tab-pane fade" id="asset" role="tabpanel" aria-labelledby="asset-tab">
+                            <div class="card border-0 shadow-sm rounded-3">
+                                <div class="card-header d-flex justify-content-between align-items-center border-0 py-3" style="background: linear-gradient(180deg, #075E54 0%, #128C7E 100%); border-radius: 10px 10px 0 0 !important;">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-building me-2 text-white"></i>
+                                        <h5 class="card-title mb-0 text-white">Laporan Asset</h5>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row mb-3">
+                                        <div class="col-md-4">
+                                            <div class="form-floating">
+                                                <input type="date" class="form-control" id="tanggalAwalAsset" value="">
+                                                <label for="tanggalAwalAsset">Tanggal Awal</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-floating">
+                                                <input type="date" class="form-control" id="tanggalAkhirAsset" value="">
+                                                <label for="tanggalAkhirAsset">Tanggal Akhir</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <button class="btn btn-whatsapp w-100 h-100" id="btnFilterAsset">
+                                                <i class="bi bi-funnel me-1"></i>Filter
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="table-responsive">
+                                        <table class="table table-hover mb-0" id="asset-table">
+                                            <thead class="border-bottom bg-light">
+                                                <tr>
+                                                    <th scope="col" class="border-0" style="padding: 15px 20px; width: 60px;">No</th>
+                                                    <th scope="col" class="border-0" style="padding: 15px 20px; width: 12%;">Tanggal</th>
+                                                    <th scope="col" class="border-0" style="padding: 15px 20px; width: auto;">Nama Akun</th>
+                                                    <th scope="col" class="border-0 text-end" style="padding: 15px 20px; width: 12%;">Subtotal</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -926,16 +980,151 @@
             loadFitrahData();
         });
 
+        // Function to set default dates for Asset
+        function setDefaultDatesAsset() {
+            const today = new Date();
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+
+            const firstDayFormatted = firstDay.toISOString().split('T')[0];
+            const todayFormatted = today.toISOString().split('T')[0];
+
+            document.getElementById('tanggalAwalAsset').value = firstDayFormatted;
+            document.getElementById('tanggalAkhirAsset').value = todayFormatted;
+        }
+
+        // Function to load asset data
+        async function loadAssetData() {
+            const tanggalAwal = document.getElementById('tanggalAwalAsset').value;
+            const tanggalAkhir = document.getElementById('tanggalAkhirAsset').value;
+
+            try {
+                // Build query parameters - using ts and tf as per API implementation
+                const params = new URLSearchParams();
+
+                if (tanggalAwal) params.append('ts', tanggalAwal);
+                if (tanggalAkhir) params.append('tf', tanggalAkhir);
+
+                const response = await fetch(`/api/laporan.asset?${params}`);
+                const result = await response.json();
+
+                const tbody = document.querySelector('#asset-table tbody');
+                tbody.innerHTML = '';
+
+                if (result.status === 'success' && result.data && result.data.length > 0) {
+                    // Group data by nama_kategori and jenis_kategori
+                    const groupedData = {};
+
+                    result.data.forEach(item => {
+                        const key = `${item.nama_kategori}_${item.jenis_kategori}`;
+                        if (!groupedData[key]) {
+                            groupedData[key] = {
+                                nama_kategori: item.nama_kategori,
+                                jenis_kategori: item.jenis_kategori,
+                                items: []
+                            };
+                        }
+                        groupedData[key].items.push(item);
+                    });
+
+                    // Calculate totals
+                    let grandTotal = 0;
+                    let rowNumber = 1;
+
+                    // Process each group
+                    for (const [key, group] of Object.entries(groupedData)) {
+                        // Add a header row for the group
+                        const groupHeaderRow = document.createElement('tr');
+                        groupHeaderRow.style.cssText = 'background-color: #e9ecef; font-weight: bold;';
+                        groupHeaderRow.innerHTML = `
+                            <td class="align-middle" style="padding: 15px 20px;">&nbsp;</td>
+                            <td class="align-middle" style="padding: 15px 20px; font-weight: bold;">${group.nama_kategori}</td>
+                            <td class="align-middle" style="padding: 15px 20px">${group.jenis_kategori}</td>
+                            <td class="align-middle text-end" style="padding: 15px 20px;"></td>
+                        `;
+                        tbody.appendChild(groupHeaderRow);
+
+                        // Add data rows for this group
+                        let groupTotal = 0;
+                        group.items.forEach(item => {
+                            const row = document.createElement('tr');
+
+                            // Add to totals
+                            groupTotal += parseFloat(item.subtotal || 0);
+                            grandTotal += parseFloat(item.subtotal || 0);
+
+                            // Format the row according to the requested structure
+                            row.innerHTML = `
+                                <td class="align-middle" style="padding: 15px 20px;">${rowNumber++}</td>
+                                <td class="align-middle" style="padding: 15px 20px;">${formatDate(item.tanggal) || ''}</td>
+                                <td class="align-middle" style="padding: 15px 20px;">${item.nama_akun || ''}</td>
+                                <td class="align-middle text-end" style="padding: 15px 20px;">${formatCurrency(item.subtotal || 0)}</td>
+                            `;
+                            tbody.appendChild(row);
+                        });
+
+                        // Add total row for the group
+                        const groupTotalRow = document.createElement('tr');
+                        groupTotalRow.style.cssText = 'background-color: #f8f9fa; font-weight: bold;';
+                        groupTotalRow.innerHTML = `
+                            <td class="align-middle" style="padding: 15px 20px;" colspan="3" class="text-end">Total ${group.nama_kategori}:</td>
+                            <td class="align-middle text-end" style="padding: 15px 20px;">${formatCurrency(groupTotal)}</td>
+                        `;
+                        tbody.appendChild(groupTotalRow);
+                    }
+
+                    // Add grand total row
+                    const grandTotalRow = document.createElement('tr');
+                    grandTotalRow.style.cssText = 'background-color: #e9ecef; font-weight: bold; font-size: 1.1em;';
+                    grandTotalRow.innerHTML = `
+                        <td class="align-middle" style="padding: 15px 20px;" colspan="3" class="text-end">Grand Total:</td>
+                        <td class="align-middle text-end" style="padding: 15px 20px;">${formatCurrency(grandTotal)}</td>
+                    `;
+                    tbody.appendChild(grandTotalRow);
+                } else {
+                    // Show no data row
+                    const row = document.createElement('tr');
+                    row.innerHTML = `<td colspan="4" class="text-center py-4">Tidak ada data ditemukan</td>`;
+                    tbody.appendChild(row);
+
+                    // Add empty grand total row even when no data
+                    const grandTotalRow = document.createElement('tr');
+                    grandTotalRow.style.cssText = 'background-color: #e9ecef; font-weight: bold; font-size: 1.1em;';
+                    grandTotalRow.innerHTML = `
+                        <td class="align-middle" style="padding: 15px 20px;" colspan="3" class="text-end">Grand Total:</td>
+                        <td class="align-middle text-end" style="padding: 15px 20px;">${formatCurrency(0)}</td>
+                    `;
+                    tbody.appendChild(grandTotalRow);
+                }
+
+            } catch (error) {
+                console.error('Error loading asset data:', error);
+
+                // Show error message in table
+                const tbody = document.querySelector('#asset-table tbody');
+                tbody.innerHTML = '';
+                const row = document.createElement('tr');
+                row.innerHTML = `<td colspan="4" class="text-center py-4 text-danger">Terjadi kesalahan saat memuat data: ${error.message}</td>`;
+                tbody.appendChild(row);
+            }
+        }
+
+        // Event listener for asset filter button
+        document.getElementById('btnFilterAsset').addEventListener('click', function() {
+            loadAssetData();
+        });
+
         // Load data when page loads
         document.addEventListener('DOMContentLoaded', function() {
             setDefaultDates(); // Set default dates to current month for jurnal
             setDefaultDatesArusKas(); // Set default dates for arus kas
             setDefaultDatesRugiLaba(); // Set default dates for rugi laba
             setDefaultDatesFitrah(); // Set default dates for fitrah
+            setDefaultDatesAsset(); // Set default dates for asset
             loadJurnalData(1);
             loadArusKasData();
             loadRugiLabaData();
             loadFitrahData(); // Load fitrah data
+            loadAssetData(); // Load asset data
         });
     </script>
 
